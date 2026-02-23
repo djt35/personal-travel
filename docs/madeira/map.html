@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Madeira Island Tour — Mar 14-21, 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #e2e8f0; }
+  #map { width: 100%; height: 60vh; }
+  .header { padding: 16px 24px; background: #1e293b; border-bottom: 1px solid #334155; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .header h1 { font-size: 20px; font-weight: 600; }
+  .header h1 span { color: #38bdf8; }
+  .header .dates { font-size: 14px; color: #94a3b8; }
+  .timeline { padding: 16px 24px; display: flex; gap: 8px; overflow-x: auto; }
+  .day-card { flex: 0 0 auto; width: 170px; background: #1e293b; border-radius: 10px; padding: 12px; border: 1px solid #334155; transition: border-color 0.2s; cursor: pointer; }
+  .day-card:hover { border-color: #38bdf8; }
+  .day-card.santacruz { border-left: 3px solid #f59e0b; }
+  .day-card.pontadosol { border-left: 3px solid #10b981; }
+  .day-card.northcoast { border-left: 3px solid #8b5cf6; }
+  .day-card.travel { border-left: 3px solid #38bdf8; }
+  .day-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; margin-bottom: 4px; }
+  .day-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .day-detail { font-size: 12px; color: #94a3b8; line-height: 1.4; }
+  .legend { padding: 10px 24px; display: flex; gap: 20px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #94a3b8; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .budget-bar { padding: 12px 24px; background: #1e293b; border-top: 1px solid #334155; display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; font-size: 13px; }
+  .budget-bar span { color: #64748b; }
+  .budget-bar strong { color: #38bdf8; }
+  .stays-panel { padding: 16px 24px; background: #0f172a; }
+  .stays-panel h2 { font-size: 16px; margin-bottom: 12px; color: #38bdf8; }
+  .stay-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+  .stay-card { background: #1e293b; border-radius: 10px; padding: 14px; border: 1px solid #334155; }
+  .stay-card.confirmed { border-left: 3px solid #10b981; }
+  .stay-card.option { border-left: 3px solid #8b5cf6; }
+  .stay-card h3 { font-size: 14px; margin-bottom: 6px; }
+  .stay-card .meta { font-size: 12px; color: #94a3b8; line-height: 1.6; }
+  .stay-card a { color: #38bdf8; text-decoration: none; font-size: 12px; }
+  .stay-card a:hover { text-decoration: underline; }
+  .stay-card .price { color: #10b981; font-weight: 600; }
+  .stay-card .badge { display: inline-block; background: #10b981; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 6px; }
+  .stay-card .badge.option-badge { background: #8b5cf6; }
+  .leaflet-popup-content-wrapper { background: #1e293b; color: #e2e8f0; border-radius: 8px; border: 1px solid #334155; }
+  .leaflet-popup-tip { background: #1e293b; }
+  .leaflet-popup-content { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 13px; line-height: 1.6; }
+  .leaflet-popup-content b { color: #38bdf8; }
+  .leaflet-popup-content .price { color: #10b981; font-weight: 600; }
+  .leaflet-popup-content .subtext { color: #94a3b8; font-size: 11px; }
+  .poi-name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>Madeira</span> Island Tour</h1>
+  <div class="dates">Sat 14 Mar &mdash; Sat 21 Mar 2026 &middot; 7 nights &middot; 3 bases</div>
+</div>
+
+<div id="map"></div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Base 1: Santa Cruz (3 nights)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div> Base 2: Ponta do Sol (2 nights)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div> Base 3: North Coast (2 nights) &mdash; 4 options</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> Attractions</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#38bdf8"></div> Route</div>
+</div>
+
+<div class="timeline">
+  <div class="day-card travel" onclick="flyTo(32.6944,-16.7744,11)">
+    <div class="day-label">Sat 14 Mar</div>
+    <div class="day-title">Arrive &rarr; Santa Cruz</div>
+    <div class="day-detail">FR398 CRL 11:15 &rarr; FNC 14:05 (direct). Pick up car, settle in.</div>
+  </div>
+  <div class="day-card santacruz" onclick="flyTo(32.6531,-16.9023,13)">
+    <div class="day-label">Sun 15 Mar</div>
+    <div class="day-title">Funchal Day Trip</div>
+    <div class="day-detail">Monte Palace Garden, toboggan ride, cable car, Mercado.</div>
+  </div>
+  <div class="day-card santacruz" onclick="flyTo(32.7486,-16.7097,13)">
+    <div class="day-label">Mon 16 Mar</div>
+    <div class="day-title">East Coast</div>
+    <div class="day-detail">Ponta de S&atilde;o Louren&ccedil;o hike, Machico beach.</div>
+  </div>
+  <div class="day-card pontadosol" onclick="flyTo(32.6828,-17.0819,13)">
+    <div class="day-label">Tue 17 Mar</div>
+    <div class="day-title">Move to Ponta do Sol</div>
+    <div class="day-detail">Cabo Gir&atilde;o skywalk, drive to cottage, pool afternoon.</div>
+  </div>
+  <div class="day-card pontadosol" onclick="flyTo(32.7600,-17.1200,12)">
+    <div class="day-label">Wed 18 Mar</div>
+    <div class="day-title">West Coast</div>
+    <div class="day-detail">Levada 25 Fontes waterfall, Paul da Serra, Ponta do Pargo sunset.</div>
+  </div>
+  <div class="day-card northcoast" onclick="flyTo(32.82,-17.08,12)">
+    <div class="day-label">Thu 19 Mar</div>
+    <div class="day-title">Move to North Coast</div>
+    <div class="day-detail">Jardim do Mar, coast road, Porto Moniz lava pools.</div>
+  </div>
+  <div class="day-card northcoast" onclick="flyTo(32.8284,-17.1062,12)">
+    <div class="day-label">Fri 20 Mar</div>
+    <div class="day-title">North Coast</div>
+    <div class="day-detail">Seixal natural pools, S&atilde;o Vicente caves, OR Pico do Arieiro hike.</div>
+  </div>
+  <div class="day-card travel" onclick="flyTo(32.6944,-16.7744,11)">
+    <div class="day-label">Sat 21 Mar</div>
+    <div class="day-title">Fly Home</div>
+    <div class="day-detail">FR397 FNC 06:00 &rarr; CRL 10:50 (direct). Early start!</div>
+  </div>
+</div>
+
+<div class="stays-panel">
+  <h2>Accommodation</h2>
+  <div class="stay-grid">
+    <div class="stay-card confirmed">
+      <h3>Base 1: Avista Ba&iacute;a Villa <span class="badge">CONFIRMED</span></h3>
+      <div class="meta">
+        Santa Cruz &middot; Sat 14 &ndash; Tue 17 Mar (3 nights)<br>
+        <span class="price">&euro;461</span> &middot; 4.95&#9733; &middot; Spacious villa, garden, ocean views<br>
+        <a href="https://www.airbnb.com/rooms/723854065701466291?check_in=2026-03-14&check_out=2026-03-17&adults=2" target="_blank">View on Airbnb &rarr;</a>
+      </div>
+    </div>
+    <div class="stay-card confirmed">
+      <h3>Base 2: Secluded Cottage w/ Pool <span class="badge">CONFIRMED</span></h3>
+      <div class="meta">
+        Ponta do Sol &middot; Tue 17 &ndash; Thu 19 Mar (2 nights)<br>
+        <span class="price">&euro;295</span> &middot; 4.92&#9733; &middot; 3BR, pool, oceanside views<br>
+        <a href="https://www.airbnb.com/rooms/603556572543846910?check_in=2026-03-17&check_out=2026-03-19&adults=2" target="_blank">View on Airbnb &rarr;</a>
+      </div>
+    </div>
+    <div class="stay-card option">
+      <h3>Base 3 Option V: Blue Horizon Luxury Villa <span class="badge option-badge">OPTION</span></h3>
+      <div class="meta">
+        S&atilde;o Vicente &middot; Thu 19 &ndash; Sat 21 Mar (2 nights)<br>
+        4.92&#9733; (51 reviews) &middot; Luxury villa, panoramic mountain views<br>
+        <a href="https://www.airbnb.com/rooms/1084565504128499027?check_in=2026-03-19&check_out=2026-03-21&adults=2" target="_blank">View on Airbnb &rarr;</a>
+      </div>
+    </div>
+    <div class="stay-card option">
+      <h3>Base 3 Option VI: Villa with Mountain View <span class="badge option-badge">OPTION</span></h3>
+      <div class="meta">
+        S&atilde;o Vicente &middot; Thu 19 &ndash; Sat 21 Mar (2 nights)<br>
+        Villa &middot; 10 min from Porto Moniz, BBQ, parking, near beach<br>
+        <a href="https://www.airbnb.com/rooms/3041982?check_in=2026-03-19&check_out=2026-03-21&adults=2" target="_blank">View on Airbnb &rarr;</a>
+      </div>
+    </div>
+    <div class="stay-card option">
+      <h3>Base 3 Option VII: Casa Kalm &mdash; Jacuzzi <span class="badge option-badge">OPTION</span></h3>
+      <div class="meta">
+        S&atilde;o Vicente &middot; Thu 19 &ndash; Sat 21 Mar (2 nights)<br>
+        4.95&#9733; (20 reviews) &middot; Private jacuzzi, mountain views, adult only<br>
+        <a href="https://www.airbnb.com/rooms/1452135483754165878?check_in=2026-03-19&check_out=2026-03-21&adults=2" target="_blank">View on Airbnb &rarr;</a>
+      </div>
+    </div>
+    <div class="stay-card option">
+      <h3>Base 3 Option VIII: Geta del Ilh&eacute;u <span class="badge option-badge">OPTION</span></h3>
+      <div class="meta">
+        Porto Moniz &middot; Thu 19 &ndash; Sat 21 Mar (2 nights)<br>
+        <span class="price">&euro;541</span> &middot; Superhost &middot; Premium exclusive property<br>
+        <a href="https://www.airbnb.com/rooms/1154153821793287143?check_in=2026-03-19&check_out=2026-03-21&adults=2" target="_blank">View on Airbnb &rarr;</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="budget-bar">
+  <div><span>Flights (Ryanair CRL, 2 pax):</span> <strong>~&euro;607</strong></div>
+  <div><span>Accommodation (base 1+2):</span> <strong>&euro;756</strong></div>
+  <div><span>Base 3 (pick one):</span> <strong>&euro;250&ndash;541</strong></div>
+  <div><span>Car rental:</span> <strong>~&euro;250</strong></div>
+  <div><span>Est. total:</span> <strong>~&euro;1,863&ndash;2,154</strong></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const map = L.map('map', { zoomControl: true }).setView([32.76, -17.0], 11);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap &copy; CARTO',
+  maxZoom: 18
+}).addTo(map);
+
+function flyTo(lat, lng, zoom) { map.flyTo([lat, lng], zoom, { duration: 1 }); }
+
+function makeIcon(color, size) {
+  return L.divIcon({
+    className: '',
+    html: `<div style="width:${size}px;height:${size}px;background:${color};border:2px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.5);"></div>`,
+    iconSize: [size, size],
+    iconAnchor: [size/2, size/2],
+    popupAnchor: [0, -size/2]
+  });
+}
+function makeNumberIcon(color, num) {
+  return L.divIcon({
+    className: '',
+    html: `<div style="width:28px;height:28px;background:${color};border:2px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;font-family:system-ui;">${num}</div>`,
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+    popupAnchor: [0, -14]
+  });
+}
+function makeLetterIcon(color, letter) {
+  return L.divIcon({
+    className: '',
+    html: `<div style="width:24px;height:24px;background:${color};border:2px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;font-family:system-ui;opacity:0.85;">${letter}</div>`,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+    popupAnchor: [0, -12]
+  });
+}
+
+// === CONFIRMED ACCOMMODATION (large numbered) ===
+L.marker([32.68742, -16.79664], { icon: makeNumberIcon('#f59e0b', 1) })
+  .addTo(map).bindPopup(`<div class="poi-name">Base 1: Santa Cruz</div>
+  <b>Avista Ba&iacute;a &mdash; Villa</b> <span style="color:#10b981">CONFIRMED</span><br>
+  Sat 14 &ndash; Tue 17 Mar (3 nights)<br>
+  <span class="price">&euro;461</span> &middot; 4.95 &#9733;<br>
+  <span class="subtext">Spacious villa, garden, ocean views, near airport</span><br>
+  <a href="https://www.airbnb.com/rooms/723854065701466291" target="_blank" style="color:#38bdf8">View on Airbnb</a>`);
+
+L.marker([32.6828, -17.0819], { icon: makeNumberIcon('#10b981', 2) })
+  .addTo(map).bindPopup(`<div class="poi-name">Base 2: Ponta do Sol</div>
+  <b>Secluded Cottage w/ Pool</b> <span style="color:#10b981">CONFIRMED</span><br>
+  Tue 17 &ndash; Thu 19 Mar (2 nights)<br>
+  <span class="price">&euro;295</span> &middot; 4.92 &#9733;<br>
+  <span class="subtext">3BR, 3BA, pool, oceanside views</span><br>
+  <a href="https://www.airbnb.com/rooms/603556572543846910" target="_blank" style="color:#38bdf8">View on Airbnb</a>`);
+
+// === BASE 3 OPTIONS (lettered markers) ===
+const base3options = [
+  { lat: 32.792, lng: -17.040, letter: 'V',
+    popup: `<div class="poi-name">Option V: Blue Horizon Luxury Villa</div>
+    S&atilde;o Vicente &middot; Thu 19 &ndash; Sat 21 Mar (2 nights)<br>
+    4.92 &#9733; (51 reviews) &middot; Luxury villa, panoramic views<br>
+    <a href="https://www.airbnb.com/rooms/1084565504128499027?check_in=2026-03-19&check_out=2026-03-21&adults=2" target="_blank" style="color:#38bdf8">View on Airbnb</a>` },
+  { lat: 32.810, lng: -17.055, letter: 'VI',
+    popup: `<div class="poi-name">Option VI: Villa with Mountain View</div>
+    S&atilde;o Vicente &middot; Thu 19 &ndash; Sat 21 Mar (2 nights)<br>
+    Villa &middot; 10 min Porto Moniz, BBQ, near beach<br>
+    <a href="https://www.airbnb.com/rooms/3041982?check_in=2026-03-19&check_out=2026-03-21&adults=2" target="_blank" style="color:#38bdf8">View on Airbnb</a>` },
+  { lat: 32.800, lng: -17.035, letter: 'VII',
+    popup: `<div class="poi-name">Option VII: Casa Kalm &mdash; Jacuzzi</div>
+    S&atilde;o Vicente &middot; Thu 19 &ndash; Sat 21 Mar (2 nights)<br>
+    4.95 &#9733; (20 reviews) &middot; Private jacuzzi, adult only, mountain retreat<br>
+    <a href="https://www.airbnb.com/rooms/1452135483754165878?check_in=2026-03-19&check_out=2026-03-21&adults=2" target="_blank" style="color:#38bdf8">View on Airbnb</a>` },
+  { lat: 32.8646, lng: -17.175, letter: 'VIII',
+    popup: `<div class="poi-name">Option VIII: Geta del Ilh&eacute;u</div>
+    Porto Moniz &middot; Thu 19 &ndash; Sat 21 Mar (2 nights)<br>
+    <span class="price">&euro;541</span> &middot; Superhost &middot; Premium exclusive<br>
+    <a href="https://www.airbnb.com/rooms/1154153821793287143?check_in=2026-03-19&check_out=2026-03-21&adults=2" target="_blank" style="color:#38bdf8">View on Airbnb</a>` }
+];
+
+base3options.forEach(o => {
+  L.marker([o.lat, o.lng], { icon: makeLetterIcon('#8b5cf6', o.letter) })
+    .addTo(map).bindPopup(o.popup);
+});
+
+// === AIRPORT ===
+L.marker([32.6944, -16.7744], { icon: makeIcon('#38bdf8', 16) })
+  .addTo(map)
+  .bindPopup(`<div class="poi-name">Funchal Airport (FNC)</div>
+    <b>Outbound:</b> FR398 CRL 11:15 &rarr; FNC 14:05 (Ryanair, direct)<br>
+    <b>Return:</b> FR397 FNC 06:00 &rarr; CRL 10:50 (Ryanair, direct)<br>
+    <span class="subtext">~&euro;607 for 2 passengers return</span>`);
+
+// === POINTS OF INTEREST ===
+const pois = [
+  { lat: 32.6531, lng: -16.9023, name: 'Monte Palace Garden', detail: 'Sun: Tropical garden + toboggan ride' },
+  { lat: 32.6469, lng: -16.9078, name: 'Mercado dos Lavradores', detail: 'Sun: Fresh fruit, flowers, fish market' },
+  { lat: 32.7486, lng: -16.7097, name: 'Ponta de S\u00e3o Louren\u00e7o', detail: 'Mon: Peninsula hike, dramatic sea cliffs (~2.5h)' },
+  { lat: 32.7189, lng: -16.7636, name: 'Machico Beach', detail: 'Mon: Sandy beach, stop on return' },
+  { lat: 32.6570, lng: -17.0100, name: 'Cabo Gir\u00e3o', detail: 'Tue: Europe\'s highest sea cliff skywalk (580m)' },
+  { lat: 32.7604, lng: -17.1340, name: 'Levada 25 Fontes', detail: 'Wed: Iconic waterfall levada walk (~3h)' },
+  { lat: 32.7700, lng: -17.1000, name: 'Paul da Serra', detail: 'Wed: High plateau, 1400m elevation' },
+  { lat: 32.8120, lng: -17.2530, name: 'Ponta do Pargo', detail: 'Wed: Westernmost lighthouse, epic sunsets' },
+  { lat: 32.7345, lng: -17.2086, name: 'Jardim do Mar', detail: 'Thu: Charming surf village' },
+  { lat: 32.7545, lng: -17.0140, name: 'Encumeada Pass', detail: 'Both coasts visible simultaneously' },
+  { lat: 32.7960, lng: -16.9776, name: 'S\u00e3o Vicente Caves', detail: 'Thu: Volcanic lava tubes' },
+  { lat: 32.8284, lng: -17.1062, name: 'Seixal Natural Pools', detail: 'Fri: Volcanic rock pools, dramatic setting' },
+  { lat: 32.8290, lng: -17.1720, name: 'Porto Moniz Lava Pools', detail: 'Thu/Fri: Famous natural swimming pools' },
+  { lat: 32.7354, lng: -16.9283, name: 'Pico do Arieiro', detail: 'Alt: 3rd highest peak, above-cloud hike' },
+];
+
+pois.forEach(p => {
+  L.marker([p.lat, p.lng], { icon: makeIcon('#ef4444', 10) })
+    .addTo(map).bindPopup(`<div class="poi-name">${p.name}</div>${p.detail}`);
+});
+
+// === ROUTE LINES ===
+// Airport → Santa Cruz
+L.polyline([[32.6944,-16.7744],[32.68742,-16.79664]], { color: '#38bdf8', weight: 2, dashArray: '6,4', opacity: 0.7 }).addTo(map);
+// Santa Cruz → Funchal day trip
+L.polyline([[32.68742,-16.79664],[32.6531,-16.9023]], { color: '#f59e0b', weight: 2, dashArray: '6,4', opacity: 0.5 }).addTo(map);
+// Santa Cruz → East
+L.polyline([[32.68742,-16.79664],[32.7486,-16.7097]], { color: '#f59e0b', weight: 2, dashArray: '6,4', opacity: 0.5 }).addTo(map);
+// Santa Cruz → Cabo Girão → Ponta do Sol
+L.polyline([[32.68742,-16.79664],[32.6570,-17.0100],[32.6828,-17.0819]], { color: '#38bdf8', weight: 3, opacity: 0.8 }).addTo(map)
+  .bindPopup('<b>Tue 17:</b> Santa Cruz &rarr; Cabo Gir&atilde;o &rarr; Ponta do Sol');
+// Ponta do Sol → Levada → Paul da Serra → Ponta do Pargo
+L.polyline([[32.6828,-17.0819],[32.7604,-17.1340],[32.7700,-17.1000],[32.8120,-17.2530]], { color: '#10b981', weight: 2, dashArray: '6,4', opacity: 0.5 }).addTo(map);
+// Ponta do Sol → North Coast (São Vicente area)
+L.polyline([[32.6828,-17.0819],[32.7345,-17.2086],[32.82,-17.08]], { color: '#38bdf8', weight: 3, opacity: 0.8 }).addTo(map)
+  .bindPopup('<b>Thu 19:</b> Ponta do Sol &rarr; Jardim do Mar &rarr; North Coast');
+// North coast → Seixal
+L.polyline([[32.82,-17.08],[32.8284,-17.1062]], { color: '#8b5cf6', weight: 2, dashArray: '6,4', opacity: 0.5 }).addTo(map);
+// North coast → Porto Moniz
+L.polyline([[32.82,-17.08],[32.8290,-17.1720]], { color: '#8b5cf6', weight: 2, dashArray: '6,4', opacity: 0.5 }).addTo(map);
+// North coast → Airport (return)
+L.polyline([[32.82,-17.08],[32.7545,-17.0140],[32.6944,-16.7744]], { color: '#38bdf8', weight: 2, dashArray: '6,4', opacity: 0.7 }).addTo(map);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Madeira Trip — Mar 14-21, 2026</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #e2e8f0; line-height: 1.6; }
+  .container { max-width: 800px; margin: 0 auto; padding: 24px 20px; }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  h1 span { color: #38bdf8; }
+  .subtitle { color: #94a3b8; font-size: 15px; margin-bottom: 32px; }
+  h2 { font-size: 18px; font-weight: 600; color: #38bdf8; margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 1px solid #334155; }
+  h3 { font-size: 15px; font-weight: 600; margin: 20px 0 8px; }
+
+  .flight-card { background: #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 12px; border: 1px solid #334155; }
+  .flight-card.recommended { border-left: 4px solid #10b981; }
+  .flight-card.alternative { border-left: 4px solid #64748b; }
+  .flight-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .flight-label.rec { color: #10b981; }
+  .flight-label.alt { color: #64748b; }
+  .flight-row { display: flex; justify-content: space-between; align-items: center; margin: 6px 0; }
+  .flight-route { font-size: 15px; font-weight: 500; }
+  .flight-detail { font-size: 13px; color: #94a3b8; }
+  .flight-price { font-size: 20px; font-weight: 700; color: #10b981; }
+  .flight-price.alt-price { color: #64748b; font-size: 16px; }
+  .flight-note { font-size: 12px; color: #94a3b8; margin-top: 8px; font-style: italic; }
+
+  .stay-card { background: #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 12px; border: 1px solid #334155; }
+  .stay-card.confirmed { border-left: 4px solid #10b981; }
+  .stay-card.option { border-left: 4px solid #8b5cf6; }
+  .stay-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .stay-name { font-size: 16px; font-weight: 600; }
+  .stay-dates { font-size: 13px; color: #94a3b8; }
+  .stay-meta { font-size: 13px; color: #94a3b8; margin: 4px 0; }
+  .stay-price { font-size: 18px; font-weight: 700; color: #10b981; }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+  .badge-confirmed { background: #10b981; color: white; }
+  .badge-option { background: #8b5cf6; color: white; }
+  .badge-superhost { background: #f59e0b; color: #1e293b; }
+  a { color: #38bdf8; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .link-btn { display: inline-block; background: #38bdf8; color: #0f172a; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; margin-top: 10px; }
+  .link-btn:hover { background: #7dd3fc; text-decoration: none; }
+
+  .budget-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+  .budget-table td { padding: 8px 12px; border-bottom: 1px solid #334155; font-size: 14px; }
+  .budget-table td:last-child { text-align: right; font-weight: 600; color: #10b981; }
+  .budget-table tr.total td { border-top: 2px solid #38bdf8; font-size: 16px; font-weight: 700; color: #38bdf8; }
+  .budget-table tr.total td:last-child { color: #38bdf8; }
+  .budget-table .tbd { color: #94a3b8; font-style: italic; font-weight: 400; }
+
+  .route-section { background: #1e293b; border-radius: 12px; padding: 20px; margin-top: 16px; border: 1px solid #334155; }
+  .route-item { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
+  .route-item .route-name { color: #e2e8f0; }
+  .route-item .route-time { color: #94a3b8; }
+
+  .note { background: #1e293b; border-radius: 8px; padding: 14px 16px; margin-top: 16px; font-size: 13px; color: #94a3b8; border-left: 3px solid #f59e0b; }
+
+  .map-link { display: block; text-align: center; background: linear-gradient(135deg, #1e293b, #334155); border-radius: 12px; padding: 24px; margin-top: 24px; border: 1px solid #334155; }
+  .map-link h3 { color: #38bdf8; margin-bottom: 8px; }
+  .map-link p { color: #94a3b8; font-size: 13px; margin-bottom: 12px; }
+
+  .divider { border: none; border-top: 1px solid #334155; margin: 32px 0; }
+
+  .option-grid { display: grid; gap: 12px; }
+  .pick-note { font-size: 13px; color: #94a3b8; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1><span>Madeira</span> Island Tour</h1>
+  <p class="subtitle">Saturday 14 March - Saturday 21 March 2026 &middot; 7 nights &middot; 3 bases</p>
+
+  <!-- ===== FLIGHTS ===== -->
+  <h2>Flights</h2>
+
+  <div class="flight-card recommended">
+    <div class="flight-label rec">Recommended &mdash; Ryanair from Charleroi</div>
+    <div class="flight-row">
+      <div>
+        <div class="flight-route">CRL &rarr; FNC</div>
+        <div class="flight-detail">FR398 &middot; Sat 14 Mar &middot; 11:15 &rarr; 14:05 &middot; Direct</div>
+      </div>
+    </div>
+    <div class="flight-row">
+      <div>
+        <div class="flight-route">FNC &rarr; CRL</div>
+        <div class="flight-detail">FR397 &middot; Sat 21 Mar &middot; 06:00 &rarr; 10:50 &middot; Direct</div>
+      </div>
+    </div>
+    <div class="flight-row" style="margin-top: 8px;">
+      <div class="flight-detail">2 passengers, both direct</div>
+      <div class="flight-price">&euro;607</div>
+    </div>
+    <div class="flight-note">Drive Drongen &rarr; CRL ~1h45. Early return = leave property ~03:00 (or stay near airport night before).</div>
+  </div>
+
+  <div class="flight-card alternative">
+    <div class="flight-label alt">Alternative &mdash; Brussels Airlines from Brussels</div>
+    <div class="flight-row">
+      <div>
+        <div class="flight-route">BRU &rarr; FNC</div>
+        <div class="flight-detail">SN3827 &middot; Sat 14 Mar &middot; 07:05 &rarr; 10:05 &middot; Direct</div>
+      </div>
+    </div>
+    <div class="flight-row">
+      <div>
+        <div class="flight-route">FNC &rarr; BRU</div>
+        <div class="flight-detail">SN3828 &middot; Sat 21 Mar &middot; 11:15 &rarr; 15:55 &middot; Direct</div>
+      </div>
+    </div>
+    <div class="flight-row" style="margin-top: 8px;">
+      <div class="flight-detail">2 passengers, both direct</div>
+      <div class="flight-price alt-price">&euro;1,165</div>
+    </div>
+    <div class="flight-note">More civilised times. BRU is ~1h from Drongen.</div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ===== ACCOMMODATION ===== -->
+  <h2>Accommodation</h2>
+
+  <!-- Base 1 -->
+  <h3>Base 1 &mdash; East Coast &middot; Santa Cruz &middot; 3 nights</h3>
+  <div class="stay-card confirmed">
+    <div class="stay-header">
+      <div>
+        <div class="stay-name">Avista Ba&iacute;a Villa <span class="badge badge-confirmed">Confirmed</span></div>
+        <div class="stay-dates">Sat 14 Mar &rarr; Tue 17 Mar (3 nights)</div>
+      </div>
+      <div class="stay-price">&euro;461</div>
+    </div>
+    <div class="stay-meta">
+      &#9733; 4.95 &middot; Santa Cruz, east coast &middot; Near airport &middot; Entire villa
+    </div>
+    <a class="link-btn" href="https://www.airbnb.com/rooms/723854065701466291?check_in=2026-03-14&check_out=2026-03-17&adults=2" target="_blank">View on Airbnb &rarr;</a>
+  </div>
+
+  <!-- Base 2 -->
+  <h3>Base 2 &mdash; South-West Coast &middot; Ponta do Sol &middot; 2 nights</h3>
+  <div class="stay-card confirmed">
+    <div class="stay-header">
+      <div>
+        <div class="stay-name">Secluded Cottage with Pool <span class="badge badge-confirmed">Confirmed</span></div>
+        <div class="stay-dates">Tue 17 Mar &rarr; Thu 19 Mar (2 nights)</div>
+      </div>
+      <div class="stay-price">&euro;295</div>
+    </div>
+    <div class="stay-meta">
+      &#9733; 4.92 &middot; Ponta do Sol, south-west coast &middot; Private pool &middot; Rural &middot; Entire cottage
+    </div>
+    <a class="link-btn" href="https://www.airbnb.com/rooms/603556572543846910?check_in=2026-03-17&check_out=2026-03-19&adults=2" target="_blank">View on Airbnb &rarr;</a>
+  </div>
+
+  <!-- Base 3 -->
+  <h3>Base 3 &mdash; North Coast &middot; S&atilde;o Vicente / Porto Moniz &middot; 2 nights</h3>
+  <p class="pick-note">Pick your favourite &mdash; all four are great options. Click to view each listing.</p>
+
+  <div class="option-grid">
+    <div class="stay-card option">
+      <div class="stay-header">
+        <div>
+          <div class="stay-name">V. Blue Horizon Luxury Villa <span class="badge badge-option">Option</span></div>
+          <div class="stay-dates">Thu 19 Mar &rarr; Sat 21 Mar (2 nights)</div>
+        </div>
+      </div>
+      <div class="stay-meta">
+        &#9733; 4.92 (51 reviews) &middot; S&atilde;o Vicente &middot; Luxury villa with ocean views
+      </div>
+      <a class="link-btn" href="https://www.airbnb.com/rooms/1084565504128499027?check_in=2026-03-19&check_out=2026-03-21&adults=2" target="_blank">View on Airbnb &rarr;</a>
+    </div>
+
+    <div class="stay-card option">
+      <div class="stay-header">
+        <div>
+          <div class="stay-name">VI. Villa with Mountain View <span class="badge badge-option">Option</span></div>
+          <div class="stay-dates">Thu 19 Mar &rarr; Sat 21 Mar (2 nights)</div>
+        </div>
+      </div>
+      <div class="stay-meta">
+        S&atilde;o Vicente &middot; Mountain views &middot; Secluded villa setting
+      </div>
+      <a class="link-btn" href="https://www.airbnb.com/rooms/3041982?check_in=2026-03-19&check_out=2026-03-21&adults=2" target="_blank">View on Airbnb &rarr;</a>
+    </div>
+
+    <div class="stay-card option">
+      <div class="stay-header">
+        <div>
+          <div class="stay-name">VII. Casa Kalm <span class="badge badge-option">Option</span></div>
+          <div class="stay-dates">Thu 19 Mar &rarr; Sat 21 Mar (2 nights)</div>
+        </div>
+      </div>
+      <div class="stay-meta">
+        &#9733; 4.95 (20 reviews) &middot; S&atilde;o Vicente &middot; Private jacuzzi &middot; Adults only &middot; Tranquil retreat
+      </div>
+      <a class="link-btn" href="https://www.airbnb.com/rooms/1452135483754165878?check_in=2026-03-19&check_out=2026-03-21&adults=2" target="_blank">View on Airbnb &rarr;</a>
+    </div>
+
+    <div class="stay-card option">
+      <div class="stay-header">
+        <div>
+          <div class="stay-name">VIII. Geta del Ilh&eacute;u <span class="badge badge-option">Option</span> <span class="badge badge-superhost">Superhost</span></div>
+          <div class="stay-dates">Thu 19 Mar &rarr; Sat 21 Mar (2 nights)</div>
+        </div>
+        <div class="stay-price">&euro;541</div>
+      </div>
+      <div class="stay-meta">
+        Porto Moniz &middot; Superhost &middot; Exclusive property near natural pools
+      </div>
+      <a class="link-btn" href="https://www.airbnb.com/rooms/1154153821793287143?check_in=2026-03-19&check_out=2026-03-21&adults=2" target="_blank">View on Airbnb &rarr;</a>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ===== DRIVING ROUTE ===== -->
+  <h2>Driving Route</h2>
+  <div class="route-section">
+    <div class="route-item"><span class="route-name">FNC Airport &rarr; Santa Cruz (Base 1)</span><span class="route-time">~10 min</span></div>
+    <div class="route-item"><span class="route-name">Santa Cruz &rarr; Ponta do Sol (Base 2)</span><span class="route-time">~45 min</span></div>
+    <div class="route-item"><span class="route-name">Ponta do Sol &rarr; S&atilde;o Vicente / Porto Moniz (Base 3)</span><span class="route-time">~40-55 min</span></div>
+    <div class="route-item"><span class="route-name">S&atilde;o Vicente &rarr; FNC Airport</span><span class="route-time">~45 min</span></div>
+    <div class="route-item"><span class="route-name">Porto Moniz &rarr; FNC Airport</span><span class="route-time">~60 min</span></div>
+  </div>
+  <div class="note">Rental car needed for the full week. Madeira has good roads but mountain routes are winding. Driving times are approximate.</div>
+
+  <hr class="divider">
+
+  <!-- ===== BUDGET ===== -->
+  <h2>Budget Estimate</h2>
+  <table class="budget-table">
+    <tr><td>Flights (Ryanair CRL, 2 pax)</td><td>&euro;607</td></tr>
+    <tr><td>Base 1 &mdash; Avista Ba&iacute;a Villa (3 nights)</td><td>&euro;461</td></tr>
+    <tr><td>Base 2 &mdash; Secluded Cottage (2 nights)</td><td>&euro;295</td></tr>
+    <tr><td>Base 3 &mdash; North coast villa (2 nights)</td><td class="tbd">&euro;250 &ndash; 541</td></tr>
+    <tr><td>Car rental (7 days)</td><td class="tbd">~&euro;250</td></tr>
+    <tr class="total"><td>Estimated Total</td><td>&euro;1,863 &ndash; 2,154</td></tr>
+  </table>
+  <div class="note">Base 3 price depends on which villa we pick. Car rental is estimated &mdash; exact price TBC. Food, fuel, and activities not included.</div>
+
+  <hr class="divider">
+
+  <!-- ===== MAP ===== -->
+  <a href="map.html" class="map-link" style="text-decoration: none;">
+    <h3>Interactive Map</h3>
+    <p>Full interactive map with all bases, routes, and points of interest.</p>
+    <p style="font-size: 12px; color: #38bdf8; font-weight: 600;">Open Map &rarr;</p>
+  </a>
+
+  <p style="text-align: center; color: #475569; font-size: 12px; margin-top: 32px;">
+    Generated by Kai &middot; Feb 2026
+  </p>
+
+</div>
+</body>
+</html>
