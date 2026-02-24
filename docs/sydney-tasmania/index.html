@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sydney + Tasmania — Mar 16–30, 2026</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #e2e8f0; overflow: hidden; }
+    #map { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+    .glass { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 12px; }
+    #header { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); z-index: 1000; padding: 12px 28px; text-align: center; }
+    #header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+    #header p { font-size: 13px; color: #94a3b8; margin-top: 2px; }
+    #timeline { position: absolute; top: 80px; left: 16px; bottom: 80px; width: 280px; z-index: 1000; padding: 16px; overflow-y: auto; }
+    #timeline::-webkit-scrollbar { width: 4px; }
+    #timeline::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.3); border-radius: 2px; }
+    .timeline-section { margin-bottom: 16px; }
+    .timeline-section h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: #64748b; margin-bottom: 8px; padding-left: 4px; }
+    .day-card { padding: 10px 12px; border-radius: 8px; cursor: pointer; margin-bottom: 6px; transition: all 0.2s; border-left: 3px solid transparent; }
+    .day-card:hover { background: rgba(148,163,184,0.1); }
+    .day-card.active { background: rgba(148,163,184,0.15); }
+    .day-card .day-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .day-card .day-title { font-size: 14px; font-weight: 500; margin-top: 2px; }
+    .day-card .day-desc { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+    .day-card.base-hub { border-left-color: #38bdf8; } .day-card.base-hub .day-label { color: #38bdf8; }
+    .day-card.base-es { border-left-color: #ec4899; } .day-card.base-es .day-label { color: #ec4899; }
+    .day-card.base-nb { border-left-color: #10b981; } .day-card.base-nb .day-label { color: #10b981; }
+    .day-card.base-t1 { border-left-color: #f43f5e; } .day-card.base-t1 .day-label { color: #f43f5e; }
+    .day-card.base-t2 { border-left-color: #f59e0b; } .day-card.base-t2 .day-label { color: #f59e0b; }
+    .day-card.base-t3 { border-left-color: #8b5cf6; } .day-card.base-t3 .day-label { color: #8b5cf6; }
+    .day-card.base-t4 { border-left-color: #14b8a6; } .day-card.base-t4 .day-label { color: #14b8a6; }
+    .day-card.travel { border-left-color: #64748b; } .day-card.travel .day-label { color: #64748b; }
+    #property-panel { position: absolute; top: 80px; right: 16px; bottom: 80px; width: 340px; z-index: 1000; padding: 16px; overflow-y: auto; display: none; }
+    #property-panel::-webkit-scrollbar { width: 4px; }
+    #property-panel::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.3); border-radius: 2px; }
+    #property-panel h3 { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+    .section-divider { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: #64748b; margin: 16px 0 8px; padding-top: 12px; border-top: 1px solid rgba(148,163,184,0.15); }
+    .prop-card { padding: 12px; border-radius: 8px; margin-bottom: 8px; background: rgba(148,163,184,0.08); cursor: pointer; transition: all 0.2s; }
+    .prop-card:hover { background: rgba(148,163,184,0.15); }
+    .prop-card.hotel-card { border-left: 3px solid rgba(251,191,36,0.5); }
+    .prop-card .prop-name { font-size: 13px; font-weight: 600; }
+    .prop-card .prop-meta { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+    .prop-card .prop-price { font-size: 14px; font-weight: 700; margin-top: 4px; }
+    .prop-card .prop-link { display: inline-block; margin-top: 6px; font-size: 11px; color: #38bdf8; text-decoration: none; }
+    .prop-card .prop-link:hover { text-decoration: underline; }
+    .prop-card .prop-rating { color: #fbbf24; }
+    .prop-card .forbes-badge, .prop-card .hotel-badge {
+      display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 10px;
+      font-weight: 700; margin-left: 6px;
+    }
+    .forbes-badge { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+    .hotel-badge { background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); }
+    #budget { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 1000; padding: 12px 24px; display: flex; gap: 24px; align-items: center; }
+    .budget-item { text-align: center; }
+    .budget-item .budget-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; }
+    .budget-item .budget-value { font-size: 15px; font-weight: 700; margin-top: 2px; }
+    .budget-item.total .budget-value { color: #38bdf8; font-size: 18px; }
+    .budget-divider { width: 1px; height: 36px; background: rgba(148,163,184,0.2); }
+    #legend { position: absolute; bottom: 80px; right: 16px; z-index: 1000; padding: 12px 16px; }
+    .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 12px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .legend-line { width: 20px; height: 2px; border-top: 2px dashed; flex-shrink: 0; }
+    .legend-square { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+    .legend-hub { width: 14px; height: 14px; border-radius: 50%; border: 2.5px solid #fbbf24; flex-shrink: 0; }
+    .legend-plane { font-size: 14px; flex-shrink: 0; width: 20px; text-align: center; }
+    .base-toggle { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; margin-right: 4px; border: 1px solid rgba(148,163,184,0.2); transition: all 0.2s; color: #94a3b8; }
+    .base-toggle:hover { background: rgba(148,163,184,0.15); }
+    .base-toggle.active-hub { background: rgba(56,189,248,0.2); border-color: #38bdf8; color: #38bdf8; }
+    .base-toggle.active-es { background: rgba(236,72,153,0.2); border-color: #ec4899; color: #ec4899; }
+    .base-toggle.active-nb { background: rgba(16,185,129,0.2); border-color: #10b981; color: #10b981; }
+    .base-toggle.active-t1 { background: rgba(244,63,94,0.2); border-color: #f43f5e; color: #f43f5e; }
+    .base-toggle.active-t2 { background: rgba(245,158,11,0.2); border-color: #f59e0b; color: #f59e0b; }
+    .base-toggle.active-t3 { background: rgba(139,92,246,0.2); border-color: #8b5cf6; color: #8b5cf6; }
+    .base-toggle.active-t4 { background: rgba(20,184,166,0.2); border-color: #14b8a6; color: #14b8a6; }
+    #base-toggles { position: absolute; top: 80px; left: 312px; z-index: 1000; display: flex; gap: 4px; flex-wrap: wrap; max-width: 480px; }
+    .leaflet-popup-content-wrapper { background: rgba(15, 23, 42, 0.92) !important; backdrop-filter: blur(12px) !important; border: 1px solid rgba(148,163,184,0.2) !important; border-radius: 10px !important; color: #e2e8f0 !important; }
+    .leaflet-popup-tip { background: rgba(15, 23, 42, 0.92) !important; }
+    .leaflet-popup-content { font-size: 13px !important; line-height: 1.5 !important; }
+    .leaflet-popup-content a { color: #38bdf8 !important; }
+    .popup-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+    .popup-meta { color: #94a3b8; font-size: 12px; }
+    .popup-price { font-size: 15px; font-weight: 700; margin-top: 4px; }
+    .popup-link { display: inline-block; margin-top: 6px; }
+    .popup-badge { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; margin-top: 4px; }
+    .poi-title { font-weight: 600; }
+    .poi-desc { color: #94a3b8; font-size: 12px; }
+    @media (max-width: 900px) { #timeline { display: none; } #property-panel { display: none !important; } #base-toggles { left: 16px; top: 80px; } }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="header" class="glass">
+  <h1>Sydney + Tasmania &mdash; 2-Week Alternative</h1>
+  <p>Mar 16&ndash;30, 2026 &nbsp;&middot;&nbsp; 14 nights &nbsp;&middot;&nbsp; Week 1 Sydney &middot; Week 2 Tasmania Road Trip</p>
+</div>
+<div id="timeline" class="glass"></div>
+<div id="base-toggles">
+  <span class="base-toggle" data-base="hub" onclick="toggleBase('hub')">Sydney Hotels</span>
+  <span class="base-toggle" data-base="es" onclick="toggleBase('es')">Eastern Suburbs</span>
+  <span class="base-toggle" data-base="nb" onclick="toggleBase('nb')">Northern Beaches</span>
+  <span class="base-toggle" data-base="t1" onclick="toggleBase('t1')">Hobart</span>
+  <span class="base-toggle" data-base="t2" onclick="toggleBase('t2')">Freycinet</span>
+  <span class="base-toggle" data-base="t3" onclick="toggleBase('t3')">Cradle Mountain</span>
+  <span class="base-toggle" data-base="t4" onclick="toggleBase('t4')">Launceston</span>
+</div>
+<div id="property-panel" class="glass"></div>
+<div id="budget" class="glass">
+  <div class="budget-item"><div class="budget-label">Flights (BRU&harr;SYD)</div><div class="budget-value">TBD</div></div>
+  <div class="budget-divider"></div>
+  <div class="budget-item"><div class="budget-label">Sydney (7n)</div><div class="budget-value">~EUR 1,400&ndash;3,200</div></div>
+  <div class="budget-divider"></div>
+  <div class="budget-item"><div class="budget-label">Tasmania (7n)</div><div class="budget-value">~EUR 900&ndash;1,800</div></div>
+  <div class="budget-divider"></div>
+  <div class="budget-item"><div class="budget-label">SYD&harr;HBA Flight</div><div class="budget-value">~EUR 100&ndash;200</div></div>
+  <div class="budget-divider"></div>
+  <div class="budget-item"><div class="budget-label">Car Rental</div><div class="budget-value">~EUR 600</div></div>
+  <div class="budget-divider"></div>
+  <div class="budget-item total"><div class="budget-label">Est. Total</div><div class="budget-value">EUR 3,000+</div></div>
+</div>
+<div id="legend" class="glass">
+  <div class="legend-item"><span class="legend-hub" style="background:rgba(56,189,248,0.3);"></span> Sydney CBD (2n)</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#ec4899"></span> Eastern Suburbs (2n)</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span> Northern Beaches (3n)</div>
+  <div class="legend-item"><span class="legend-plane">&#9992;</span> Fly SYD &rarr; HBA</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#f43f5e"></span> Hobart (2n)</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> Freycinet (2n)</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#8b5cf6"></span> Cradle Mountain (2n)</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#14b8a6"></span> Launceston (1n)</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#38bdf8; width:8px; height:8px;"></span> Points of Interest</div>
+  <div class="legend-item"><span class="legend-square" style="background:rgba(251,191,36,0.4); border:1px solid #fbbf24;"></span> Hotel / Resort</div>
+  <div class="legend-item"><span class="legend-line" style="border-color:#64748b"></span> Driving route</div>
+</div>
+
+<script>
+const map = L.map('map', { center: [-38, 148.5], zoom: 6, zoomControl: false });
+L.control.zoom({ position: 'topright' }).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OSM &copy; CARTO', subdomains: 'abcd', maxZoom: 19
+}).addTo(map);
+
+const COLORS = { hub: '#38bdf8', es: '#ec4899', nb: '#10b981', t1: '#f43f5e', t2: '#f59e0b', t3: '#8b5cf6', t4: '#14b8a6', poi: '#38bdf8' };
+const CHECKINS = { es: '2026-03-18', nb: '2026-03-20', t1: '2026-03-23', t2: '2026-03-25', t3: '2026-03-27', t4: '2026-03-29' };
+const CHECKOUTS = { es: '2026-03-20', nb: '2026-03-23', t1: '2026-03-25', t2: '2026-03-27', t3: '2026-03-29', t4: '2026-03-30' };
+const BASE_NAMES = { hub: 'Sydney CBD Hotels', es: 'Eastern Suburbs', nb: 'Northern Beaches', t1: 'Hobart', t2: 'Freycinet / Coles Bay', t3: 'Cradle Mountain', t4: 'Launceston' };
+
+// ─── SYDNEY CBD HOTELS (2n, Mar 16–18) ───
+const sydneyHotels = [
+  { letter: 'A', name: 'Park Hyatt Sydney', badge: 'Forbes 4-Star', type: '5-star Hotel', location: 'The Rocks', price: 650, priceLabel: '~EUR 650/night', total: 1300, rating: '9.3/10', lat: -33.856, lng: 151.207, url: 'https://www.booking.com/hotel/au/park-hyatt-sydney.html' },
+  { letter: 'B', name: 'Capella Sydney', badge: 'Forbes 4-Star', type: '5-star Boutique', location: 'CBD', price: 550, priceLabel: '~EUR 550/night', total: 1100, rating: '9.5/10', lat: -33.865, lng: 151.210, url: 'https://www.booking.com/hotel/au/capella-sydney.html' },
+  { letter: 'C', name: 'Four Seasons Hotel Sydney', badge: 'Forbes Rec.', type: '5-star Hotel', location: 'Circular Quay', price: 274, priceLabel: 'EUR 274/night', total: 548, rating: '9.1/10', lat: -33.860, lng: 151.209, url: 'https://www.booking.com/hotel/au/four-seasons-sydney.html' },
+  { letter: 'D', name: 'The Fullerton Hotel Sydney', badge: 'Forbes Rec.', type: '5-star Hotel', location: 'CBD', price: 223, priceLabel: 'EUR 223/night', total: 446, rating: '8.9/10', lat: -33.863, lng: 151.208, url: 'https://www.booking.com/hotel/au/fullerton-sydney.html' },
+  { letter: 'E', name: 'Crown Towers Sydney', badge: 'Booking 8.4', type: '5-star \u00b7 Harbour Bridge King + brekkie', location: 'Barangaroo', price: 487, priceLabel: 'EUR 487/night', total: 974, rating: '8.4/10', lat: -33.862, lng: 151.200, url: 'https://www.booking.com/hotel/au/crown-towers-sydney.html' },
+];
+
+// ─── EASTERN SUBURBS AIRBNB (base es, Mar 18–20, 2n) ───
+const esAirbnb = [
+  { id: '6121617', letter: 'A', name: 'Bondi Retreat: Art Deco Charm', type: 'Apartment', location: 'Bondi Beach', price: 520, rating: '4.93\u2605', lat: -33.88717, lng: 151.27351, nights: 2, dates: 'Mar 18\u201320' },
+  { id: '1158267099470366781', letter: 'B', name: 'Stunning Beach Views', type: 'Apartment', location: 'Tamarama', price: 458, rating: '4.88\u2605', lat: -33.8976, lng: 151.2668, nights: 2, dates: 'Mar 18\u201320' },
+  { id: '1293097361693522808', letter: 'C', name: '2 Bed Belles@Bondi', type: 'Apartment', location: 'Bondi Beach', price: 477, rating: '4.88\u2605', lat: -33.8868, lng: 151.2716, nights: 2, dates: 'Mar 18\u201320' },
+  { id: '1569172007841877793', letter: 'D', name: 'Bondi Beauty 3BR North Bondi', type: 'Apartment', location: 'North Bondi', price: 803, rating: '5.0\u2605', lat: -33.88686, lng: 151.27668, nights: 2, dates: 'Mar 18\u201320' },
+  { id: '1312652224944253630', letter: 'E', name: 'Sunny Bondi Top Floor + Parking', type: 'Apartment', location: 'Bondi Beach', price: 699, rating: '5.0\u2605', lat: -33.88943, lng: 151.26977, nights: 2, dates: 'Mar 18\u201320' },
+];
+
+// ─── NORTHERN BEACHES AIRBNB (base nb, Mar 20–23, 3n) ───
+const nbAirbnb = [
+  { id: '1044440363828605263', letter: 'A', name: 'Designer Retreat Meets Vibrant Beachside', type: 'Home', location: 'Palm Beach', price: 990, rating: '4.96\u2605', lat: -33.600, lng: 151.324, nights: 3, dates: 'Mar 20\u201323' },
+  { id: '52458814', letter: 'B', name: 'Kookaburra Retreat - Palmy Beach House', type: 'Home', location: 'Palm Beach', price: 2080, rating: '5.0\u2605', lat: -33.598, lng: 151.321, nights: 3, dates: 'Mar 20\u201323' },
+  { id: '1419259250704944124', letter: 'C', name: 'Bynya Retreat', type: 'Guesthouse', location: 'Palm Beach', price: 1155, rating: '5.0\u2605', lat: -33.604, lng: 151.326, nights: 3, dates: 'Mar 20\u201323' },
+  { id: '1378554715854564047', letter: 'D', name: 'Waterview Palm Beach Cottage', type: 'Guesthouse', location: 'Palm Beach', price: 565, rating: '4.83\u2605', lat: -33.596, lng: 151.319, nights: 3, dates: 'Mar 20\u201323' },
+];
+
+// ─── HOBART AIRBNB (base t1, Mar 23–25, 2n) ───
+const hobartAirbnb = [
+  { id: '1571325802729376313', letter: 'A', name: 'The Black Swan Inn on Barrack', type: 'Home', location: 'Hobart CBD', price: 381, rating: '5.0\u2605', lat: -42.88385, lng: 147.32014, nights: 2, dates: 'Mar 23\u201325' },
+  { id: '18495495', letter: 'B', name: '26 BirNB \u2013 Location & Amazing Views', type: 'Guesthouse', location: 'Sandy Bay', price: 262, rating: '4.97\u2605', lat: -42.9142, lng: 147.3345, nights: 2, dates: 'Mar 23\u201325' },
+  { id: '17612373', letter: 'C', name: 'White Cottage \u2013 Luxe 3-Bed House', type: 'Home', location: 'North Hobart', price: 408, rating: '4.96\u2605', lat: -42.8718, lng: 147.3184, nights: 2, dates: 'Mar 23\u201325' },
+  { id: '1581813809576365015', letter: 'D', name: 'Haven CBD \u2013 Hobart Retreats', type: 'Apartment', location: 'Hobart CBD', price: 342, rating: '4.95\u2605', lat: -42.8842, lng: 147.323, nights: 2, dates: 'Mar 23\u201325' },
+  { id: '45826988', letter: 'E', name: 'Battery Point Apt \u2013 Sunny Balcony', type: 'Apartment', location: 'Battery Point', price: 383, rating: '4.95\u2605', lat: -42.88905, lng: 147.33029, nights: 2, dates: 'Mar 23\u201325' },
+];
+
+// ─── FREYCINET AIRBNB (base t2, Mar 25–27, 2n) ───
+const freycinetAirbnb = [
+  { id: '1025464455577190326', letter: 'A', name: 'Hazards Escape \u2013 The Top Shack', type: 'Home', location: 'Coles Bay', price: 513, rating: '4.99\u2605', lat: -42.1076, lng: 148.246, nights: 2, dates: 'Mar 25\u201327' },
+  { id: '1380665082081246794', letter: 'B', name: 'Sea Breeze Freycinet \u2013 Hot Tub', type: 'Home', location: 'Coles Bay', price: 522, rating: '4.96\u2605', lat: -42.094, lng: 148.242, nights: 2, dates: 'Mar 25\u201327' },
+  { id: '4609039', letter: 'C', name: 'Relax @ the Lighthouse', type: 'Home', location: 'Dolphin Sands', price: 407, rating: '4.96\u2605', lat: -42.092, lng: 148.118, nights: 2, dates: 'Mar 25\u201327' },
+  { id: '23615349', letter: 'D', name: "d'Sands on Great Oyster Bay", type: 'Guesthouse', location: 'Dolphin Sands', price: 294, rating: '4.94\u2605', lat: -42.097, lng: 148.229, nights: 2, dates: 'Mar 25\u201327' },
+  { id: '28317288', letter: 'E', name: 'Banksia Cabin on Nine Mile Beach', type: 'Cabin', location: 'Dolphin Sands', price: 383, rating: '4.93\u2605', lat: -42.098, lng: 148.229, nights: 2, dates: 'Mar 25\u201327' },
+];
+
+// ─── CRADLE MOUNTAIN AIRBNB (base t3, Mar 27–29, 2n) ───
+const cradleAirbnb = [
+  { id: '48907272', letter: 'A', name: 'Mountain Valley Wilderness Holidays', type: 'Guest suite', location: 'Loongana (nr Cradle Mtn)', price: 282, rating: '5.0\u2605', lat: -41.413, lng: 145.977, nights: 2, dates: 'Mar 27\u201329' },
+  { id: '17303287', letter: 'B', name: 'Spinners Retreat \u2013 Off-Grid Highlands', type: 'Cabin', location: 'Breona (Central Highlands)', price: 271, rating: '4.96\u2605', lat: -41.782, lng: 146.704, nights: 2, dates: 'Mar 27\u201329' },
+  { id: '1452065825356954543', letter: 'C', name: 'Rivendell Cottage \u2013 Off Grid Cabin', type: 'Cabin', location: "Jackeys Marsh", price: 310, rating: '5.0\u2605', lat: -41.691, lng: 146.674, nights: 2, dates: 'Mar 27\u201329' },
+];
+
+// ─── LAUNCESTON AIRBNB (base t4, Mar 29–30, 1n) ───
+const launcestonAirbnb = [
+  { id: '1228740217255029117', letter: 'A', name: 'Patrick Street Townhouse', type: 'Townhouse', location: 'South Launceston', price: 218, rating: '4.99\u2605', lat: -41.451, lng: 147.1392, nights: 1, dates: 'Mar 29\u201330' },
+  { id: '1030636904242881534', letter: 'B', name: 'Central Modern Apartment', type: 'Apartment', location: 'Launceston CBD', price: 134, rating: '4.98\u2605', lat: -41.4377, lng: 147.1402, nights: 1, dates: 'Mar 29\u201330' },
+  { id: '1175910643458522147', letter: 'C', name: 'Luxe Escape \u2013 Outdoor Sauna & Bath', type: 'Home', location: 'Invermay', price: 202, rating: '4.96\u2605', lat: -41.4162, lng: 147.13951, nights: 1, dates: 'Mar 29\u201330' },
+  { id: '1028101337192676156', letter: 'D', name: 'Serene City Hideaway \u2013 Spa Bath', type: 'Apartment', location: 'Launceston CBD', price: 123, rating: '4.96\u2605', lat: -41.4373, lng: 147.1389, nights: 1, dates: 'Mar 29\u201330' },
+  { id: '24270357', letter: 'E', name: "Alice's Cottages \u2013 The French Cottage", type: 'Cottage', location: 'Launceston', price: 135, rating: '4.88\u2605', lat: -41.44585, lng: 147.13663, nights: 1, dates: 'Mar 29\u201330' },
+];
+
+// ─── POINTS OF INTEREST ───
+const pois = [
+  // Sydney hub
+  { name: 'Sydney Opera House', desc: 'Iconic performing arts venue', lat: -33.857, lng: 151.215, base: 'hub' },
+  { name: 'Sydney Harbour Bridge', desc: 'Bridge climb or walk', lat: -33.852, lng: 151.211, base: 'hub' },
+  { name: 'The Rocks', desc: 'Historic precinct, weekend markets', lat: -33.859, lng: 151.208, base: 'hub' },
+  { name: 'Royal Botanic Gardens', desc: 'Harbour-side gardens, Mrs Macquaries Chair', lat: -33.864, lng: 151.217, base: 'hub' },
+  { name: 'Sydney Airport (SYD)', desc: 'Arrival & departure point', lat: -33.946, lng: 151.177, base: -1 },
+  // Eastern Suburbs (es)
+  { name: 'Bondi Beach', desc: 'Iconic crescent beach, surf culture', lat: -33.891, lng: 151.278, base: 'es' },
+  { name: 'Bondi to Coogee Coastal Walk', desc: '6km walk via Tamarama, Bronte, Clovelly', lat: -33.900, lng: 151.270, base: 'es' },
+  { name: 'Tamarama Beach', desc: 'Small sheltered beach, Glamarama', lat: -33.898, lng: 151.271, base: 'es' },
+  { name: 'Gordons Bay', desc: 'Secluded snorkelling cove, underwater trail', lat: -33.912, lng: 151.260, base: 'es' },
+  { name: 'Bondi Icebergs Pool', desc: 'Famous ocean pool, restaurant & bar', lat: -33.895, lng: 151.274, base: 'es' },
+  // Northern Beaches (nb)
+  { name: 'Whale Beach', desc: 'Golden sand, ocean pool, surf', lat: -33.612, lng: 151.328, base: 'nb' },
+  { name: 'Palm Beach & Pittwater', desc: 'Iconic beach, Pittwater views', lat: -33.600, lng: 151.317, base: 'nb' },
+  { name: 'Barrenjoey Lighthouse', desc: '30-min walk, panoramic views', lat: -33.590, lng: 151.328, base: 'nb' },
+  { name: 'Ku-ring-gai Chase NP', desc: 'Bushwalks, Aboriginal rock art, kayaking', lat: -33.630, lng: 151.260, base: 'nb' },
+  // Tasmania — Hobart (t1)
+  { name: 'MONA (Museum of Old & New Art)', desc: "Australia's most controversial museum, ferry from waterfront", lat: -42.829, lng: 147.263, base: 't1' },
+  { name: 'kunanyi / Mt Wellington', desc: '1,271m summit, panoramic views of Hobart & beyond', lat: -42.897, lng: 147.234, base: 't1' },
+  { name: 'Salamanca Place', desc: 'Historic waterfront, Saturday market, restaurants', lat: -42.886, lng: 147.331, base: 't1' },
+  { name: 'Hobart Airport (HBA)', desc: 'Arrive from Sydney (~2h30 flight)', lat: -42.836, lng: 147.510, base: -1 },
+  // Tasmania — Freycinet (t2)
+  { name: 'Wineglass Bay Lookout', desc: 'Iconic viewpoint, 45-min uphill walk', lat: -42.157, lng: 148.293, base: 't2' },
+  { name: 'Wineglass Bay Beach', desc: 'Pristine crescent beach, 1.5h return hike', lat: -42.166, lng: 148.300, base: 't2' },
+  { name: 'Honeymoon Bay', desc: 'Sheltered bay, great for kayaking', lat: -42.117, lng: 148.287, base: 't2' },
+  { name: 'Bicheno Penguin Tours', desc: 'Little penguins at dusk, guided walks', lat: -41.872, lng: 148.303, base: 't2' },
+  // Tasmania — Cradle Mountain (t3)
+  { name: 'Dove Lake Circuit', desc: '6km walk around lake beneath Cradle Mountain', lat: -41.656, lng: 145.960, base: 't3' },
+  { name: 'Cradle Mountain Summit', desc: 'Challenging full-day hike, 1,545m', lat: -41.641, lng: 145.942, base: 't3' },
+  { name: 'Enchanted Walk', desc: 'Easy 20-min rainforest loop, ancient trees', lat: -41.637, lng: 145.950, base: 't3' },
+  { name: 'Cradle Mountain Visitor Centre', desc: 'Park passes, shuttle bus, information', lat: -41.611, lng: 145.945, base: 't3' },
+  // Tasmania — Launceston (t4)
+  { name: 'Cataract Gorge Reserve', desc: 'Dramatic gorge, chairlift, swimming basin, peacocks', lat: -41.449, lng: 147.119, base: 't4' },
+  { name: 'Launceston City Park', desc: 'Victorian gardens, Japanese macaque enclosure', lat: -41.436, lng: 147.142, base: 't4' },
+  { name: 'Launceston Airport (LST)', desc: 'Depart for Sydney or home', lat: -41.545, lng: 147.214, base: -1 },
+];
+
+// ─── ROUTES ───
+const routes = [
+  // Week 1 — Sydney
+  { from: 'Airport \u2192 Sydney CBD', color: '#38bdf8', points: [[-33.946,151.177],[-33.92,151.19],[-33.89,151.20],[-33.858,151.210]], time: '~25min' },
+  { from: 'Sydney CBD \u2192 Eastern Suburbs', color: '#ec4899', points: [[-33.858,151.210],[-33.870,151.230],[-33.880,151.250],[-33.891,151.274]], time: '~20min' },
+  { from: 'Eastern Suburbs \u2192 Northern Beaches', color: '#10b981', points: [[-33.891,151.274],[-33.870,151.250],[-33.858,151.210],[-33.82,151.22],[-33.77,151.24],[-33.70,151.28],[-33.65,151.30],[-33.600,151.320]], time: '~1h 15min' },
+  { from: 'Northern Beaches \u2192 SYD Airport', color: '#64748b', points: [[-33.600,151.320],[-33.65,151.30],[-33.70,151.28],[-33.77,151.24],[-33.82,151.22],[-33.858,151.210],[-33.92,151.19],[-33.946,151.177]], time: '~1h' },
+  // Week 2 — Tasmania
+  { from: 'Hobart \u2192 Coles Bay / Freycinet', color: '#f59e0b', points: [[-42.884,147.325],[-42.80,147.50],[-42.65,147.70],[-42.50,147.85],[-42.35,148.00],[-42.20,148.15],[-42.107,148.246]], time: '~2h 30min via A3' },
+  { from: 'Freycinet \u2192 Cradle Mountain', color: '#8b5cf6', points: [[-42.107,148.246],[-42.00,148.15],[-41.90,147.90],[-41.80,147.50],[-41.70,147.20],[-41.65,146.80],[-41.63,146.40],[-41.63,146.00],[-41.640,145.955]], time: '~3h 30min via Midlands' },
+  { from: 'Cradle Mountain \u2192 Launceston', color: '#14b8a6', points: [[-41.640,145.955],[-41.60,146.10],[-41.55,146.30],[-41.50,146.60],[-41.48,146.80],[-41.46,147.00],[-41.445,147.135]], time: '~1h 30min via C132' },
+];
+
+// ─── FLIGHT PATH (dashed, SYD → HBA) ───
+const flightPath = [[-33.946,151.177],[-35.0,150.5],[-37.0,149.5],[-39.0,148.5],[-41.0,148.0],[-42.836,147.510]];
+
+// ─── TIMELINE ───
+const timeline = [
+  // Week 1 — Sydney
+  { day: 'Day 1',  date: 'Mon Mar 16', title: 'Arrive Sydney CBD',             desc: 'Land at SYD, check into hotel, harbour walk',                  base: 'hub',    lat: -33.858, lng: 151.210, zoom: 15 },
+  { day: 'Day 2',  date: 'Tue Mar 17', title: 'Opera House & Harbour',         desc: 'Opera House, Harbour Bridge, The Rocks, Botanic Gardens',       base: 'hub',    lat: -33.858, lng: 151.210, zoom: 15 },
+  { day: 'Day 3',  date: 'Wed Mar 18', title: 'Move to Eastern Suburbs',       desc: 'Check into Bondi/Tamarama area Airbnb',                        base: 'es',     lat: -33.891, lng: 151.274, zoom: 14 },
+  { day: 'Day 4',  date: 'Thu Mar 19', title: 'Bondi\u2013Coogee Coastal Walk',desc: 'Beach day, Icebergs pool, coastal walk, Gordons Bay',           base: 'es',     lat: -33.900, lng: 151.268, zoom: 14 },
+  { day: 'Day 5',  date: 'Fri Mar 20', title: 'Drive to Northern Beaches',     desc: 'Drive to Palm Beach area (~1h15), settle in',                   base: 'nb',     lat: -33.600, lng: 151.320, zoom: 13 },
+  { day: 'Day 6',  date: 'Sat Mar 21', title: 'Whale Beach & Barrenjoey',      desc: 'Beach day, ocean pools, Barrenjoey Lighthouse walk',            base: 'nb',     lat: -33.605, lng: 151.325, zoom: 15 },
+  { day: 'Day 7',  date: 'Sun Mar 22', title: 'Ku-ring-gai Chase NP',          desc: 'Bushwalks, Aboriginal rock art, kayaking',                      base: 'nb',     lat: -33.630, lng: 151.260, zoom: 13 },
+  { day: '\u2708', date: 'Mon Mar 23', title: 'Fly Sydney \u2192 Hobart',      desc: 'Drive to SYD, fly to Hobart (~2h30), Salamanca waterfront',     base: 'travel', lat: -38.5,   lng: 149.0,   zoom: 6 },
+  // Week 2 — Tasmania
+  { day: 'Day 8',  date: 'Mon Mar 23', title: 'Arrive Hobart',                 desc: 'Check in, Salamanca waterfront, evening stroll',                base: 't1',     lat: -42.884, lng: 147.325, zoom: 13 },
+  { day: 'Day 9',  date: 'Tue Mar 24', title: 'MONA & kunanyi',                desc: 'MONA museum (ferry), Mt Wellington summit, Salamanca dining',   base: 't1',     lat: -42.860, lng: 147.290, zoom: 12 },
+  { day: 'Day 10', date: 'Wed Mar 25', title: 'Drive to Freycinet',            desc: 'Pick up car, drive to Coles Bay (~2h30), Wineglass Bay lookout', base: 't2',    lat: -42.107, lng: 148.246, zoom: 11 },
+  { day: 'Day 11', date: 'Thu Mar 26', title: 'Wineglass Bay & Penguins',      desc: 'Beach hike, Hazards walk, drive to Bicheno for penguins',       base: 't2',     lat: -42.000, lng: 148.290, zoom: 10 },
+  { day: 'Day 12', date: 'Fri Mar 27', title: 'Drive to Cradle Mountain',      desc: '~3h30 drive via Midlands, Dove Lake circuit walk',              base: 't3',     lat: -41.656, lng: 145.960, zoom: 11 },
+  { day: 'Day 13', date: 'Sat Mar 28', title: 'Cradle Mountain Walks',         desc: 'Enchanted Walk, wilderness exploring, wildlife spotting',        base: 't3',     lat: -41.640, lng: 145.950, zoom: 12 },
+  { day: 'Day 14', date: 'Sun Mar 29', title: 'Drive to Launceston',           desc: 'Drive to Launceston (~1h30), Cataract Gorge, City Park',        base: 't4',     lat: -41.445, lng: 147.135, zoom: 13 },
+  { day: 'Day 15', date: 'Mon Mar 30', title: 'Depart Launceston',             desc: 'Morning Cataract Gorge chairlift, fly LST \u2192 SYD \u2192 home', base: 't4',  lat: -41.545, lng: 147.214, zoom: 11 },
+];
+
+// ─── LAYERS ───
+const baseLayers = { hub: L.layerGroup(), es: L.layerGroup(), nb: L.layerGroup(), t1: L.layerGroup(), t2: L.layerGroup(), t3: L.layerGroup(), t4: L.layerGroup() };
+const poiLayer = L.layerGroup();
+const routeLayer = L.layerGroup();
+
+// ─── MARKER HELPERS ───
+function addCircleMarker(lat, lng, letter, color, layer, popupHtml, isHotel) {
+  const marker = L.circleMarker([lat, lng], {
+    radius: 14,
+    fillColor: color, fillOpacity: 0.85,
+    color: isHotel ? '#fbbf24' : '#fff',
+    weight: isHotel ? 2.5 : 2,
+    dashArray: isHotel ? '4,3' : null
+  });
+  const icon = L.divIcon({
+    className: '',
+    html: `<div style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;pointer-events:none;">${letter}</div>`,
+    iconSize: [28, 28], iconAnchor: [14, 14]
+  });
+  const label = L.marker([lat, lng], { icon, interactive: false });
+  marker.bindPopup(popupHtml, { maxWidth: 300 });
+  layer.addLayer(marker);
+  layer.addLayer(label);
+}
+
+// ─── CREATE MARKERS: Sydney CBD Hotels ───
+sydneyHotels.forEach(h => {
+  const badgeColor = h.badge.includes('4-Star') ? 'background:rgba(251,191,36,0.2);color:#fbbf24;' : 'background:rgba(148,163,184,0.15);color:#94a3b8;';
+  addCircleMarker(h.lat, h.lng, h.letter, COLORS['hub'], baseLayers['hub'], `
+    <div class="popup-title">${h.letter}. ${h.name}</div>
+    <div class="popup-meta">${h.type} \u00b7 ${h.location} \u00b7 ${h.rating}</div>
+    <div class="popup-badge" style="${badgeColor}">${h.badge}</div>
+    <div class="popup-price">${h.priceLabel} <span style="font-size:12px;color:#94a3b8">\u00b7 ~EUR ${h.total} total (2n)</span></div>
+    <a class="popup-link" href="${h.url}" target="_blank">View on Booking.com \u2192</a>
+  `, true);
+});
+
+// ─── CREATE MARKERS: Airbnb properties ───
+function addAirbnbMarkers(items, baseKey) {
+  items.forEach(p => {
+    const url = `https://www.airbnb.com/rooms/${p.id}?check_in=${CHECKINS[baseKey]}&check_out=${CHECKOUTS[baseKey]}&adults=2`;
+    addCircleMarker(p.lat, p.lng, p.letter, COLORS[baseKey], baseLayers[baseKey], `
+      <div class="popup-title">${p.letter}. ${p.name}</div>
+      <div class="popup-meta">${p.type} \u00b7 ${p.location} \u00b7 <span style="color:#fbbf24">${p.rating}</span></div>
+      <div class="popup-price">EUR ${p.price.toLocaleString()} <span style="font-size:12px;color:#94a3b8">/ ${p.nights}n (${p.dates})</span></div>
+      <a class="popup-link" href="${url}" target="_blank">View on Airbnb \u2192</a>
+    `, false);
+  });
+}
+addAirbnbMarkers(esAirbnb, 'es');
+addAirbnbMarkers(nbAirbnb, 'nb');
+addAirbnbMarkers(hobartAirbnb, 't1');
+addAirbnbMarkers(freycinetAirbnb, 't2');
+addAirbnbMarkers(cradleAirbnb, 't3');
+addAirbnbMarkers(launcestonAirbnb, 't4');
+
+// ─── POI + ROUTE MARKERS ───
+pois.forEach(poi => {
+  const color = poi.base === -1 ? '#ef4444' : COLORS.poi;
+  const radius = poi.base === -1 ? 8 : 6;
+  const marker = L.circleMarker([poi.lat, poi.lng], { radius, fillColor: color, fillOpacity: 0.7, color: '#fff', weight: 1.5 });
+  marker.bindPopup(`<div class="poi-title">${poi.name}</div><div class="poi-desc">${poi.desc}</div>`);
+  poiLayer.addLayer(marker);
+});
+routes.forEach(route => {
+  const polyline = L.polyline(route.points, { color: route.color, weight: 2.5, opacity: 0.6, dashArray: '8, 8' });
+  polyline.bindPopup(`<div class="poi-title">${route.from}</div><div class="poi-desc">${route.time}</div>`);
+  routeLayer.addLayer(polyline);
+});
+// Flight path (dotted)
+const flight = L.polyline(flightPath, { color: '#94a3b8', weight: 1.5, opacity: 0.5, dashArray: '4, 8' });
+flight.bindPopup('<div class="poi-title">Sydney \u2192 Hobart</div><div class="poi-desc">~2h 30min flight</div>');
+routeLayer.addLayer(flight);
+// Flight icon at midpoint
+const planeIcon = L.divIcon({ className: '', html: '<div style="font-size:18px;color:#94a3b8;">&#9992;</div>', iconSize: [20, 20], iconAnchor: [10, 10] });
+L.marker([-38, 149], { icon: planeIcon, interactive: false }).addTo(routeLayer);
+
+routeLayer.addTo(map);
+poiLayer.addTo(map);
+Object.values(baseLayers).forEach(l => l.addTo(map));
+
+// ─── TIMELINE ───
+function renderTimeline() {
+  const el = document.getElementById('timeline');
+  const sections = [
+    { key: 'syd', label: 'Week 1 \u2014 Sydney (Mar 16\u201323)', days: [0,1,2,3,4,5,6] },
+    { key: 'fly', label: 'Travel Day', days: [7] },
+    { key: 'tas', label: 'Week 2 \u2014 Tasmania (Mar 23\u201330)', days: [8,9,10,11,12,13,14,15] },
+  ];
+
+  let html = '';
+  sections.forEach(s => {
+    html += `<div class="timeline-section"><h3>${s.label}</h3>`;
+    s.days.forEach(i => {
+      const t = timeline[i];
+      const baseCls = t.base === 'travel' ? 'travel' : `base-${t.base}`;
+      html += `<div class="day-card ${baseCls}" onclick="flyTo(${t.lat},${t.lng},${t.zoom},${i})">
+        <div class="day-label">${t.day} \u00b7 ${t.date}</div>
+        <div class="day-title">${t.title}</div>
+        <div class="day-desc">${t.desc}</div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+
+function flyTo(lat, lng, zoom, idx) {
+  map.flyTo([lat, lng], zoom, { duration: 1.2 });
+  document.querySelectorAll('.day-card').forEach((c, i) => c.classList.toggle('active', i === idx));
+}
+
+// ─── PROPERTY PANEL ───
+let activeBase = null;
+function toggleBase(baseKey) {
+  const panel = document.getElementById('property-panel');
+  const toggles = document.querySelectorAll('.base-toggle');
+  if (activeBase === baseKey) {
+    activeBase = null;
+    panel.style.display = 'none';
+    toggles.forEach(t => t.className = 'base-toggle');
+    return;
+  }
+  activeBase = baseKey;
+  toggles.forEach(t => {
+    const b = t.dataset.base;
+    t.className = b === baseKey ? `base-toggle active-${baseKey}` : 'base-toggle';
+  });
+
+  const color = COLORS[baseKey];
+  let html = `<h3 style="color:${color}">${BASE_NAMES[baseKey]} Options</h3>`;
+  const allBounds = [];
+
+  if (baseKey === 'hub') {
+    html += `<p style="font-size:12px;color:#94a3b8;margin-bottom:12px;">2 nights &middot; Mar 16&ndash;18</p>`;
+    sydneyHotels.forEach(h => {
+      allBounds.push([h.lat, h.lng]);
+      const badgeCls = h.badge.includes('4-Star') ? 'forbes-badge' : 'hotel-badge';
+      html += `<div class="prop-card hotel-card" onclick="map.flyTo([${h.lat},${h.lng}],16,{duration:0.8})">
+        <div class="prop-name">${h.letter}. ${h.name} <span class="${badgeCls}">${h.badge}</span></div>
+        <div class="prop-meta">${h.type} &middot; ${h.location} &middot; ${h.rating}</div>
+        <div class="prop-price" style="color:${color}">${h.priceLabel} &middot; ~EUR ${h.total} total (2n)</div>
+        <a class="prop-link" href="${h.url}" target="_blank" onclick="event.stopPropagation()">View on Booking.com &rarr;</a>
+      </div>`;
+    });
+  } else {
+    const airbnbMap = { es: esAirbnb, nb: nbAirbnb, t1: hobartAirbnb, t2: freycinetAirbnb, t3: cradleAirbnb, t4: launcestonAirbnb };
+    const nightLabels = {
+      es: '2 nights &middot; Mar 18&ndash;20',
+      nb: '3 nights &middot; Mar 20&ndash;23',
+      t1: '2 nights &middot; Mar 23&ndash;25',
+      t2: '2 nights &middot; Mar 25&ndash;27',
+      t3: '2 nights &middot; Mar 27&ndash;29 &middot; Remote area &mdash; limited Airbnb',
+      t4: '1 night &middot; Mar 29&ndash;30',
+    };
+    const airbnbs = airbnbMap[baseKey];
+    html += `<p style="font-size:12px;color:#94a3b8;margin-bottom:12px;">${nightLabels[baseKey]}</p>`;
+    html += `<div class="section-divider">Airbnb Options</div>`;
+    airbnbs.forEach(p => {
+      allBounds.push([p.lat, p.lng]);
+      const url = `https://www.airbnb.com/rooms/${p.id}?check_in=${CHECKINS[baseKey]}&check_out=${CHECKOUTS[baseKey]}&adults=2`;
+      html += `<div class="prop-card" onclick="map.flyTo([${p.lat},${p.lng}],15,{duration:0.8})">
+        <div class="prop-name">${p.letter}. ${p.name}</div>
+        <div class="prop-meta">${p.type} &middot; ${p.location} &middot; <span class="prop-rating">${p.rating}</span></div>
+        <div class="prop-price" style="color:${color}">EUR ${p.price.toLocaleString()} / ${p.nights}n</div>
+        <a class="prop-link" href="${url}" target="_blank" onclick="event.stopPropagation()">View on Airbnb &rarr;</a>
+      </div>`;
+    });
+  }
+
+  panel.innerHTML = html;
+  panel.style.display = 'block';
+  if (allBounds.length) map.flyToBounds(L.latLngBounds(allBounds).pad(0.3), { duration: 1 });
+}
+
+// ─── INIT ───
+renderTimeline();
+const allPoints = [];
+sydneyHotels.forEach(h => allPoints.push([h.lat, h.lng]));
+[esAirbnb, nbAirbnb, hobartAirbnb, freycinetAirbnb, cradleAirbnb, launcestonAirbnb].forEach(arr => arr.forEach(p => allPoints.push([p.lat, p.lng])));
+pois.forEach(p => allPoints.push([p.lat, p.lng]));
+map.fitBounds(L.latLngBounds(allPoints).pad(0.1));
+</script>
+</body>
+</html>
