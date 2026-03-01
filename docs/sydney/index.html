@@ -27,16 +27,14 @@
     .day-card .day-desc { font-size: 12px; color: #94a3b8; margin-top: 2px; }
     /* base 1 = sky blue / Sydney CBD */
     .day-card.base-1 { border-left-color: #38bdf8; } .day-card.base-1 .day-label { color: #38bdf8; }
-    /* base 2 = rose / Ku-ring-gai Chase */
-    .day-card.base-2 { border-left-color: #f43f5e; } .day-card.base-2 .day-label { color: #f43f5e; }
-    /* base 3 = amber / Hunter Valley */
-    .day-card.base-3 { border-left-color: #f59e0b; } .day-card.base-3 .day-label { color: #f59e0b; }
+    /* base 2 = amber / Hunter Valley */
+    .day-card.base-2 { border-left-color: #f59e0b; } .day-card.base-2 .day-label { color: #f59e0b; }
+    /* base 3 = emerald / Dorrigo */
+    .day-card.base-3 { border-left-color: #10b981; } .day-card.base-3 .day-label { color: #10b981; }
     /* base 4 = purple / Nelson Bay */
     .day-card.base-4 { border-left-color: #8b5cf6; } .day-card.base-4 .day-label { color: #8b5cf6; }
-    /* base 5 = emerald / Bellingen */
-    .day-card.base-5 { border-left-color: #10b981; } .day-card.base-5 .day-label { color: #10b981; }
-    /* base 6 = pink / Myall Lakes */
-    .day-card.base-6 { border-left-color: #ec4899; } .day-card.base-6 .day-label { color: #ec4899; }
+    /* base 5 = rose / Ku-ring-gai Chase */
+    .day-card.base-5 { border-left-color: #f43f5e; } .day-card.base-5 .day-label { color: #f43f5e; }
     .day-card.travel { border-left-color: #64748b; } .day-card.travel .day-label { color: #64748b; }
     #property-panel { position: absolute; top: 80px; right: 16px; bottom: 80px; width: 340px; z-index: 1000; padding: 16px; overflow-y: auto; display: none; }
     #property-panel::-webkit-scrollbar { width: 4px; }
@@ -64,11 +62,10 @@
     .base-toggle { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; margin-right: 4px; border: 1px solid rgba(148,163,184,0.2); transition: all 0.2s; color: #94a3b8; }
     .base-toggle:hover { background: rgba(148,163,184,0.15); }
     .base-toggle.active-1 { background: rgba(56,189,248,0.2); border-color: #38bdf8; color: #38bdf8; }
-    .base-toggle.active-2 { background: rgba(244,63,94,0.2); border-color: #f43f5e; color: #f43f5e; }
-    .base-toggle.active-3 { background: rgba(245,158,11,0.2); border-color: #f59e0b; color: #f59e0b; }
+    .base-toggle.active-2 { background: rgba(245,158,11,0.2); border-color: #f59e0b; color: #f59e0b; }
+    .base-toggle.active-3 { background: rgba(16,185,129,0.2); border-color: #10b981; color: #10b981; }
     .base-toggle.active-4 { background: rgba(139,92,246,0.2); border-color: #8b5cf6; color: #8b5cf6; }
-    .base-toggle.active-5 { background: rgba(16,185,129,0.2); border-color: #10b981; color: #10b981; }
-    .base-toggle.active-6 { background: rgba(236,72,153,0.2); border-color: #ec4899; color: #ec4899; }
+    .base-toggle.active-5 { background: rgba(244,63,94,0.2); border-color: #f43f5e; color: #f43f5e; }
     #base-toggles { position: absolute; top: 80px; left: 312px; z-index: 1000; display: flex; gap: 4px; flex-wrap: wrap; max-width: 500px; }
     .leaflet-popup-content-wrapper { background: rgba(15, 23, 42, 0.92) !important; backdrop-filter: blur(12px) !important; border: 1px solid rgba(148,163,184,0.2) !important; border-radius: 10px !important; color: #e2e8f0 !important; }
     .leaflet-popup-tip { background: rgba(15, 23, 42, 0.92) !important; }
@@ -87,16 +84,15 @@
 <div id="map"></div>
 <div id="header" class="glass">
   <h1>Sydney Northern NSW Loop &mdash; Mar 15&ndash;28, 2026</h1>
-  <p>13 nights &nbsp;&middot;&nbsp; 6 bases &nbsp;&middot;&nbsp; Ku-ring-gai &rarr; Hunter Valley &rarr; Nelson Bay &rarr; Dorrigo &rarr; Myall Lakes</p>
+  <p>13 nights &nbsp;&middot;&nbsp; 5 bases &nbsp;&middot;&nbsp; Sydney &rarr; Hunter Valley &rarr; Dorrigo &rarr; Nelson Bay &rarr; Ku-ring-gai</p>
 </div>
 <div id="timeline" class="glass"></div>
 <div id="base-toggles">
   <span class="base-toggle" data-base="1" onclick="toggleBase(1)">Sydney</span>
-  <span class="base-toggle" data-base="2" onclick="toggleBase(2)">Ku-ring-gai</span>
-  <span class="base-toggle" data-base="3" onclick="toggleBase(3)">Hunter Valley</span>
+  <span class="base-toggle" data-base="2" onclick="toggleBase(2)">Hunter Valley</span>
+  <span class="base-toggle" data-base="3" onclick="toggleBase(3)">Dorrigo</span>
   <span class="base-toggle" data-base="4" onclick="toggleBase(4)">Nelson Bay</span>
-  <span class="base-toggle" data-base="5" onclick="toggleBase(5)">Bellingen</span>
-  <span class="base-toggle" data-base="6" onclick="toggleBase(6)">Myall Lakes</span>
+  <span class="base-toggle" data-base="5" onclick="toggleBase(5)">Ku-ring-gai</span>
 </div>
 <div id="property-panel" class="glass"></div>
 <div id="budget" class="glass">
@@ -104,27 +100,26 @@
   <div class="budget-divider"></div>
   <div class="budget-item"><div class="budget-label">Sydney (3n)</div><div class="budget-value">~EUR 488&ndash;763</div></div>
   <div class="budget-divider"></div>
-  <div class="budget-item"><div class="budget-label">Ku-ring-gai (1n)</div><div class="budget-value">~EUR 148&ndash;224</div></div>
-  <div class="budget-divider"></div>
   <div class="budget-item"><div class="budget-label">Hunter (2n)</div><div class="budget-value">~EUR 248&ndash;665</div></div>
   <div class="budget-divider"></div>
-  <div class="budget-item"><div class="budget-label">Nelson Bay (2n)</div><div class="budget-value">~EUR 248&ndash;512</div></div>
+  <div class="budget-item"><div class="budget-label">Dorrigo (3n)</div><div class="budget-value">~EUR 447&ndash;585</div></div>
   <div class="budget-divider"></div>
-  <div class="budget-item"><div class="budget-label">Bellingen (3n)</div><div class="budget-value">~EUR 447&ndash;585</div></div>
+  <div class="budget-item"><div class="budget-label">Nelson Bay (3n)</div><div class="budget-value">~EUR 372&ndash;768</div></div>
   <div class="budget-divider"></div>
-  <div class="budget-item"><div class="budget-label">Myall Lakes (1n)</div><div class="budget-value">~EUR 97&ndash;150</div></div>
+  <div class="budget-item"><div class="budget-label">Ku-ring-gai (1n)</div><div class="budget-value">~EUR 148&ndash;224</div></div>
+  <div class="budget-divider"></div>
+  <div class="budget-item"><div class="budget-label">Return Syd (1n)</div><div class="budget-value">TBD</div></div>
   <div class="budget-divider"></div>
   <div class="budget-item"><div class="budget-label">Car Rental</div><div class="budget-value">~EUR 700</div></div>
   <div class="budget-divider"></div>
-  <div class="budget-item total"><div class="budget-label">Est. Total</div><div class="budget-value">EUR 3,000&ndash;4,000+</div></div>
+  <div class="budget-item total"><div class="budget-label">Est. Total</div><div class="budget-value">EUR 3,500&ndash;5,000+</div></div>
 </div>
 <div id="legend" class="glass">
   <div class="legend-item"><span class="legend-dot" style="background:#38bdf8"></span> Sydney CBD (3n)</div>
-  <div class="legend-item"><span class="legend-dot" style="background:#f43f5e"></span> Ku-ring-gai Chase (1n)</div>
   <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> Hunter Valley (2n)</div>
-  <div class="legend-item"><span class="legend-dot" style="background:#8b5cf6"></span> Nelson Bay (2n)</div>
-  <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span> Bellingen/Dorrigo (3n)</div>
-  <div class="legend-item"><span class="legend-dot" style="background:#ec4899"></span> Myall Lakes (1n)</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#10b981"></span> Dorrigo (3n)</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#8b5cf6"></span> Nelson Bay (3n)</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#f43f5e"></span> Ku-ring-gai Chase (1n)</div>
   <div class="legend-item"><span class="legend-dot" style="background:#38bdf8; width:8px; height:8px;"></span> Points of Interest</div>
   <div class="legend-item"><span class="legend-line" style="border-color:#64748b"></span> Driving route</div>
 </div>
@@ -136,11 +131,11 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
   attribution: '&copy; OSM &copy; CARTO', subdomains: 'abcd', maxZoom: 19
 }).addTo(map);
 
-const COLORS = { 1: '#38bdf8', 2: '#f43f5e', 3: '#f59e0b', 4: '#8b5cf6', 5: '#10b981', 6: '#ec4899', poi: '#38bdf8' };
-const CHECKINS = { 1: '2026-03-15', 2: '2026-03-18', 3: '2026-03-19', 4: '2026-03-21', 5: '2026-03-23', 6: '2026-03-26' };
-const CHECKOUTS = { 1: '2026-03-18', 2: '2026-03-19', 3: '2026-03-21', 4: '2026-03-23', 5: '2026-03-26', 6: '2026-03-27' };
-const BASE_NAMES = { 1: 'Sydney CBD', 2: 'Ku-ring-gai Chase', 3: 'Hunter Valley', 4: 'Nelson Bay', 5: 'Bellingen / Dorrigo', 6: 'Myall Lakes' };
-const NIGHT_LABELS = { 1: '3 nights &middot; Mar 15&ndash;18', 2: '1 night &middot; Mar 18&ndash;19', 3: '2 nights &middot; Mar 19&ndash;21', 4: '2 nights &middot; Mar 21&ndash;23', 5: '3 nights &middot; Mar 23&ndash;26', 6: '1 night &middot; Mar 26&ndash;27' };
+const COLORS = { 1: '#38bdf8', 2: '#f59e0b', 3: '#10b981', 4: '#8b5cf6', 5: '#f43f5e', poi: '#38bdf8' };
+const CHECKINS = { 1: '2026-03-15', 2: '2026-03-18', 3: '2026-03-20', 4: '2026-03-23', 5: '2026-03-26' };
+const CHECKOUTS = { 1: '2026-03-18', 2: '2026-03-20', 3: '2026-03-23', 4: '2026-03-26', 5: '2026-03-27' };
+const BASE_NAMES = { 1: 'Sydney CBD', 2: 'Hunter Valley', 3: 'Dorrigo', 4: 'Nelson Bay', 5: 'Ku-ring-gai Chase' };
+const NIGHT_LABELS = { 1: '3 nights &middot; Mar 15&ndash;18', 2: '2 nights &middot; Mar 18&ndash;20', 3: '3 nights &middot; Mar 20&ndash;23', 4: '3 nights &middot; Mar 23&ndash;26', 5: '1 night &middot; Mar 26&ndash;27' };
 
 // ─── SYDNEY CBD AIRBNB (base 1, Mar 15–18, 3n) ───
 const sydneyAirbnb = [
@@ -150,53 +145,46 @@ const sydneyAirbnb = [
   { id: '13529946', letter: 'S4', name: 'Harbour Views from a Modern Retreat', type: 'Apartment', location: 'Elizabeth Bay', price: 488, rating: '4.87\u2605', lat: -33.8699, lng: 151.2258, nights: 3, dates: 'Mar 15\u201318' },
 ];
 
-// ─── KU-RING-GAI CHASE AIRBNB (base 2, Mar 18–19, 1n) ───
+// ─── KU-RING-GAI CHASE AIRBNB (base 5, Mar 26–27, 1n) ───
 const kuringaiAirbnb = [
-  { id: '16339390', letter: 'K1', name: 'Patonga Creek Cabin', type: 'Cabin', location: 'Patonga', price: 220, rating: '4.97\u2605', lat: -33.5489, lng: 151.2699, nights: 1, dates: 'Mar 18\u201319' },
-  { id: '608823210324279714', letter: 'K2', name: 'The Nest - intimate studio hideaway', type: 'Guesthouse', location: 'Brooklyn', price: 192, rating: '4.91\u2605', lat: -33.5475, lng: 151.2275, nights: 1, dates: 'Mar 18\u201319' },
-  { id: '17451815', letter: 'K3', name: 'Historic Sandstone Apartment in Village', type: 'Apartment', location: 'Brooklyn', price: 224, rating: '4.85\u2605', lat: -33.5479, lng: 151.2267, nights: 1, dates: 'Mar 18\u201319' },
-  { id: '21115763', letter: 'K4', name: 'Bella Cottage', type: 'Cottage', location: 'Berowra Heights', price: 148, rating: '4.82\u2605', lat: -33.60615, lng: 151.14609, nights: 1, dates: 'Mar 18\u201319' },
+  { id: '16339390', letter: 'K1', name: 'Patonga Creek Cabin', type: 'Cabin', location: 'Patonga', price: 220, rating: '4.97\u2605', lat: -33.5489, lng: 151.2699, nights: 1, dates: 'Mar 26\u201327' },
+  { id: '608823210324279714', letter: 'K2', name: 'The Nest - intimate studio hideaway', type: 'Guesthouse', location: 'Brooklyn', price: 192, rating: '4.91\u2605', lat: -33.5475, lng: 151.2275, nights: 1, dates: 'Mar 26\u201327' },
+  { id: '17451815', letter: 'K3', name: 'Historic Sandstone Apartment in Village', type: 'Apartment', location: 'Brooklyn', price: 224, rating: '4.85\u2605', lat: -33.5479, lng: 151.2267, nights: 1, dates: 'Mar 26\u201327' },
+  { id: '21115763', letter: 'K4', name: 'Bella Cottage', type: 'Cottage', location: 'Berowra Heights', price: 148, rating: '4.82\u2605', lat: -33.60615, lng: 151.14609, nights: 1, dates: 'Mar 26\u201327' },
 ];
 
-// ─── HUNTER VALLEY AIRBNB (base 3, Mar 19–21, 2n) ───
+// ─── HUNTER VALLEY AIRBNB (base 2, Mar 18–20, 2n) ───
 const hunterAirbnb = [
-  { id: '40492936', letter: 'H1', name: '1 BR Spa Cabin', type: 'Tiny home', location: 'North Rothbury', price: 518, rating: '4.99\u2605', lat: -32.69263, lng: 151.3547, nights: 2, dates: 'Mar 19\u201321' },
-  { id: '51850582', letter: 'H2', name: 'Mistress Block Vineyard - The Studio', type: 'Home', location: 'Pokolbin', price: 492, rating: '4.95\u2605', lat: -32.7942, lng: 151.276, nights: 2, dates: 'Mar 19\u201321' },
-  { id: '969197747540313339', letter: 'H3', name: 'Hollybrook - Valley View Cabin', type: 'Ranch', location: 'Sweetmans Creek', price: 468, rating: '4.97\u2605', lat: -32.8977, lng: 151.1649, nights: 2, dates: 'Mar 19\u201321' },
-  { id: '36611772', letter: 'H4', name: 'Olive Lane', type: 'Guest suite', location: 'Lovedale', price: 255, rating: '4.92\u2605', lat: -32.75572, lng: 151.37457, nights: 2, dates: 'Mar 19\u201321' },
-  { id: '29529178', letter: 'H5', name: 'The Shedhouse at Milbrodale Farm', type: 'Cottage', location: 'Milbrodale', price: 376, rating: '4.99\u2605', lat: -32.6962, lng: 151.02, nights: 2, dates: 'Mar 19\u201321' },
-  { id: '901061344088446641', letter: 'H6', name: 'Crawford Cottage', type: 'Cabin', location: 'Congewai', price: 248, rating: '4.98\u2605', lat: -32.98401, lng: 151.30605, nights: 2, dates: 'Mar 19\u201321' },
-  { id: '1268395887645376327', letter: 'H7', name: 'The Burrows: Off-Grid Cabin with Highland Coos!', type: 'Cabin', location: 'Paynes Crossing', price: 370, rating: '5.0\u2605', lat: -32.8927, lng: 151.0784, nights: 2, dates: 'Mar 19\u201321' },
-  { id: '14125175', letter: 'H8', name: 'Cranky Rock Cottage', type: 'Farm stay', location: 'Sweetmans Creek', price: 378, rating: '4.93\u2605', lat: -32.88955, lng: 151.16858, nights: 2, dates: 'Mar 19\u201321' },
-  { id: 'bk_cypress-lakes', letter: 'H9', name: 'Oaks Cypress Lakes Resort', type: 'Golf resort', location: 'Pokolbin', price: 426, rating: '8.3 Booking', lat: -32.783, lng: 151.307, nights: 2, dates: 'Mar 19\u201321', platform: 'booking', url: 'https://www.booking.com/hotel/au/cypress-lakes-resort-by-oaks-hotels-amp-resorts.html' },
-  { id: 'bk_kirkton-park', letter: 'H10', name: 'voco Kirkton Park Hunter Valley', type: 'IHG hotel', location: 'Pokolbin', price: 341, rating: '8.7 Booking', lat: -32.7643, lng: 151.2844, nights: 2, dates: 'Mar 19\u201321', platform: 'booking', url: 'https://www.booking.com/hotel/au/voco-kirkton-park-hunter-valley.html' },
-  { id: 'bk_hermitage-lodge', letter: 'H11', name: 'Hermitage Lodge', type: 'Vineyard lodge', location: 'Pokolbin', price: 352, rating: '8.9 Booking', lat: -32.790, lng: 151.283, nights: 2, dates: 'Mar 19\u201321', platform: 'booking', url: 'https://www.booking.com/hotel/au/hermitage-lodge.html' },
-  { id: 'bk_spicers-vineyards', letter: 'H12', name: 'Spicers Vineyards Estate', type: '5\u2605 luxury hotel', location: 'Pokolbin', price: 665, rating: '8.7 Booking', lat: -32.7766, lng: 151.2636, nights: 2, dates: 'Mar 19\u201321', platform: 'booking', url: 'https://www.booking.com/hotel/au/the-vineyards-estate.html' },
+  { id: '40492936', letter: 'H1', name: '1 BR Spa Cabin', type: 'Tiny home', location: 'North Rothbury', price: 518, rating: '4.99\u2605', lat: -32.69263, lng: 151.3547, nights: 2, dates: 'Mar 18\u201320' },
+  { id: '51850582', letter: 'H2', name: 'Mistress Block Vineyard - The Studio', type: 'Home', location: 'Pokolbin', price: 492, rating: '4.95\u2605', lat: -32.7942, lng: 151.276, nights: 2, dates: 'Mar 18\u201320' },
+  { id: '969197747540313339', letter: 'H3', name: 'Hollybrook - Valley View Cabin', type: 'Ranch', location: 'Sweetmans Creek', price: 468, rating: '4.97\u2605', lat: -32.8977, lng: 151.1649, nights: 2, dates: 'Mar 18\u201320' },
+  { id: '36611772', letter: 'H4', name: 'Olive Lane', type: 'Guest suite', location: 'Lovedale', price: 255, rating: '4.92\u2605', lat: -32.75572, lng: 151.37457, nights: 2, dates: 'Mar 18\u201320' },
+  { id: '29529178', letter: 'H5', name: 'The Shedhouse at Milbrodale Farm', type: 'Cottage', location: 'Milbrodale', price: 376, rating: '4.99\u2605', lat: -32.6962, lng: 151.02, nights: 2, dates: 'Mar 18\u201320' },
+  { id: '901061344088446641', letter: 'H6', name: 'Crawford Cottage', type: 'Cabin', location: 'Congewai', price: 248, rating: '4.98\u2605', lat: -32.98401, lng: 151.30605, nights: 2, dates: 'Mar 18\u201320' },
+  { id: '1268395887645376327', letter: 'H7', name: 'The Burrows: Off-Grid Cabin with Highland Coos!', type: 'Cabin', location: 'Paynes Crossing', price: 370, rating: '5.0\u2605', lat: -32.8927, lng: 151.0784, nights: 2, dates: 'Mar 18\u201320' },
+  { id: '14125175', letter: 'H8', name: 'Cranky Rock Cottage', type: 'Farm stay', location: 'Sweetmans Creek', price: 378, rating: '4.93\u2605', lat: -32.88955, lng: 151.16858, nights: 2, dates: 'Mar 18\u201320' },
+  { id: 'bk_cypress-lakes', letter: 'H9', name: 'Oaks Cypress Lakes Resort', type: 'Golf resort', location: 'Pokolbin', price: 426, rating: '8.3 Booking', lat: -32.783, lng: 151.307, nights: 2, dates: 'Mar 18\u201320', platform: 'booking', url: 'https://www.booking.com/hotel/au/cypress-lakes-resort-by-oaks-hotels-amp-resorts.html' },
+  { id: 'bk_kirkton-park', letter: 'H10', name: 'voco Kirkton Park Hunter Valley', type: 'IHG hotel', location: 'Pokolbin', price: 341, rating: '8.7 Booking', lat: -32.7643, lng: 151.2844, nights: 2, dates: 'Mar 18\u201320', platform: 'booking', url: 'https://www.booking.com/hotel/au/voco-kirkton-park-hunter-valley.html' },
+  { id: 'bk_hermitage-lodge', letter: 'H11', name: 'Hermitage Lodge', type: 'Vineyard lodge', location: 'Pokolbin', price: 352, rating: '8.9 Booking', lat: -32.790, lng: 151.283, nights: 2, dates: 'Mar 18\u201320', platform: 'booking', url: 'https://www.booking.com/hotel/au/hermitage-lodge.html' },
+  { id: 'bk_spicers-vineyards', letter: 'H12', name: 'Spicers Vineyards Estate', type: '5\u2605 luxury hotel', location: 'Pokolbin', price: 665, rating: '8.7 Booking', lat: -32.7766, lng: 151.2636, nights: 2, dates: 'Mar 18\u201320', platform: 'booking', url: 'https://www.booking.com/hotel/au/the-vineyards-estate.html' },
 ];
 
-// ─── NELSON BAY AIRBNB (base 4, Mar 21–23, 2n) ───
+// ─── NELSON BAY AIRBNB (base 4, Mar 23–26, 3n) ───
 const nelsonBayAirbnb = [
-  { id: '52940700', letter: 'N1', name: 'Breathtaking views | Private retreat', type: 'Apartment', location: 'Nelson Bay', price: 420, rating: '4.92\u2605', lat: -32.71675, lng: 152.15133, nights: 2, dates: 'Mar 21\u201323' },
-  { id: '46471073', letter: 'N2', name: 'HighTide - luxury apartment', type: 'Guest suite', location: 'Corlette', price: 512, rating: '4.99\u2605', lat: -32.7242, lng: 152.1043, nights: 2, dates: 'Mar 21\u201323' },
-  { id: '46012271', letter: 'N3', name: 'Accommodation by the sea', type: 'Guest suite', location: 'Fingal Bay', price: 248, rating: '4.97\u2605', lat: -32.7482, lng: 152.1698, nights: 2, dates: 'Mar 21\u201323' },
-  { id: '52544606', letter: 'N4', name: 'Morna Point Surf Studio', type: 'Tiny home', location: 'Anna Bay', price: 282, rating: '4.99\u2605', lat: -32.78219, lng: 152.08309, nights: 2, dates: 'Mar 21\u201323' },
+  { id: '52940700', letter: 'N1', name: 'Breathtaking views | Private retreat', type: 'Apartment', location: 'Nelson Bay', price: 630, rating: '4.92\u2605', lat: -32.71675, lng: 152.15133, nights: 3, dates: 'Mar 23\u201326' },
+  { id: '46471073', letter: 'N2', name: 'HighTide - luxury apartment', type: 'Guest suite', location: 'Corlette', price: 768, rating: '4.99\u2605', lat: -32.7242, lng: 152.1043, nights: 3, dates: 'Mar 23\u201326' },
+  { id: '46012271', letter: 'N3', name: 'Accommodation by the sea', type: 'Guest suite', location: 'Fingal Bay', price: 372, rating: '4.97\u2605', lat: -32.7482, lng: 152.1698, nights: 3, dates: 'Mar 23\u201326' },
+  { id: '52544606', letter: 'N4', name: 'Morna Point Surf Studio', type: 'Tiny home', location: 'Anna Bay', price: 423, rating: '4.99\u2605', lat: -32.78219, lng: 152.08309, nights: 3, dates: 'Mar 23\u201326' },
 ];
 
-// ─── BELLINGEN / DORRIGO AIRBNB (base 5, Mar 23–26, 3n) ───
-const bellingenAirbnb = [
-  { id: '797964353222394071', letter: 'B1', name: 'The Barn Bellingen', type: 'Barn', location: 'Bellingen', price: 499, rating: '4.97\u2605', lat: -30.4536, lng: 152.8936, nights: 3, dates: 'Mar 23\u201326' },
-  { id: '735804765927625931', letter: 'B2', name: 'Sunny Corner Pastures - Cedar', type: 'Farm stay', location: 'Bellingen', price: 585, rating: '4.99\u2605', lat: -30.472, lng: 152.8697, nights: 3, dates: 'Mar 23\u201326' },
-  { id: '967140407373205971', letter: 'B3', name: 'The EcoShed - Private Riverfront Getaway', type: 'Farm stay', location: 'Bellingen', price: 553, rating: '4.95\u2605', lat: -30.4556, lng: 152.9182, nights: 3, dates: 'Mar 23\u201326' },
-  { id: '630061093791514234', letter: 'B4', name: 'Nature + Nurture', type: 'Guesthouse', location: 'Bellingen', price: 447, rating: '4.96\u2605', lat: -30.458, lng: 152.8983, nights: 3, dates: 'Mar 23\u201326' },
+// ─── DORRIGO AIRBNB (base 3, Mar 20–23, 3n) ───
+const dorrigoAirbnb = [
+  { id: '797964353222394071', letter: 'D1', name: 'The Barn Bellingen', type: 'Barn', location: 'Bellingen', price: 499, rating: '4.97\u2605', lat: -30.4536, lng: 152.8936, nights: 3, dates: 'Mar 20\u201323' },
+  { id: '735804765927625931', letter: 'D2', name: 'Sunny Corner Pastures - Cedar', type: 'Farm stay', location: 'Bellingen', price: 585, rating: '4.99\u2605', lat: -30.472, lng: 152.8697, nights: 3, dates: 'Mar 20\u201323' },
+  { id: '967140407373205971', letter: 'D3', name: 'The EcoShed - Private Riverfront Getaway', type: 'Farm stay', location: 'Bellingen', price: 553, rating: '4.95\u2605', lat: -30.4556, lng: 152.9182, nights: 3, dates: 'Mar 20\u201323' },
+  { id: '630061093791514234', letter: 'D4', name: 'Nature + Nurture', type: 'Guesthouse', location: 'Bellingen', price: 447, rating: '4.96\u2605', lat: -30.458, lng: 152.8983, nights: 3, dates: 'Mar 20\u201323' },
 ];
 
-// ─── MYALL LAKES AIRBNB (base 6, Mar 26–27, 1n) ───
-const myallAirbnb = [
-  { id: '1282280841862939458', letter: 'M1', name: 'GypsyBlu Studio - Our Kindred Acres', type: 'Farm stay', location: 'Bombah Point', price: 139, rating: '5.0\u2605', lat: -32.46939, lng: 152.25214, nights: 1, dates: 'Mar 26\u201327' },
-  { id: '1590878046209618712', letter: 'M2', name: 'The GREEN door Swan Bay', type: 'Apartment', location: 'Hawks Nest', price: 131, rating: '5.0\u2605', lat: -32.6625, lng: 152.1743, nights: 1, dates: 'Mar 26\u201327' },
-  { id: '1340145507855147617', letter: 'M3', name: 'Peaceful luxury retreat in nature', type: 'Tiny home', location: 'Booral', price: 150, rating: '4.98\u2605', lat: -32.47107, lng: 151.98767, nights: 1, dates: 'Mar 26\u201327' },
-  { id: '1273571703297600518', letter: 'M4', name: "Allan's Place - Our Kindred Acres", type: 'Farm stay', location: 'Bombah Point', price: 97, rating: '4.93\u2605', lat: -32.4699, lng: 152.2497, nights: 1, dates: 'Mar 26\u201327' },
-];
 
 // ─── POINTS OF INTEREST ───
 const pois = [
@@ -206,60 +194,56 @@ const pois = [
   { name: 'The Rocks', desc: 'Historic precinct, weekend markets', lat: -33.859, lng: 151.208, base: 1 },
   { name: 'Sydney Airport (SYD)', desc: 'Arrival & departure point', lat: -33.946, lng: 151.177, base: -1 },
   // Ku-ring-gai Chase
-  { name: 'Ku-ring-gai Chase NP', desc: 'Aboriginal rock art, bushwalks, water views', lat: -33.630, lng: 151.260, base: 2 },
-  { name: 'West Head Lookout', desc: 'Panoramic views over Pittwater & Palm Beach', lat: -33.575, lng: 151.297, base: 2 },
-  { name: 'Barrenjoey Lighthouse', desc: '30-min walk, panoramic views', lat: -33.590, lng: 151.328, base: 2 },
-  { name: 'Bobbin Head', desc: 'Mangrove boardwalk, kayaking, picnic area', lat: -33.650, lng: 151.158, base: 2 },
+  { name: 'Ku-ring-gai Chase NP', desc: 'Aboriginal rock art, bushwalks, water views', lat: -33.630, lng: 151.260, base: 5 },
+  { name: 'West Head Lookout', desc: 'Panoramic views over Pittwater & Palm Beach', lat: -33.575, lng: 151.297, base: 5 },
+  { name: 'Barrenjoey Lighthouse', desc: '30-min walk, panoramic views', lat: -33.590, lng: 151.328, base: 5 },
+  { name: 'Bobbin Head', desc: 'Mangrove boardwalk, kayaking, picnic area', lat: -33.650, lng: 151.158, base: 5 },
   // Hunter Valley
-  { name: 'Pokolbin Wine Region', desc: 'Over 150 wineries, Semillon & Shiraz', lat: -32.770, lng: 151.280, base: 3 },
-  { name: 'Hunter Valley Gardens', desc: '60-acre themed garden complex', lat: -32.780, lng: 151.290, base: 3 },
-  { name: 'Audrey Wilkinson Vineyard', desc: 'Oldest vineyard, hilltop views', lat: -32.770, lng: 151.300, base: 3 },
+  { name: 'Pokolbin Wine Region', desc: 'Over 150 wineries, Semillon & Shiraz', lat: -32.770, lng: 151.280, base: 2 },
+  { name: 'Hunter Valley Gardens', desc: '60-acre themed garden complex', lat: -32.780, lng: 151.290, base: 2 },
+  { name: 'Audrey Wilkinson Vineyard', desc: 'Oldest vineyard, hilltop views', lat: -32.770, lng: 151.300, base: 2 },
   // Nelson Bay
   { name: 'Stockton Sand Dunes', desc: 'Largest moving dunes in Southern Hemisphere', lat: -32.840, lng: 151.920, base: 4 },
   { name: 'Tomaree Head Summit Walk', desc: '1-hr return, stunning coastal views', lat: -32.718, lng: 152.178, base: 4 },
   { name: 'Dolphin Watching - Nelson Bay', desc: 'Year-round bottlenose dolphins', lat: -32.720, lng: 152.150, base: 4 },
-  // Bellingen / Dorrigo
-  { name: 'Dorrigo National Park', desc: 'World Heritage rainforest, Skywalk lookout', lat: -30.367, lng: 152.730, base: 5 },
-  { name: 'New England National Park', desc: 'Gondwana rainforest, Point Lookout', lat: -30.490, lng: 152.400, base: 5 },
-  { name: 'Bellingen Town', desc: 'Artsy village, markets, cafes', lat: -30.452, lng: 152.900, base: 5 },
-  { name: 'Dangar Falls', desc: '30m waterfall near Dorrigo', lat: -30.348, lng: 152.703, base: 5 },
-  // Myall Lakes
-  { name: 'Myall Lakes National Park', desc: 'Pristine coastal lakes, kayaking', lat: -32.480, lng: 152.330, base: 6 },
-  { name: 'Mungo Brush', desc: 'Beach camping, wildlife, dark skies', lat: -32.540, lng: 152.350, base: 6 },
+  // Dorrigo
+  { name: 'Dorrigo National Park', desc: 'World Heritage rainforest, Skywalk lookout', lat: -30.367, lng: 152.730, base: 3 },
+  { name: 'New England National Park', desc: 'Gondwana rainforest, Point Lookout', lat: -30.490, lng: 152.400, base: 3 },
+  { name: 'Bellingen Town', desc: 'Artsy village, markets, cafes', lat: -30.452, lng: 152.900, base: 3 },
+  { name: 'Dangar Falls', desc: '30m waterfall near Dorrigo', lat: -30.348, lng: 152.703, base: 3 },
 ];
 
 // ─── ROUTES ───
 const routes = [
   { from: 'Airport \u2192 Sydney CBD', color: '#38bdf8', points: [[-33.946,151.177],[-33.92,151.19],[-33.89,151.20],[-33.858,151.210]], time: '~25min' },
-  { from: 'Sydney CBD \u2192 Ku-ring-gai Chase', color: '#f43f5e', points: [[-33.858,151.210],[-33.82,151.22],[-33.77,151.20],[-33.70,151.18],[-33.63,151.16],[-33.55,151.23]], time: '~1h' },
-  { from: 'Ku-ring-gai \u2192 Hunter Valley', color: '#f59e0b', points: [[-33.55,151.23],[-33.45,151.15],[-33.30,151.10],[-33.10,151.15],[-32.95,151.20],[-32.77,151.28]], time: '~2h' },
-  { from: 'Hunter Valley \u2192 Nelson Bay', color: '#8b5cf6', points: [[-32.77,151.28],[-32.75,151.40],[-32.70,151.60],[-32.72,151.80],[-32.72,152.00],[-32.72,152.15]], time: '~1h 45min' },
-  { from: 'Nelson Bay \u2192 Bellingen', color: '#10b981', points: [[-32.72,152.15],[-32.50,152.20],[-32.20,152.20],[-31.90,152.40],[-31.50,152.60],[-31.10,152.70],[-30.70,152.80],[-30.45,152.90]], time: '~4h 30min' },
-  { from: 'Bellingen \u2192 Myall Lakes', color: '#ec4899', points: [[-30.45,152.90],[-30.70,152.80],[-31.10,152.70],[-31.50,152.50],[-31.90,152.30],[-32.20,152.20],[-32.47,152.25]], time: '~4h' },
-  { from: 'Myall Lakes \u2192 Sydney', color: '#64748b', points: [[-32.47,152.25],[-32.60,152.10],[-32.80,151.90],[-33.00,151.70],[-33.30,151.40],[-33.55,151.25],[-33.80,151.20],[-33.858,151.210]], time: '~3h' },
+  { from: 'Sydney CBD \u2192 Hunter Valley', color: '#f59e0b', points: [[-33.858,151.210],[-33.77,151.20],[-33.55,151.15],[-33.30,151.10],[-33.10,151.15],[-32.95,151.20],[-32.77,151.28]], time: '~2h' },
+  { from: 'Hunter Valley \u2192 Dorrigo', color: '#10b981', points: [[-32.77,151.28],[-32.60,151.40],[-32.30,151.60],[-32.00,151.90],[-31.60,152.20],[-31.20,152.50],[-30.80,152.70],[-30.45,152.90]], time: '~4h 30min' },
+  { from: 'Dorrigo \u2192 Nelson Bay', color: '#8b5cf6', points: [[-30.45,152.90],[-30.80,152.70],[-31.20,152.50],[-31.60,152.30],[-32.00,152.20],[-32.30,152.15],[-32.72,152.15]], time: '~4h' },
+  { from: 'Nelson Bay \u2192 Ku-ring-gai', color: '#f43f5e', points: [[-32.72,152.15],[-32.80,151.90],[-33.00,151.70],[-33.20,151.40],[-33.40,151.25],[-33.55,151.23]], time: '~2h 30min' },
+  { from: 'Ku-ring-gai \u2192 Sydney CBD', color: '#64748b', points: [[-33.55,151.23],[-33.63,151.20],[-33.70,151.20],[-33.80,151.21],[-33.858,151.210]], time: '~45min' },
   { from: 'Sydney CBD \u2192 Airport', color: '#64748b', points: [[-33.858,151.210],[-33.92,151.19],[-33.946,151.177]], time: '~25min' },
 ];
 
 // ─── TIMELINE ───
 const timeline = [
-  { day: 'Day 1',  date: 'Sun Mar 15', title: 'Arrive Sydney',           desc: 'Land 18:50, check into Airbnb, harbour walk',                         base: 1,        lat: -33.858, lng: 151.210, zoom: 14 },
-  { day: 'Day 2',  date: 'Mon Mar 16', title: 'Sydney Exploring',        desc: 'Opera House, Harbour Bridge, The Rocks, ferry rides',                   base: 1,        lat: -33.857, lng: 151.215, zoom: 15 },
-  { day: 'Day 3',  date: 'Tue Mar 17', title: 'Sydney Day 2',            desc: 'Bondi, coastal walks, Taronga Zoo, or Blue Mountains day trip',         base: 1,        lat: -33.858, lng: 151.210, zoom: 13 },
-  { day: 'Day 4',  date: 'Wed Mar 18', title: 'Ku-ring-gai Chase NP',   desc: 'Drive north, boat ride on Hawkesbury, Aboriginal rock art',              base: 2,        lat: -33.575, lng: 151.260, zoom: 12 },
-  { day: 'Day 5',  date: 'Thu Mar 19', title: 'Drive to Hunter Valley',  desc: '~2h drive, afternoon wine tasting, settle in',                          base: 'travel', lat: -32.77,  lng: 151.28,  zoom: 11 },
-  { day: 'Day 6',  date: 'Fri Mar 20', title: 'Hunter Valley Wine Country', desc: 'Cellar doors, Semillon & Shiraz, gardens, cheese tasting',           base: 3,        lat: -32.770, lng: 151.280, zoom: 12 },
-  { day: 'Day 7',  date: 'Sat Mar 21', title: 'Drive to Nelson Bay',     desc: '~1h45 drive, Stockton Sand Dunes, sunset at Tomaree',                   base: 'travel', lat: -32.720, lng: 152.150, zoom: 12 },
-  { day: 'Day 8',  date: 'Sun Mar 22', title: 'Nelson Bay & Port Stephens', desc: 'Dolphin watching, beaches, Tomaree Head walk',                       base: 4,        lat: -32.720, lng: 152.150, zoom: 12 },
-  { day: 'Day 9',  date: 'Mon Mar 23', title: 'Drive to Bellingen',      desc: '~4h30 drive north along coast to Bellingen hinterland',                 base: 'travel', lat: -31.50,  lng: 152.50,  zoom: 8  },
-  { day: 'Day 10', date: 'Tue Mar 24', title: 'Dorrigo National Park',   desc: 'Skywalk lookout, rainforest walks, Dangar Falls',                       base: 5,        lat: -30.367, lng: 152.730, zoom: 12 },
-  { day: 'Day 11', date: 'Wed Mar 25', title: 'Bellingen & Surrounds',   desc: 'Bellingen markets, New England NP day trip, local cafes',               base: 5,        lat: -30.452, lng: 152.900, zoom: 12 },
-  { day: 'Day 12', date: 'Thu Mar 26', title: 'Drive to Myall Lakes',    desc: '~4h drive south, arrive at Myall Lakes NP',                             base: 'travel', lat: -32.47,  lng: 152.25,  zoom: 10 },
-  { day: 'Day 13', date: 'Fri Mar 27', title: 'Drive to Sydney',         desc: '~3h drive south, last evening in Sydney',                               base: 'travel', lat: -33.858, lng: 151.210, zoom: 11 },
-  { day: 'Day 14', date: 'Sat Mar 28', title: 'Fly Home',                desc: 'Transfer to airport, land Sunday at 14:15',                             base: 1,        lat: -33.946, lng: 151.177, zoom: 12 },
+  { day: 'Day 1',  date: 'Sun Mar 15', title: 'Arrive Sydney',              desc: 'Land 18:50, check into Airbnb, harbour walk',                      base: 1,        lat: -33.858, lng: 151.210, zoom: 14 },
+  { day: 'Day 2',  date: 'Mon Mar 16', title: 'Sydney Exploring',           desc: 'Opera House, Harbour Bridge, The Rocks, ferry rides',                base: 1,        lat: -33.857, lng: 151.215, zoom: 15 },
+  { day: 'Day 3',  date: 'Tue Mar 17', title: 'Sydney Day 2',               desc: 'Bondi, coastal walks, Taronga Zoo, or Blue Mountains day trip',      base: 1,        lat: -33.858, lng: 151.210, zoom: 13 },
+  { day: 'Day 4',  date: 'Wed Mar 18', title: 'Drive to Hunter Valley',     desc: '~2h drive, afternoon wine tasting, settle in',                       base: 'travel', lat: -32.77,  lng: 151.28,  zoom: 11 },
+  { day: 'Day 5',  date: 'Thu Mar 19', title: 'Hunter Valley Wine & Golf',  desc: 'Cellar doors, Semillon & Shiraz, golf, cheese tasting',              base: 2,        lat: -32.770, lng: 151.280, zoom: 12 },
+  { day: 'Day 6',  date: 'Fri Mar 20', title: 'Drive to Dorrigo',           desc: '~4h30 drive north via Gloucester to Dorrigo hinterland',             base: 'travel', lat: -31.20,  lng: 152.10,  zoom: 8  },
+  { day: 'Day 7',  date: 'Sat Mar 21', title: 'Dorrigo National Park',      desc: 'Skywalk lookout, rainforest walks, Dangar Falls',                    base: 3,        lat: -30.367, lng: 152.730, zoom: 12 },
+  { day: 'Day 8',  date: 'Sun Mar 22', title: 'Bellingen & Surrounds',      desc: 'Bellingen markets, local cafes, New England NP day trip',            base: 3,        lat: -30.452, lng: 152.900, zoom: 12 },
+  { day: 'Day 9',  date: 'Mon Mar 23', title: 'Drive to Nelson Bay',        desc: '~4h drive south along coast to Port Stephens',                       base: 'travel', lat: -31.50,  lng: 152.50,  zoom: 8  },
+  { day: 'Day 10', date: 'Tue Mar 24', title: 'Nelson Bay & Port Stephens', desc: 'Dolphin watching, beaches, Tomaree Head walk',                       base: 4,        lat: -32.720, lng: 152.150, zoom: 12 },
+  { day: 'Day 11', date: 'Wed Mar 25', title: 'Nelson Bay Day 2',           desc: 'Stockton Sand Dunes, kayaking, whale watching (seasonal)',            base: 4,        lat: -32.720, lng: 152.150, zoom: 12 },
+  { day: 'Day 12', date: 'Thu Mar 26', title: 'Drive to Ku-ring-gai',       desc: '~2h30 south, afternoon bushwalk at Ku-ring-gai Chase NP',            base: 5,        lat: -33.575, lng: 151.260, zoom: 12 },
+  { day: 'Day 13', date: 'Fri Mar 27', title: 'Back to Sydney',             desc: '~45min to Sydney CBD, last night in the city',                        base: 1,        lat: -33.858, lng: 151.210, zoom: 13 },
+  { day: 'Day 14', date: 'Sat Mar 28', title: 'Fly Home',                   desc: 'Transfer to airport, land Sunday at 14:15',                          base: 1,        lat: -33.946, lng: 151.177, zoom: 12 },
 ];
 
 // ─── LAYERS ───
-const baseLayers = { 1: L.layerGroup(), 2: L.layerGroup(), 3: L.layerGroup(), 4: L.layerGroup(), 5: L.layerGroup(), 6: L.layerGroup() };
+const baseLayers = { 1: L.layerGroup(), 2: L.layerGroup(), 3: L.layerGroup(), 4: L.layerGroup(), 5: L.layerGroup() };
 const poiLayer = L.layerGroup();
 const routeLayer = L.layerGroup();
 
@@ -296,11 +280,10 @@ function addAirbnbMarkers(items, baseNum) {
   });
 }
 addAirbnbMarkers(sydneyAirbnb, 1);
-addAirbnbMarkers(kuringaiAirbnb, 2);
-addAirbnbMarkers(hunterAirbnb, 3);
+addAirbnbMarkers(hunterAirbnb, 2);
+addAirbnbMarkers(dorrigoAirbnb, 3);
 addAirbnbMarkers(nelsonBayAirbnb, 4);
-addAirbnbMarkers(bellingenAirbnb, 5);
-addAirbnbMarkers(myallAirbnb, 6);
+addAirbnbMarkers(kuringaiAirbnb, 5);
 
 // ─── POI + ROUTE MARKERS ───
 pois.forEach(poi => {
@@ -324,11 +307,10 @@ function renderTimeline() {
   const el = document.getElementById('timeline');
   const sectionDefs = [
     { key: 'sydney',    label: 'Sydney',                   days: [0, 1, 2] },
-    { key: 'kuringai',  label: 'North via Ku-ring-gai',    days: [3] },
-    { key: 'hunter',    label: 'Hunter Valley',             days: [4, 5] },
-    { key: 'nelson',    label: 'Nelson Bay',                days: [6, 7] },
-    { key: 'bellingen', label: 'Bellingen / Dorrigo',       days: [8, 9, 10] },
-    { key: 'myall',     label: 'Return via Myall Lakes',    days: [11, 12] },
+    { key: 'hunter',    label: 'Hunter Valley',             days: [3, 4] },
+    { key: 'dorrigo',   label: 'Dorrigo',                   days: [5, 6, 7] },
+    { key: 'nelson',    label: 'Nelson Bay',                days: [8, 9, 10] },
+    { key: 'kuringai',  label: 'Ku-ring-gai & Return',      days: [11, 12] },
     { key: 'depart',    label: 'Departure',                 days: [13] },
   ];
 
@@ -372,7 +354,7 @@ function toggleBase(baseKey) {
   });
 
   const color = COLORS[baseKey];
-  const airbnbMap = { 1: sydneyAirbnb, 2: kuringaiAirbnb, 3: hunterAirbnb, 4: nelsonBayAirbnb, 5: bellingenAirbnb, 6: myallAirbnb };
+  const airbnbMap = { 1: sydneyAirbnb, 2: hunterAirbnb, 3: dorrigoAirbnb, 4: nelsonBayAirbnb, 5: kuringaiAirbnb };
   const airbnbs = airbnbMap[baseKey];
   const allBounds = [];
 
@@ -401,7 +383,7 @@ function toggleBase(baseKey) {
 // ─── INIT ───
 renderTimeline();
 const allPoints = [];
-[sydneyAirbnb, kuringaiAirbnb, hunterAirbnb, nelsonBayAirbnb, bellingenAirbnb, myallAirbnb].forEach(arr => arr.forEach(p => allPoints.push([p.lat, p.lng])));
+[sydneyAirbnb, hunterAirbnb, dorrigoAirbnb, nelsonBayAirbnb, kuringaiAirbnb].forEach(arr => arr.forEach(p => allPoints.push([p.lat, p.lng])));
 pois.forEach(p => allPoints.push([p.lat, p.lng]));
 map.fitBounds(L.latLngBounds(allPoints).pad(0.1));
 </script>
