@@ -106,7 +106,7 @@
   <div class="budget-divider"></div>
   <div class="budget-item"><div class="budget-label">Ku-ring-gai (1n)</div><div class="budget-value">~EUR 148&ndash;224</div></div>
   <div class="budget-divider"></div>
-  <div class="budget-item"><div class="budget-label">Hunter (2n)</div><div class="budget-value">~EUR 248&ndash;518</div></div>
+  <div class="budget-item"><div class="budget-label">Hunter (2n)</div><div class="budget-value">~EUR 248&ndash;665</div></div>
   <div class="budget-divider"></div>
   <div class="budget-item"><div class="budget-label">Nelson Bay (2n)</div><div class="budget-value">~EUR 248&ndash;512</div></div>
   <div class="budget-divider"></div>
@@ -168,6 +168,10 @@ const hunterAirbnb = [
   { id: '901061344088446641', letter: 'H6', name: 'Crawford Cottage', type: 'Cabin', location: 'Congewai', price: 248, rating: '4.98\u2605', lat: -32.98401, lng: 151.30605, nights: 2, dates: 'Mar 19\u201321' },
   { id: '1268395887645376327', letter: 'H7', name: 'The Burrows: Off-Grid Cabin with Highland Coos!', type: 'Cabin', location: 'Paynes Crossing', price: 370, rating: '5.0\u2605', lat: -32.8927, lng: 151.0784, nights: 2, dates: 'Mar 19\u201321' },
   { id: '14125175', letter: 'H8', name: 'Cranky Rock Cottage', type: 'Farm stay', location: 'Sweetmans Creek', price: 378, rating: '4.93\u2605', lat: -32.88955, lng: 151.16858, nights: 2, dates: 'Mar 19\u201321' },
+  { id: 'bk_cypress-lakes', letter: 'H9', name: 'Oaks Cypress Lakes Resort', type: 'Golf resort', location: 'Pokolbin', price: 426, rating: '8.3 Booking', lat: -32.783, lng: 151.307, nights: 2, dates: 'Mar 19\u201321', platform: 'booking', url: 'https://www.booking.com/hotel/au/cypress-lakes-resort-by-oaks-hotels-amp-resorts.html' },
+  { id: 'bk_kirkton-park', letter: 'H10', name: 'voco Kirkton Park Hunter Valley', type: 'IHG hotel', location: 'Pokolbin', price: 341, rating: '8.7 Booking', lat: -32.7643, lng: 151.2844, nights: 2, dates: 'Mar 19\u201321', platform: 'booking', url: 'https://www.booking.com/hotel/au/voco-kirkton-park-hunter-valley.html' },
+  { id: 'bk_hermitage-lodge', letter: 'H11', name: 'Hermitage Lodge', type: 'Vineyard lodge', location: 'Pokolbin', price: 352, rating: '8.9 Booking', lat: -32.790, lng: 151.283, nights: 2, dates: 'Mar 19\u201321', platform: 'booking', url: 'https://www.booking.com/hotel/au/hermitage-lodge.html' },
+  { id: 'bk_spicers-vineyards', letter: 'H12', name: 'Spicers Vineyards Estate', type: '5\u2605 luxury hotel', location: 'Pokolbin', price: 665, rating: '8.7 Booking', lat: -32.7766, lng: 151.2636, nights: 2, dates: 'Mar 19\u201321', platform: 'booking', url: 'https://www.booking.com/hotel/au/the-vineyards-estate.html' },
 ];
 
 // ─── NELSON BAY AIRBNB (base 4, Mar 21–23, 2n) ───
@@ -280,12 +284,14 @@ function addCircleMarker(lat, lng, letter, color, layer, popupHtml) {
 // ─── CREATE MARKERS: Airbnb properties ───
 function addAirbnbMarkers(items, baseNum) {
   items.forEach(p => {
-    const url = `https://www.airbnb.com/rooms/${p.id}?check_in=${CHECKINS[baseNum]}&check_out=${CHECKOUTS[baseNum]}&adults=2`;
+    const isBooking = p.platform === 'booking';
+    const url = isBooking ? p.url : `https://www.airbnb.com/rooms/${p.id}?check_in=${CHECKINS[baseNum]}&check_out=${CHECKOUTS[baseNum]}&adults=2`;
+    const linkLabel = isBooking ? 'View on Booking.com' : 'View on Airbnb';
     addCircleMarker(p.lat, p.lng, p.letter, COLORS[baseNum], baseLayers[baseNum], `
       <div class="popup-title">${p.letter}. ${p.name}</div>
       <div class="popup-meta">${p.type} \u00b7 ${p.location} \u00b7 <span style="color:#fbbf24">${p.rating}</span></div>
       <div class="popup-price">EUR ${p.price.toLocaleString()} <span style="font-size:12px;color:#94a3b8">/ ${p.nights}n (${p.dates})</span></div>
-      <a class="popup-link" href="${url}" target="_blank">View on Airbnb \u2192</a>
+      <a class="popup-link" href="${url}" target="_blank">${linkLabel} \u2192</a>
     `);
   });
 }
@@ -372,16 +378,18 @@ function toggleBase(baseKey) {
 
   let html = `<h3 style="color:${color}">${BASE_NAMES[baseKey]} Options</h3>`;
   html += `<p style="font-size:12px;color:#94a3b8;margin-bottom:12px;">${NIGHT_LABELS[baseKey]}</p>`;
-  html += `<div class="section-divider">Airbnb Options</div>`;
+  html += `<div class="section-divider">Accommodation Options</div>`;
 
   airbnbs.forEach(p => {
     allBounds.push([p.lat, p.lng]);
-    const url = `https://www.airbnb.com/rooms/${p.id}?check_in=${CHECKINS[baseKey]}&check_out=${CHECKOUTS[baseKey]}&adults=2`;
+    const isBooking = p.platform === 'booking';
+    const url = isBooking ? p.url : `https://www.airbnb.com/rooms/${p.id}?check_in=${CHECKINS[baseKey]}&check_out=${CHECKOUTS[baseKey]}&adults=2`;
+    const linkLabel = isBooking ? 'View on Booking.com' : 'View on Airbnb';
     html += `<div class="prop-card" onclick="map.flyTo([${p.lat},${p.lng}],15,{duration:0.8})">
       <div class="prop-name">${p.letter}. ${p.name}</div>
       <div class="prop-meta">${p.type} &middot; ${p.location} &middot; <span class="prop-rating">${p.rating}</span></div>
       <div class="prop-price" style="color:${color}">EUR ${p.price.toLocaleString()} / ${p.nights}n</div>
-      <a class="prop-link" href="${url}" target="_blank" onclick="event.stopPropagation()">View on Airbnb &rarr;</a>
+      <a class="prop-link" href="${url}" target="_blank" onclick="event.stopPropagation()">${linkLabel} &rarr;</a>
     </div>`;
   });
 
