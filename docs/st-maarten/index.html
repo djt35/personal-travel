@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>St. Maarten — Mar 15–22, 2026</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0f172a; color: #e2e8f0; }
+    #map { width: 100%; height: 100vh; }
+
+    /* Glassmorphism panels */
+    .glass {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      border-radius: 12px;
+    }
+
+    /* Header */
+    .header {
+      position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
+      z-index: 1000; padding: 10px 24px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .header h1 { font-size: 18px; font-weight: 700; white-space: nowrap; }
+    .header .dates { font-size: 13px; color: #94a3b8; white-space: nowrap; }
+    .header .pax { font-size: 11px; color: #64748b; white-space: nowrap; }
+
+    /* Filter bar */
+    .filters {
+      position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+      z-index: 1000; padding: 8px 16px;
+      display: flex; align-items: center; gap: 12px; font-size: 13px;
+    }
+    .filter-btn {
+      padding: 4px 14px; border-radius: 20px; border: 1px solid rgba(148,163,184,0.3);
+      background: transparent; color: #94a3b8; cursor: pointer; font-size: 12px;
+      transition: all 0.2s;
+    }
+    .filter-btn.active { background: rgba(59, 130, 246, 0.3); color: #60a5fa; border-color: #3b82f6; }
+    .filter-btn:hover { border-color: #60a5fa; color: #e2e8f0; }
+
+    /* Property sidebar */
+    .sidebar {
+      position: fixed; top: 120px; right: 12px; bottom: 12px; width: 380px;
+      z-index: 1000; overflow-y: auto; padding: 16px;
+    }
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
+    .sidebar h2 { font-size: 14px; color: #94a3b8; margin: 16px 0 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .sidebar h2:first-child { margin-top: 0; }
+
+    .prop-card {
+      padding: 12px; border-radius: 8px; margin-bottom: 8px; cursor: pointer;
+      border: 1px solid rgba(148,163,184,0.1); transition: all 0.2s;
+      position: relative;
+    }
+    .prop-card:hover { border-color: rgba(148,163,184,0.3); background: rgba(30,41,59,0.5); }
+    .prop-card .code {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%; font-size: 11px; font-weight: 700;
+      margin-right: 8px; flex-shrink: 0;
+    }
+    .prop-card .name { font-size: 14px; font-weight: 600; }
+    .prop-card .meta { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+    .prop-card .price { font-size: 15px; font-weight: 700; color: #34d399; }
+    .prop-card .price-night { font-size: 11px; color: #64748b; }
+    .prop-card .badges { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+    .prop-card .badge {
+      font-size: 10px; padding: 2px 8px; border-radius: 10px;
+      background: rgba(148,163,184,0.1); color: #94a3b8;
+    }
+    .badge.superhost { background: rgba(244,63,94,0.15); color: #fb7185; }
+    .badge.free-cancel { background: rgba(52,211,153,0.15); color: #34d399; }
+    .badge.star4 { background: rgba(250,204,21,0.15); color: #facc15; }
+    .badge.guest-fav { background: rgba(168,85,247,0.15); color: #c084fc; }
+
+    .prop-card a {
+      display: inline-block; margin-top: 6px; font-size: 12px;
+      color: #60a5fa; text-decoration: none;
+    }
+    .prop-card a:hover { text-decoration: underline; }
+
+    /* Flight panel */
+    .flights-panel {
+      position: fixed; bottom: 12px; left: 12px; z-index: 1000;
+      padding: 16px; width: 420px; max-height: 320px; overflow-y: auto;
+    }
+    .flights-panel h2 { font-size: 14px; color: #94a3b8; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .flight-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; border-bottom: 1px solid rgba(148,163,184,0.1);
+      font-size: 13px;
+    }
+    .flight-row:last-child { border-bottom: none; }
+    .flight-origin { font-weight: 600; width: 40px; }
+    .flight-route { color: #94a3b8; flex: 1; margin: 0 12px; font-size: 12px; }
+    .flight-price { font-weight: 700; color: #34d399; }
+    .flight-winner { background: rgba(52,211,153,0.08); border-radius: 6px; padding: 8px; }
+
+    /* Budget bar */
+    .budget-bar {
+      position: fixed; bottom: 12px; left: 444px; right: 404px; z-index: 1000;
+      padding: 12px 20px; display: flex; justify-content: space-around; align-items: center;
+      font-size: 13px;
+    }
+    .budget-item { text-align: center; }
+    .budget-item .label { font-size: 11px; color: #64748b; }
+    .budget-item .value { font-size: 16px; font-weight: 700; }
+    .budget-item .value.flights { color: #60a5fa; }
+    .budget-item .value.accom { color: #f59e0b; }
+    .budget-item .value.total { color: #34d399; }
+
+    /* POI legend */
+    .legend {
+      position: fixed; top: 120px; left: 12px; z-index: 1000; padding: 12px 16px;
+      font-size: 12px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+    .legend-dot {
+      width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+    }
+
+    /* Custom Leaflet markers */
+    .property-marker {
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 50%;
+      font-size: 11px; font-weight: 700; color: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      border: 2px solid rgba(255,255,255,0.3);
+      transition: transform 0.2s;
+    }
+    .property-marker:hover { transform: scale(1.2); }
+    .poi-marker {
+      display: flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px; border-radius: 50%;
+      font-size: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+
+    /* Responsive */
+    @media (max-width: 1100px) {
+      .sidebar { width: 320px; }
+      .flights-panel { width: 340px; }
+      .budget-bar { left: 356px; right: 336px; }
+    }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .flights-panel { width: calc(100% - 24px); bottom: 12px; }
+      .budget-bar { display: none; }
+      .legend { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header glass">
+  <h1>St. Maarten / Saint Martin</h1>
+  <span class="dates">Mar 15 – 22, 2026 (7 nights)</span>
+  <span class="pax">2 adults + 1 child</span>
+</div>
+
+<div class="filters glass">
+  <span style="color:#64748b">Show:</span>
+  <button class="filter-btn active" onclick="toggleFilter('booking')">Booking.com</button>
+  <button class="filter-btn active" onclick="toggleFilter('airbnb')">Airbnb</button>
+  <button class="filter-btn active" onclick="toggleFilter('poi')">Points of Interest</button>
+</div>
+
+<div class="legend glass">
+  <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> Booking.com</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f43f5e"></div> Airbnb</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#a855f7"></div> Beaches</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Attractions</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div> Restaurants</div>
+  <div class="legend-item" style="margin-top:8px;color:#64748b;font-size:10px">
+    <span>Dutch side = south</span>
+  </div>
+  <div class="legend-item" style="color:#64748b;font-size:10px">
+    <span>French side = north</span>
+  </div>
+</div>
+
+<div class="sidebar glass" id="sidebar">
+  <h2>Booking.com — 4★+ Hotels</h2>
+  <div id="booking-cards"></div>
+  <h2>Airbnb — Top Picks</h2>
+  <div id="airbnb-cards"></div>
+</div>
+
+<div class="flights-panel glass">
+  <h2>Flights — Sat Mar 14 → Sun Mar 22</h2>
+  <div class="flight-row flight-winner">
+    <span class="flight-origin">BRU</span>
+    <span class="flight-route">KLM via AMS · 1h25m layover · return via Trinidad</span>
+    <span class="flight-price">€3,691</span>
+  </div>
+  <div class="flight-row">
+    <span class="flight-origin">CDG</span>
+    <span class="flight-route">Air France DIRECT both ways</span>
+    <span class="flight-price">€4,085</span>
+  </div>
+  <div class="flight-row">
+    <span class="flight-origin">LHR</span>
+    <span class="flight-route">KLM/AF via AMS or CDG</span>
+    <span class="flight-price">€4,245</span>
+  </div>
+  <div class="flight-row">
+    <span class="flight-origin">AMS</span>
+    <span class="flight-route">KLM direct out · AF via CDG return</span>
+    <span class="flight-price">€5,080</span>
+  </div>
+  <div style="font-size:11px;color:#64748b;margin-top:8px">All prices for 3 passengers (2A+1C) round trip</div>
+</div>
+
+<div class="budget-bar glass" id="budget-bar">
+  <div class="budget-item">
+    <div class="label">Flights (BRU)</div>
+    <div class="value flights">€3,691</div>
+  </div>
+  <div class="budget-item">
+    <div class="label">Accommodation</div>
+    <div class="value accom" id="accom-budget">—</div>
+  </div>
+  <div class="budget-item">
+    <div class="label">Car Rental (est.)</div>
+    <div class="value" style="color:#94a3b8">€350</div>
+  </div>
+  <div class="budget-item">
+    <div class="label">Total (est.)</div>
+    <div class="value total" id="total-budget">—</div>
+  </div>
+</div>
+
+<div id="map"></div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+
+const bookingProperties = [
+  { code: 'B1', name: 'Shamrock Orient Bay', lat: 18.0886, lng: -63.0281, stars: 4, score: 9.3, price: 1668, ppn: 238, url: 'https://www.booking.com/hotel/mf/cosy-duplex-a-la-baie-orientale.html', freeCancel: false, area: 'Orient Bay (French)', notes: 'Preferred Plus · Only 1 left' },
+  { code: 'B2', name: 'Calme avec vue sur l\'océan', lat: 18.0998, lng: -63.0273, stars: 4, score: 9.3, price: 1038, ppn: 148, url: 'https://www.booking.com/hotel/mf/calme-avec-vue-formidable-sur-l-ocean.html', freeCancel: false, area: 'Orient Bay (French)', notes: 'Ocean view · great value' },
+  { code: 'B3', name: 'Bright & Spacious 3BR', lat: 18.0660, lng: -63.0714, stars: 4, score: 9.0, price: 1007, ppn: 144, url: 'https://www.booking.com/hotel/mf/bright-amp-spacious-3br-retreat-in-saint-martin.html', freeCancel: true, area: 'Marigot (French)', notes: '3 bedrooms · families' },
+  { code: 'B4', name: 'Hommage Hotel & Residences', lat: 18.0606, lng: -63.1105, stars: 4, score: 8.0, price: 2384, ppn: 341, url: 'https://www.booking.com/hotel/mf/mercure-st-martin.html', freeCancel: true, area: 'Baie Nettle (French)', notes: 'Beachfront · pool' },
+  { code: 'B5', name: 'Anse Marcel Cove Suites', lat: 18.1132, lng: -63.0413, stars: 4, score: 7.7, price: 1956, ppn: 279, url: 'https://www.booking.com/hotel/mf/anse-marcel-cove-suites.html', freeCancel: false, area: 'Anse Marcel (French)', notes: 'Beachfront · was €2,717 (28% off)' },
+  { code: 'B6', name: 'La Créola Grand Case', lat: 18.1001, lng: -63.0545, stars: 4, score: 10, price: 9917, ppn: 1417, url: 'https://www.booking.com/hotel/mf/la-creola-appart-deluxe-1-bedroom.html', freeCancel: false, area: 'Grand Case (French)', notes: 'Perfect 10 score · luxury' },
+  { code: 'B7', name: 'Villa Ravenala', lat: 18.0913, lng: -63.0756, stars: 4, score: null, price: 4440, ppn: 634, url: 'https://www.booking.com/hotel/mf/ravenala.html', freeCancel: false, area: 'Friar\'s Bay (French)', notes: 'Beachfront · 4BR villa' },
+  { code: 'B8', name: 'DELIS SERENITY Lagoon', lat: 18.0575, lng: -63.1041, stars: 4, score: null, price: 463, ppn: 66, url: 'https://www.booking.com/hotel/mf/delis-serenity-lagoon-side.html', freeCancel: false, area: 'Baie Nettle (French)', notes: 'Lagoon side · budget 4★' },
+  { code: 'B9', name: 'Residence Mont Vernon II', lat: 18.0968, lng: -63.0244, stars: null, score: 8.0, price: 749, ppn: 107, url: 'https://www.booking.com/hotel/mf/residence-mont-vernon-ii-b.html', freeCancel: true, area: 'Orient Bay (French)', notes: '2BR · 200ft from beach' },
+  { code: 'B10', name: 'Lovely 2BR condo + pool', lat: 18.0664, lng: -63.0749, stars: null, score: null, price: 589, ppn: 84, url: 'https://www.booking.com/hotel/mf/lovely-2-bedroom-condo-with-pool.html', freeCancel: true, area: 'Marigot (French)', notes: '2BR · pool · Only 1 left' },
+];
+
+const airbnbProperties = [
+  { code: 'A1', name: 'COSY 3 Duplex Shamrock', lat: 18.08809, lng: -63.02685, rating: 4.88, superhost: true, price: 1254, ppn: 179, url: 'https://www.airbnb.com/rooms/3790950', area: 'Orient Bay (French)', notes: '3BR duplex' },
+  { code: 'A2', name: 'Big & Bright 3BR', lat: 18.06728, lng: -63.08128, rating: 4.83, superhost: true, price: 1361, ppn: 194, url: 'https://www.airbnb.com/rooms/1361719834723073282', area: 'Marigot (French)', notes: '3BR · spacious' },
+  { code: 'A3', name: 'Home in Anse Marcel', lat: 18.10137, lng: -63.03169, rating: 5.0, superhost: true, price: null, ppn: null, url: 'https://www.airbnb.com/rooms/19443418', area: 'Anse Marcel (French)', notes: 'Perfect 5.0 · Superhost' },
+  { code: 'A4', name: 'Bungalow (Le Coq de Pareloup)', lat: 18.10581, lng: -63.02391, rating: 4.8, superhost: false, price: 1164, ppn: 166, url: 'https://www.airbnb.com/rooms/14036662', area: 'Cul de Sac (French)', notes: 'Charming bungalow' },
+  { code: 'A5', name: 'Home in Anse Marcel', lat: 18.10895, lng: -63.03943, rating: null, superhost: true, price: null, ppn: null, url: 'https://www.airbnb.com/rooms/1526950485540774992', area: 'Anse Marcel (French)', notes: 'Superhost' },
+  { code: 'A6', name: 'Apartment Orient Bay', lat: 18.0836, lng: -63.025, rating: null, superhost: true, price: null, ppn: null, url: 'https://www.airbnb.com/rooms/1623370006533569628', area: 'Orient Bay (French)', notes: 'Superhost' },
+  { code: 'A7', name: 'Condo Marigot', lat: 18.07944, lng: -63.06374, rating: 5.0, superhost: false, price: null, ppn: null, url: 'https://www.airbnb.com/rooms/42353704', area: 'Marigot (French)', notes: 'Perfect 5.0' },
+  { code: 'A8', name: 'On Océan — private pool', lat: 18.05740, lng: -63.01478, rating: 5.0, superhost: false, guestFav: true, price: 1858, ppn: 265, url: 'https://www.airbnb.com/rooms/47158446', area: 'Dutch side', notes: 'Private pool · Guest Favorite' },
+  { code: 'A9', name: 'Upper Prince\'s Quarter 5★', lat: 18.01224, lng: -63.03919, rating: 5.0, superhost: false, price: null, ppn: null, url: 'https://www.airbnb.com/rooms/54369685', area: 'Dutch side', notes: 'Perfect 5.0' },
+  { code: 'A10', name: 'Oceanfront Solitude Villa', lat: 18.03808, lng: -63.02346, rating: 4.5, superhost: false, price: 1658, ppn: 237, url: 'https://www.airbnb.com/rooms/5049644', area: 'Guana Bay (Dutch)', notes: 'Oceanfront · 2BR' },
+  { code: 'A11', name: 'Luxury Villa Mare Cupecoy', lat: 18.05253, lng: -63.13098, rating: null, superhost: true, price: 2615, ppn: 374, url: 'https://www.airbnb.com/rooms/1632262411453791582', area: 'Cupecoy (Dutch)', notes: 'Private pool · luxury' },
+  { code: 'A12', name: 'Bayview Resort — Anguilla', lat: 18.1711, lng: -63.0953, rating: 5.0, superhost: false, guestFav: true, price: 3345, ppn: 478, url: 'https://www.airbnb.com/rooms/890411191857120752', area: 'Anguilla (!)', notes: 'Different island · ferry required' },
+];
+
+const pois = [
+  // Beaches
+  { name: 'Orient Bay Beach', lat: 18.0882, lng: -63.0223, type: 'beach', emoji: '🏖️' },
+  { name: 'Maho Beach (plane spotting!)', lat: 18.0408, lng: -63.1155, type: 'beach', emoji: '✈️' },
+  { name: 'Baie Rouge', lat: 18.0541, lng: -63.1175, type: 'beach', emoji: '🏖️' },
+  { name: 'Happy Bay', lat: 18.0899, lng: -63.0795, type: 'beach', emoji: '🏖️' },
+  { name: 'Mullet Bay Beach', lat: 18.0392, lng: -63.1211, type: 'beach', emoji: '🏖️' },
+  { name: 'Anse Marcel Beach', lat: 18.1119, lng: -63.0393, type: 'beach', emoji: '🏖️' },
+  { name: 'Dawn Beach', lat: 18.0437, lng: -63.0127, type: 'beach', emoji: '🏖️' },
+  // Attractions
+  { name: 'Princess Juliana Airport (SXM)', lat: 18.0410, lng: -63.1089, type: 'attraction', emoji: '🛬' },
+  { name: 'Marigot Market', lat: 18.0694, lng: -63.0830, type: 'attraction', emoji: '🏪' },
+  { name: 'Fort Louis', lat: 18.0724, lng: -63.0855, type: 'attraction', emoji: '🏰' },
+  { name: 'Loterie Farm', lat: 18.0675, lng: -63.0566, type: 'attraction', emoji: '🌴' },
+  { name: 'Anguilla Ferry', lat: 18.0696, lng: -63.0882, type: 'attraction', emoji: '⛴️' },
+  // Restaurants
+  { name: 'Grand Case (Restaurant Row)', lat: 18.1015, lng: -63.0500, type: 'restaurant', emoji: '🍽️' },
+  { name: 'Friar\'s Bay Beach Café', lat: 18.0889, lng: -63.0791, type: 'restaurant', emoji: '🍹' },
+];
+
+// ─── MAP SETUP ───────────────────────────────────────────────────────────────
+
+const map = L.map('map', {
+  center: [18.065, -63.06],
+  zoom: 13,
+  zoomControl: false
+});
+
+L.control.zoom({ position: 'topright' }).addTo(map);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
+  subdomains: 'abcd', maxZoom: 19
+}).addTo(map);
+
+// Dutch / French border line (approximate)
+L.polyline([
+  [18.0590, -63.1490], [18.0415, -63.1215], [18.0310, -63.0550],
+  [18.0350, -63.0200], [18.0530, -63.0090], [18.0570, -62.9900]
+], { color: '#475569', weight: 1.5, dashArray: '8,6', opacity: 0.5 }).addTo(map);
+
+// Border label
+L.marker([18.041, -63.07], {
+  icon: L.divIcon({ className: '', html: '<div style="color:#475569;font-size:10px;white-space:nowrap;transform:rotate(-15deg)">── Dutch / French border ──</div>', iconSize: [150, 20] })
+}).addTo(map);
+
+// ─── MARKER LAYERS ───────────────────────────────────────────────────────────
+
+const layers = { booking: L.layerGroup(), airbnb: L.layerGroup(), poi: L.layerGroup() };
+const activeFilters = { booking: true, airbnb: true, poi: true };
+
+function createPropertyMarker(prop, color) {
+  return L.marker([prop.lat, prop.lng], {
+    icon: L.divIcon({
+      className: '',
+      html: `<div class="property-marker" style="background:${color}">${prop.code}</div>`,
+      iconSize: [32, 32], iconAnchor: [16, 16]
+    })
+  }).bindPopup(`
+    <div style="font-family:system-ui;min-width:220px">
+      <strong style="font-size:14px">${prop.code} — ${prop.name}</strong><br>
+      <span style="color:#666;font-size:12px">${prop.area}</span><br>
+      ${prop.score ? `<span style="font-size:13px">Score: <strong>${prop.score}/10</strong></span><br>` : ''}
+      ${prop.rating ? `<span style="font-size:13px">Rating: <strong>${prop.rating}★</strong></span><br>` : ''}
+      ${prop.price ? `<span style="font-size:14px;color:#059669"><strong>€${prop.price.toLocaleString()}</strong> / 7 nights</span><br>` : ''}
+      ${prop.ppn ? `<span style="color:#666;font-size:12px">€${prop.ppn}/night</span><br>` : ''}
+      ${prop.notes ? `<span style="font-size:12px;color:#888">${prop.notes}</span><br>` : ''}
+      <a href="${prop.url}" target="_blank" style="color:#2563eb;font-size:12px">View listing →</a>
+    </div>
+  `);
+}
+
+// Add booking markers
+bookingProperties.forEach(p => {
+  createPropertyMarker(p, '#3b82f6').addTo(layers.booking);
+});
+
+// Add airbnb markers
+airbnbProperties.forEach(p => {
+  createPropertyMarker(p, '#f43f5e').addTo(layers.airbnb);
+});
+
+// Add POI markers
+const poiColors = { beach: '#a855f7', attraction: '#f59e0b', restaurant: '#10b981' };
+pois.forEach(p => {
+  L.marker([p.lat, p.lng], {
+    icon: L.divIcon({
+      className: '',
+      html: `<div class="poi-marker" style="background:${poiColors[p.type]}">${p.emoji}</div>`,
+      iconSize: [24, 24], iconAnchor: [12, 12]
+    })
+  }).bindPopup(`<strong>${p.name}</strong>`).addTo(layers.poi);
+});
+
+// Add all layers
+Object.values(layers).forEach(l => l.addTo(map));
+
+// ─── FILTER TOGGLE ───────────────────────────────────────────────────────────
+
+function toggleFilter(key) {
+  activeFilters[key] = !activeFilters[key];
+  const btn = document.querySelector(`.filter-btn[onclick="toggleFilter('${key}')"]`);
+  btn.classList.toggle('active', activeFilters[key]);
+
+  if (activeFilters[key]) {
+    layers[key].addTo(map);
+  } else {
+    map.removeLayer(layers[key]);
+  }
+}
+
+// ─── SIDEBAR CARDS ───────────────────────────────────────────────────────────
+
+function createCard(prop, platform) {
+  const color = platform === 'booking' ? '#3b82f6' : '#f43f5e';
+  const card = document.createElement('div');
+  card.className = 'prop-card';
+  card.onclick = () => map.flyTo([prop.lat, prop.lng], 16);
+
+  let badges = '';
+  if (prop.stars >= 4) badges += '<span class="badge star4">4★</span>';
+  if (prop.superhost) badges += '<span class="badge superhost">Superhost</span>';
+  if (prop.freeCancel) badges += '<span class="badge free-cancel">Free cancel</span>';
+  if (prop.guestFav) badges += '<span class="badge guest-fav">Guest Fav</span>';
+
+  card.innerHTML = `
+    <div style="display:flex;align-items:center">
+      <span class="code" style="background:${color}">${prop.code}</span>
+      <div>
+        <div class="name">${prop.name}</div>
+        <div class="meta">${prop.area}${prop.score ? ` · ${prop.score}/10` : ''}${prop.rating ? ` · ${prop.rating}★` : ''}</div>
+      </div>
+    </div>
+    ${prop.price ? `<div style="margin-top:6px"><span class="price">€${prop.price.toLocaleString()}</span> <span class="price-night">/ 7n (€${prop.ppn}/n)</span></div>` : ''}
+    <div class="badges">${badges}</div>
+    ${prop.notes ? `<div style="font-size:11px;color:#64748b;margin-top:4px">${prop.notes}</div>` : ''}
+    <a href="${prop.url}" target="_blank" onclick="event.stopPropagation()">View listing →</a>
+  `;
+  return card;
+}
+
+const bookingCards = document.getElementById('booking-cards');
+bookingProperties.forEach(p => bookingCards.appendChild(createCard(p, 'booking')));
+
+const airbnbCards = document.getElementById('airbnb-cards');
+airbnbProperties.forEach(p => airbnbCards.appendChild(createCard(p, 'airbnb')));
+
+</script>
+</body>
+</html>
