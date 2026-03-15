@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>California Redwoods Road Trip — Mar 21-28, 2026</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e5e5e5; }
+    #map { width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 1; }
+
+    .panel {
+      position: fixed; z-index: 1000;
+      background: rgba(15, 15, 15, 0.85);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+
+    /* Title panel */
+    .title-panel {
+      top: 16px; left: 16px; max-width: 380px;
+    }
+    .title-panel h1 {
+      font-size: 20px; font-weight: 700; color: #fff;
+      margin-bottom: 4px;
+    }
+    .title-panel .subtitle {
+      font-size: 13px; color: #a3a3a3;
+    }
+    .title-panel .dates {
+      font-size: 12px; color: #737373; margin-top: 2px;
+    }
+
+    /* Timeline panel */
+    .timeline-panel {
+      top: 130px; left: 16px; width: 360px;
+      max-height: calc(100vh - 260px);
+      overflow-y: auto;
+    }
+    .timeline-panel::-webkit-scrollbar { width: 4px; }
+    .timeline-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+    .day-card {
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+    .day-card:hover { background: rgba(255,255,255,0.06); }
+    .day-card.active { background: rgba(255,255,255,0.08); }
+    .day-card .day-num { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+    .day-card .day-title { font-size: 14px; font-weight: 600; color: #fff; }
+    .day-card .day-desc { font-size: 12px; color: #a3a3a3; margin-top: 2px; }
+    .day-card .day-price { font-size: 12px; font-weight: 600; margin-top: 4px; }
+
+    /* Budget panel */
+    .budget-panel {
+      bottom: 16px; left: 16px; width: 360px;
+    }
+    .budget-panel h3 { font-size: 13px; font-weight: 600; color: #a3a3a3; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+    .budget-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+    .budget-row.total { border-top: 1px solid rgba(255,255,255,0.15); margin-top: 6px; padding-top: 8px; font-weight: 700; font-size: 15px; color: #fff; }
+    .budget-row .label { color: #a3a3a3; }
+    .budget-row .value { color: #e5e5e5; font-weight: 500; }
+
+    /* Legend */
+    .legend-panel {
+      bottom: 16px; right: 16px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+    /* Flights panel */
+    .flights-panel {
+      top: 16px; right: 16px; max-width: 300px;
+    }
+    .flights-panel h3 { font-size: 13px; font-weight: 600; color: #a3a3a3; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .flight-row { font-size: 12px; margin-bottom: 6px; line-height: 1.4; }
+    .flight-label { color: #737373; }
+    .flight-detail { color: #e5e5e5; }
+
+    @media (max-width: 768px) {
+      .timeline-panel, .budget-panel, .title-panel { position: relative; width: 100%; max-width: 100%; left: 0; top: 0; border-radius: 0; }
+      #map { height: 50vh; position: relative; }
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <div class="panel title-panel">
+    <h1>California Redwoods</h1>
+    <div class="subtitle">2 days SF + Redwoods road trip north</div>
+    <div class="dates">Sat 21 Mar — Sat 28 Mar 2026 | David, Lobke & Noah</div>
+  </div>
+
+  <div class="panel timeline-panel" id="timeline"></div>
+
+  <div class="panel budget-panel">
+    <h3>Budget (3 pax)</h3>
+    <div class="budget-row"><span class="label">Flights (BRU-SFO Lufthansa)</span><span class="value">&euro;3,682</span></div>
+    <div class="budget-row"><span class="label">Accommodation (7 nights)</span><span class="value">&euro;1,545</span></div>
+    <div class="budget-row"><span class="label">Car rental (6 days SUV)</span><span class="value">&euro;450</span></div>
+    <div class="budget-row"><span class="label">Gas + tolls</span><span class="value">&euro;110</span></div>
+    <div class="budget-row"><span class="label">Food & activities</span><span class="value">&euro;840</span></div>
+    <div class="budget-row total"><span class="label">Total</span><span class="value">&euro;6,627</span></div>
+  </div>
+
+  <div class="panel flights-panel">
+    <h3>Flights</h3>
+    <div class="flight-row">
+      <span class="flight-label">OUT:</span> <span class="flight-detail">Sat 21 Mar</span><br>
+      <span class="flight-detail">Lufthansa BRU 11:55 &rarr; IAD &rarr; SFO 21:20</span>
+    </div>
+    <div class="flight-row">
+      <span class="flight-label">RET:</span> <span class="flight-detail">Sat 28 Mar</span><br>
+      <span class="flight-detail">United SFO 13:40 &rarr; FRA &rarr; BRU 20:40 Sun</span>
+    </div>
+    <div class="flight-row" style="margin-top:8px; color: #10b981; font-weight: 600;">
+      Double evening arrivals
+    </div>
+  </div>
+
+  <div class="panel legend-panel">
+    <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> San Francisco (Nights 1-2)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> Mendocino (Night 3)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div> Garberville (Nights 4-5)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div> Orick / Redwood NP (Nights 6-7)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#64748b; width:8px; height:8px;"></div> Points of Interest</div>
+  </div>
+
+  <script>
+    const map = L.map('map', { zoomControl: false }).setView([39.5, -123.5], 7);
+    L.control.zoom({ position: 'topright' }).addTo(map);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap &copy; CARTO',
+      maxZoom: 19
+    }).addTo(map);
+
+    // Accommodation data
+    const bases = [
+      {
+        code: 'SF1', name: 'SF Apartment (Budget)', base: 'San Francisco',
+        lat: 37.7710, lng: -122.4280,
+        dates: 'Sat-Sun 21-22 Mar (2 nights)', price: '€422', rating: '4.80/5 (164 rev)',
+        url: 'https://www.airbnb.com/rooms/49444697?adults=2&children=1&check_in=2026-03-21&check_out=2026-03-23',
+        color: '#ef4444', nightNum: 0
+      },
+      {
+        code: 'SF2', name: 'SF Apartment (Best Value)', base: 'San Francisco',
+        lat: 37.7749, lng: -122.4194,
+        dates: 'Sat-Sun 21-22 Mar (2 nights)', price: '€526', rating: '4.91/5 (449 rev)',
+        url: 'https://www.airbnb.com/rooms/15051965?adults=2&children=1&check_in=2026-03-21&check_out=2026-03-23',
+        color: '#ef4444', nightNum: 0
+      },
+      {
+        code: 'SF3', name: 'SF Apartment (Premium)', base: 'San Francisco',
+        lat: 37.7788, lng: -122.4108,
+        dates: 'Sat-Sun 21-22 Mar (2 nights)', price: '€800', rating: '4.95/5 (195 rev)',
+        url: 'https://www.airbnb.com/rooms/43488825?adults=2&children=1&check_in=2026-03-21&check_out=2026-03-23',
+        color: '#ef4444', nightNum: 0
+      },
+      {
+        code: 'M1', name: 'Mendocino Cottage', base: 'Mendocino',
+        lat: 39.3077, lng: -123.7995,
+        dates: 'Mon 23 Mar (1 night)', price: '€166', rating: '4.96/5 (214 rev)',
+        url: 'https://www.airbnb.com/rooms/53035954?adults=2&children=1&check_in=2026-03-23&check_out=2026-03-24',
+        color: '#3b82f6', nightNum: 2
+      },
+      {
+        code: 'A1', name: 'Avenue of Giants Home', base: 'Garberville',
+        lat: 40.0990, lng: -123.7936,
+        dates: 'Tue-Wed 24-25 Mar (2 nights)', price: '€477', rating: '4.97/5 (517 rev)',
+        url: 'https://www.airbnb.com/rooms/24826740?adults=2&children=1&check_in=2026-03-24&check_out=2026-03-26',
+        color: '#8b5cf6', nightNum: 3
+      },
+      {
+        code: 'R1', name: 'Redwood NP Cabin', base: 'Orick',
+        lat: 41.2843, lng: -124.0594,
+        dates: 'Thu-Fri 26-27 Mar (2 nights)', price: '€376', rating: '4.96/5 (134 rev)',
+        url: 'https://www.airbnb.com/rooms/16674125?adults=2&children=1&check_in=2026-03-26&check_out=2026-03-28',
+        color: '#10b981', nightNum: 5
+      }
+    ];
+
+    // SFO marker
+    const sfoMarker = L.circleMarker([37.6213, -122.3790], {
+      radius: 8, fillColor: '#737373', color: '#fff', weight: 1, fillOpacity: 0.7
+    }).addTo(map).bindPopup('<b>SFO Airport</b><br>Arrive Sat 21 Mar 21:20<br>Depart Sat 28 Mar 13:40');
+
+    L.marker([37.6213, -122.3790], {
+      icon: L.divIcon({ className: '', html: '<div style="color:#a3a3a3;font-size:9px;font-weight:700;text-align:center;margin-top:-6px;margin-left:-10px;width:24px;">SFO</div>' })
+    }).addTo(map);
+
+    // POIs
+    const pois = [
+      { name: 'Golden Gate Bridge', lat: 37.8199, lng: -122.4783, desc: 'Day 1 — iconic crossing with Noah' },
+      { name: 'Fisherman\'s Wharf', lat: 37.8080, lng: -122.4177, desc: 'Day 1 — sea lions at Pier 39, clam chowder' },
+      { name: 'Cable Cars', lat: 37.7946, lng: -122.4117, desc: 'Day 1 — Powell-Hyde line, ride outside' },
+      { name: 'Exploratorium', lat: 37.8017, lng: -122.3975, desc: 'Day 1 — hands-on science museum for kids' },
+      { name: 'Muir Woods', lat: 37.8970, lng: -122.5811, desc: 'Day 2 morning — first redwoods, easy boardwalk' },
+      { name: 'Armstrong Redwoods', lat: 38.5294, lng: -122.9994, desc: 'Day 2 — lunch stop, Colonel Armstrong Tree' },
+      { name: 'Goat Rock Beach', lat: 38.4433, lng: -123.0731, desc: 'Harbour seals on the beach' },
+      { name: 'Glass Beach', lat: 39.4529, lng: -123.8139, desc: 'Sea glass & tide pools — Noah treasure hunt' },
+      { name: 'Founders Grove', lat: 40.3524, lng: -123.9249, desc: 'Dyerville Giant — 362ft fallen tree' },
+      { name: 'Rockefeller Forest', lat: 40.3468, lng: -123.9798, desc: 'Largest old-growth redwood forest on Earth' },
+      { name: 'Shrine Drive-Thru Tree', lat: 40.2686, lng: -123.8695, desc: 'Drive through a tree — Noah will love it' },
+      { name: 'Trinidad Head', lat: 41.0560, lng: -124.1510, desc: 'Panoramic views — lunch stop' },
+      { name: 'Fern Canyon', lat: 41.4008, lng: -124.0650, desc: 'Jurassic Park filming location — 50ft fern walls' },
+      { name: 'Elk Prairie', lat: 41.3686, lng: -124.0289, desc: 'Roosevelt elk herds grazing' },
+      { name: 'Trees of Mystery', lat: 41.5258, lng: -124.0867, desc: 'SkyTrail gondola + Paul Bunyan — Noah highlight' },
+      { name: 'Stout Memorial Grove', lat: 41.7823, lng: -124.0866, desc: 'Jedediah Smith — pristine old-growth loop' },
+      { name: 'Howland Hill Road', lat: 41.7700, lng: -124.1000, desc: 'Unpaved road through dark redwood cathedral' },
+    ];
+
+    // Add accommodation markers
+    bases.forEach(b => {
+      const marker = L.circleMarker([b.lat, b.lng], {
+        radius: 18, fillColor: b.color, color: '#fff', weight: 2, fillOpacity: 0.9
+      }).addTo(map);
+
+      L.marker([b.lat, b.lng], {
+        icon: L.divIcon({
+          className: '',
+          html: `<div style="color:#fff;font-size:12px;font-weight:800;text-align:center;margin-top:-10px;margin-left:-10px;width:24px;">${b.code}</div>`
+        })
+      }).addTo(map);
+
+      marker.bindPopup(`
+        <div style="font-family:-apple-system,sans-serif;min-width:220px;">
+          <div style="font-size:14px;font-weight:700;color:${b.color};margin-bottom:4px;">${b.code} — ${b.base}</div>
+          <div style="font-size:13px;font-weight:600;">${b.name}</div>
+          <div style="font-size:12px;color:#666;margin:4px 0;">${b.dates}</div>
+          <div style="font-size:14px;font-weight:700;">${b.price} <span style="font-weight:400;color:#666;">| ${b.rating}</span></div>
+          <a href="${b.url}" target="_blank" style="display:inline-block;margin-top:8px;padding:6px 12px;background:${b.color};color:#fff;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;">View on Airbnb</a>
+        </div>
+      `);
+    });
+
+    // Add POI markers
+    pois.forEach(p => {
+      L.circleMarker([p.lat, p.lng], {
+        radius: 5, fillColor: '#94a3b8', color: '#475569', weight: 1, fillOpacity: 0.7
+      }).addTo(map).bindPopup(`<b>${p.name}</b><br><span style="font-size:12px;color:#666;">${p.desc}</span>`);
+    });
+
+    // Route polylines
+    const routePoints = [
+      [37.7749, -122.4194],  // SF city
+      [37.8199, -122.4783],  // Golden Gate
+      [38.5294, -122.9994],  // Armstrong/Guerneville (lunch stop)
+      [39.3077, -123.7995],  // Mendocino
+      [40.0990, -123.7936],  // Garberville
+      [41.2843, -124.0594],  // Orick
+      [41.7823, -124.0866],  // Jedediah Smith (northernmost)
+    ];
+
+    // Outbound route (north)
+    L.polyline(routePoints, {
+      color: '#f59e0b', weight: 2, opacity: 0.6, dashArray: '8 6'
+    }).addTo(map);
+
+    // Return route (south via 101 — simplified)
+    const returnRoute = [
+      [41.2843, -124.0594],  // Orick
+      [40.8021, -124.1637],  // Eureka
+      [40.0990, -123.7936],  // Garberville
+      [39.1527, -123.2066],  // Willits/101
+      [38.6105, -122.8683],  // Healdsburg
+      [37.6213, -122.3790],  // SFO
+    ];
+    L.polyline(returnRoute, {
+      color: '#ef4444', weight: 2, opacity: 0.4, dashArray: '4 8'
+    }).addTo(map);
+
+    // Timeline
+    const days = [
+      { num: 0, title: 'Arrive San Francisco', desc: 'Lufthansa 21:20 — settle into SF apartment', lat: 37.7749, lng: -122.4194, zoom: 13, color: '#ef4444', price: '€526 (2n)' },
+      { num: 1, title: 'San Francisco City', desc: 'Cable cars → Pier 39 sea lions → Exploratorium → Golden Gate', lat: 37.8080, lng: -122.4177, zoom: 13, color: '#ef4444', price: 'incl.' },
+      { num: 2, title: 'SF → Mendocino', desc: 'Muir Woods morning → Guerneville lunch → Sonoma Coast → Mendocino', lat: 39.3077, lng: -123.7995, zoom: 10, color: '#3b82f6', price: '€166' },
+      { num: 3, title: 'Mendocino → Avenue of Giants', desc: 'Glass Beach → Hwy 20 inland → Avenue of the Giants', lat: 40.0990, lng: -123.7936, zoom: 11, color: '#8b5cf6', price: '€477 (2n)' },
+      { num: 4, title: 'Avenue of the Giants', desc: 'Founders Grove → Rockefeller Forest → Drive-Thru Tree → Eel River', lat: 40.3524, lng: -123.9249, zoom: 11, color: '#8b5cf6', price: 'incl.' },
+      { num: 5, title: 'Redwood National Park', desc: 'Trinidad lunch → Fern Canyon → Elk Prairie elk herds', lat: 41.2843, lng: -124.0594, zoom: 10, color: '#10b981', price: '€376 (2n)' },
+      { num: 6, title: 'Jedediah Smith', desc: 'Stout Grove → Smith River → Trees of Mystery gondola', lat: 41.7823, lng: -124.0866, zoom: 10, color: '#10b981', price: 'incl.' },
+      { num: 7, title: 'Return to SFO', desc: '5.5h drive via 101 → depart 13:40', lat: 37.6213, lng: -122.3790, zoom: 7, color: '#ef4444', price: '' },
+    ];
+
+    const timeline = document.getElementById('timeline');
+    days.forEach(d => {
+      const card = document.createElement('div');
+      card.className = 'day-card';
+      card.style.borderLeftColor = d.color;
+      card.innerHTML = `
+        <div class="day-num" style="color:${d.color}">Day ${d.num} — ${['Sat 21','Sun 22','Mon 23','Tue 24','Wed 25','Thu 26','Fri 27','Sat 28'][d.num]} Mar</div>
+        <div class="day-title">${d.title}</div>
+        <div class="day-desc">${d.desc}</div>
+        ${d.price ? `<div class="day-price" style="color:${d.color}">${d.price}</div>` : ''}
+      `;
+      card.addEventListener('click', () => {
+        map.flyTo([d.lat, d.lng], d.zoom, { duration: 1.2 });
+        document.querySelectorAll('.day-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+      });
+      timeline.appendChild(card);
+    });
+
+    // Fit bounds to show full route
+    map.fitBounds(L.latLngBounds(routePoints.concat(returnRoute)), { padding: [60, 400, 60, 60] });
+  </script>
+</body>
+</html>
