@@ -107,11 +107,11 @@
     <h3>Budget (3 pax)</h3>
     <div class="budget-row"><span class="label">Flights AF CDG&harr;CPT (3 pax)</span><span class="value">&euro;9,500</span></div>
     <div class="budget-row"><span class="label">Domestic PLZ&rarr;CPT</span><span class="value">&euro;155</span></div>
-    <div class="budget-row"><span class="label">Accommodation (8 nights)</span><span class="value">~&euro;900</span></div>
+    <div class="budget-row"><span class="label">Accommodation (8 nights)</span><span class="value">~&euro;930</span></div>
     <div class="budget-row"><span class="label">Car rental (5 days one-way)</span><span class="value">~&euro;300</span></div>
     <div class="budget-row"><span class="label">Gas</span><span class="value">~&euro;80</span></div>
     <div class="budget-row"><span class="label">Food &amp; activities</span><span class="value">~&euro;700</span></div>
-    <div class="budget-row total"><span class="label">Total</span><span class="value">~&euro;11,635</span></div>
+    <div class="budget-row total"><span class="label">Total</span><span class="value">~&euro;11,665</span></div>
   </div>
 
   <div class="panel flights-panel">
@@ -150,157 +150,214 @@
 
     // ── Accommodation data ──────────────────────────────────────────────────────
     const bases = [
-      // Cape Town
+      // Cape Town — Booking.com hotels
       {
-        code: 'CT1', name: 'Cape Town Budget', base: 'Cape Town',
+        code: 'BK1', name: 'Atlantic Marina (Hotel)', base: 'Cape Town',
+        lat: -33.9096, lng: 18.4212,
+        dates: 'Sat-Sun 21-22 Mar (2 nights)', price: '€412', rating: '9.1/10 (2424 rev)',
+        url: 'https://www.booking.com/hotel/za/carradale-304.html',
+        color: '#ef4444', placeholder: false, source: 'booking'
+      },
+      {
+        code: 'BK2', name: 'The Portswood Hotel (Hotel)', base: 'Cape Town',
+        lat: -33.9061, lng: 18.4179,
+        dates: 'Sat-Sun 21-22 Mar (2 nights)', price: '€428', rating: '8.2/10 (513 rev)',
+        url: 'https://www.booking.com/hotel/za/the-portswood.html',
+        color: '#ef4444', placeholder: false, source: 'booking'
+      },
+      {
+        code: 'BK3', name: 'Radisson RED V&A (Hotel)', base: 'Cape Town',
+        lat: -33.9090, lng: 18.4226,
+        dates: 'Sat-Sun 21-22 Mar (2 nights)', price: '€577', rating: '8.6/10 (2351 rev)',
+        url: 'https://www.booking.com/hotel/za/radisson-red-v-a-waterfront-cape-town.html',
+        color: '#ef4444', placeholder: false, source: 'booking'
+      },
+      {
+        code: 'BK4', name: 'Victoria & Alfred Hotel (Hotel)', base: 'Cape Town',
+        lat: -33.9061, lng: 18.4201,
+        dates: 'Sat-Sun 21-22 Mar (2 nights)', price: '€720', rating: '8.5/10 (1387 rev)',
+        url: 'https://www.booking.com/hotel/za/victoria-alfred.html',
+        color: '#ef4444', placeholder: false, source: 'booking'
+      },
+      // Cape Town — Airbnb
+      {
+        code: 'CT1', name: 'Cape Town Airbnb 1', base: 'Cape Town',
+        lat: -33.920, lng: 18.415,
+        dates: 'Sat-Sun 21-22 Mar (2 nights)', price: '€162', rating: '4.61/5 (116 rev)',
+        url: 'https://www.airbnb.com/rooms/42526454?adults=2&children=1&check_in=2026-03-21&check_out=2026-03-23',
+        color: '#ef4444', placeholder: false, source: 'airbnb'
+      },
+      {
+        code: 'CT2', name: 'Cape Town Airbnb 2', base: 'Cape Town',
         lat: -33.925, lng: 18.420,
-        dates: 'Sat-Sun 21-22 Mar (2 nights)', price: '€161', rating: '4.80/5 (182 rev)',
-        url: 'https://www.airbnb.com/rooms/741981929609404169?adults=2&children=1&check_in=2026-03-21&check_out=2026-03-23',
-        color: '#ef4444', placeholder: false
+        dates: 'Sat-Sun 21-22 Mar (2 nights)', price: '€227', rating: '4.96/5 (121 rev)',
+        url: 'https://www.airbnb.com/rooms/8909586?adults=2&children=1&check_in=2026-03-21&check_out=2026-03-23',
+        color: '#ef4444', placeholder: false, source: 'airbnb'
       },
       {
-        code: 'CT2', name: 'Cape Town Value', base: 'Cape Town',
-        lat: -33.915, lng: 18.415,
-        dates: 'Sat-Sun 21-22 Mar (2 nights)', price: '€300', rating: '4.85/5 (68 rev)',
-        url: 'https://www.airbnb.com/rooms/961364437444227337?adults=2&children=1&check_in=2026-03-21&check_out=2026-03-23',
-        color: '#ef4444', placeholder: false
-      },
-      {
-        code: 'CT3', name: 'Cape Town Mid', base: 'Cape Town',
+        code: 'CT3', name: 'Cape Town Airbnb 3', base: 'Cape Town',
         lat: -33.930, lng: 18.425,
-        dates: 'Sat-Sun 21-22 Mar (2 nights)', price: '€412', rating: '4.86/5 (250 rev)',
-        url: 'https://www.airbnb.com/rooms/49434290?adults=2&children=1&check_in=2026-03-21&check_out=2026-03-23',
-        color: '#ef4444', placeholder: false
+        dates: 'Sat-Sun 21-22 Mar (2 nights)', price: '€298', rating: '4.82/5 (120 rev)',
+        url: 'https://www.airbnb.com/rooms/41038560?adults=2&children=1&check_in=2026-03-21&check_out=2026-03-23',
+        color: '#ef4444', placeholder: false, source: 'airbnb'
       },
       {
-        code: 'CT4', name: 'Cape Town Premium', base: 'Cape Town',
-        lat: -33.905, lng: 18.418,
-        dates: 'Sat-Sun 21-22 Mar (2 nights)', price: '€585', rating: '4.93/5 (30 rev)',
-        url: 'https://www.airbnb.com/rooms/30052127?adults=2&children=1&check_in=2026-03-21&check_out=2026-03-23',
-        color: '#ef4444', placeholder: false
+        code: 'CT4', name: 'Cape Town Airbnb 4', base: 'Cape Town',
+        lat: -33.915, lng: 18.418,
+        dates: 'Sat-Sun 21-22 Mar (2 nights)', price: '€375', rating: '4.96/5 (159 rev)',
+        url: 'https://www.airbnb.com/rooms/4569367?adults=2&children=1&check_in=2026-03-21&check_out=2026-03-23',
+        color: '#ef4444', placeholder: false, source: 'airbnb'
       },
       {
-        code: 'CT5', name: 'Cape Town Luxury', base: 'Cape Town',
-        lat: -33.920, lng: 18.405,
-        dates: 'Sat-Sun 21-22 Mar (2 nights)', price: '€763', rating: '4.97/5 (149 rev)',
-        url: 'https://www.airbnb.com/rooms/29322407?adults=2&children=1&check_in=2026-03-21&check_out=2026-03-23',
-        color: '#ef4444', placeholder: false
+        code: 'CT5', name: 'Cape Town Airbnb 5', base: 'Cape Town',
+        lat: -33.910, lng: 18.422,
+        dates: 'Sat-Sun 21-22 Mar (2 nights)', price: '€625', rating: '4.86/5 (85 rev)',
+        url: 'https://www.airbnb.com/rooms/43580202?adults=2&children=1&check_in=2026-03-21&check_out=2026-03-23',
+        color: '#ef4444', placeholder: false, source: 'airbnb'
       },
       // Wilderness
       {
-        code: 'W1', name: 'Wilderness Budget', base: 'Wilderness',
-        lat: -33.995, lng: 22.580,
-        dates: 'Mon 23 Mar (1 night)', price: '€60', rating: '4.77/5 (47 rev)',
-        url: 'https://www.airbnb.com/rooms/53285108?adults=2&children=1&check_in=2026-03-23&check_out=2026-03-24',
-        color: '#f59e0b', placeholder: false
+        code: 'W1', name: 'Wilderness Option 1', base: 'Wilderness',
+        lat: -33.998, lng: 22.582,
+        dates: 'Mon 23 Mar (1 night)', price: '€102', rating: '4.43/5 (7 rev)',
+        url: 'https://www.airbnb.com/rooms/34748716?adults=2&children=1&check_in=2026-03-23&check_out=2026-03-24',
+        color: '#f59e0b', placeholder: false, source: 'airbnb'
       },
       {
-        code: 'W2', name: 'Wilderness Value', base: 'Wilderness',
-        lat: -33.985, lng: 22.575,
-        dates: 'Mon 23 Mar (1 night)', price: '€115', rating: '4.84/5 (56 rev)',
-        url: 'https://www.airbnb.com/rooms/29875214?adults=2&children=1&check_in=2026-03-23&check_out=2026-03-24',
-        color: '#f59e0b', placeholder: false
-      },
-      {
-        code: 'W3', name: 'Wilderness Cosy', base: 'Wilderness',
-        lat: -34.000, lng: 22.590,
+        code: 'W2', name: 'Wilderness Option 2', base: 'Wilderness',
+        lat: -34.002, lng: 22.588,
         dates: 'Mon 23 Mar (1 night)', price: '€116', rating: '4.71/5 (21 rev)',
         url: 'https://www.airbnb.com/rooms/35123446?adults=2&children=1&check_in=2026-03-23&check_out=2026-03-24',
-        color: '#f59e0b', placeholder: false
+        color: '#f59e0b', placeholder: false, source: 'airbnb'
       },
       {
-        code: 'W4', name: 'Wilderness Top Pick', base: 'Wilderness',
-        lat: -33.990, lng: 22.565,
-        dates: 'Mon 23 Mar (1 night)', price: '€235', rating: '4.91/5 (241 rev)',
-        url: 'https://www.airbnb.com/rooms/29300468?adults=2&children=1&check_in=2026-03-23&check_out=2026-03-24',
-        color: '#f59e0b', placeholder: false
+        code: 'W3', name: 'Wilderness Option 3', base: 'Wilderness',
+        lat: -33.990, lng: 22.575,
+        dates: 'Mon 23 Mar (1 night)', price: '€120', rating: '4.91/5 (119 rev)',
+        url: 'https://www.airbnb.com/rooms/27268776?adults=2&children=1&check_in=2026-03-23&check_out=2026-03-24',
+        color: '#f59e0b', placeholder: false, source: 'airbnb'
+      },
+      {
+        code: 'W4', name: 'Wilderness Option 4', base: 'Wilderness',
+        lat: -33.995, lng: 22.570,
+        dates: 'Mon 23 Mar (1 night)', price: '€123', rating: '4.98/5 (51 rev)',
+        url: 'https://www.airbnb.com/rooms/33926652?adults=2&children=1&check_in=2026-03-23&check_out=2026-03-24',
+        color: '#f59e0b', placeholder: false, source: 'airbnb'
+      },
+      {
+        code: 'W5', name: 'Wilderness Option 5', base: 'Wilderness',
+        lat: -33.985, lng: 22.565,
+        dates: 'Mon 23 Mar (1 night)', price: '€219', rating: '4.96/5 (462 rev)',
+        url: 'https://www.airbnb.com/rooms/19832921?adults=2&children=1&check_in=2026-03-23&check_out=2026-03-24',
+        color: '#f59e0b', placeholder: false, source: 'airbnb'
       },
       // Knysna
       {
-        code: 'K1', name: 'Knysna Budget', base: 'Knysna',
-        lat: -34.045, lng: 23.050,
-        dates: 'Tue 24 Mar (1 night)', price: '€43', rating: '4.86/5 (127 rev)',
-        url: 'https://www.airbnb.com/rooms/33789619?adults=2&children=1&check_in=2026-03-24&check_out=2026-03-25',
-        color: '#3b82f6', placeholder: false
+        code: 'K1', name: 'Knysna Option 1', base: 'Knysna',
+        lat: -34.042, lng: 23.048,
+        dates: 'Tue 24 Mar (1 night)', price: '€87', rating: '4.94/5 (99 rev)',
+        url: 'https://www.airbnb.com/rooms/12525998?adults=2&children=1&check_in=2026-03-24&check_out=2026-03-25',
+        color: '#3b82f6', placeholder: false, source: 'airbnb'
       },
       {
-        code: 'K2', name: 'Knysna Value', base: 'Knysna',
-        lat: -34.035, lng: 23.045,
-        dates: 'Tue 24 Mar (1 night)', price: '€50', rating: '4.91/5 (570 rev)',
-        url: 'https://www.airbnb.com/rooms/21745934?adults=2&children=1&check_in=2026-03-24&check_out=2026-03-25',
-        color: '#3b82f6', placeholder: false
+        code: 'K2', name: 'Knysna Option 2', base: 'Knysna',
+        lat: -34.038, lng: 23.055,
+        dates: 'Tue 24 Mar (1 night)', price: '€97', rating: '4.91/5 (396 rev)',
+        url: 'https://www.airbnb.com/rooms/45232467?adults=2&children=1&check_in=2026-03-24&check_out=2026-03-25',
+        color: '#3b82f6', placeholder: false, source: 'airbnb'
       },
       {
-        code: 'K3', name: 'Knysna Mid', base: 'Knysna',
-        lat: -34.050, lng: 23.060,
-        dates: 'Tue 24 Mar (1 night)', price: '€71', rating: '4.89/5 (9 rev)',
-        url: 'https://www.airbnb.com/rooms/39592919?adults=2&children=1&check_in=2026-03-24&check_out=2026-03-25',
-        color: '#3b82f6', placeholder: false
+        code: 'K3', name: 'Knysna Option 3', base: 'Knysna',
+        lat: -34.048, lng: 23.060,
+        dates: 'Tue 24 Mar (1 night)', price: '€103', rating: '4.88/5 (57 rev)',
+        url: 'https://www.airbnb.com/rooms/43967125?adults=2&children=1&check_in=2026-03-24&check_out=2026-03-25',
+        color: '#3b82f6', placeholder: false, source: 'airbnb'
       },
       {
-        code: 'K4', name: 'Knysna Luxury', base: 'Knysna',
-        lat: -34.040, lng: 23.035,
-        dates: 'Tue 24 Mar (1 night)', price: '€288', rating: '4.90/5 (243 rev)',
-        url: 'https://www.airbnb.com/rooms/5972847?adults=2&children=1&check_in=2026-03-24&check_out=2026-03-25',
-        color: '#3b82f6', placeholder: false
+        code: 'K4', name: 'Knysna Option 4', base: 'Knysna',
+        lat: -34.044, lng: 23.040,
+        dates: 'Tue 24 Mar (1 night)', price: '€105', rating: '4.89/5 (62 rev)',
+        url: 'https://www.airbnb.com/rooms/30081864?adults=2&children=1&check_in=2026-03-24&check_out=2026-03-25',
+        color: '#3b82f6', placeholder: false, source: 'airbnb'
+      },
+      {
+        code: 'K5', name: 'Knysna Option 5', base: 'Knysna',
+        lat: -34.035, lng: 23.035,
+        dates: 'Tue 24 Mar (1 night)', price: '€138', rating: '4.91/5 (11 rev)',
+        url: 'https://www.airbnb.com/rooms/38367128?adults=2&children=1&check_in=2026-03-24&check_out=2026-03-25',
+        color: '#3b82f6', placeholder: false, source: 'airbnb'
       },
       // Plettenberg Bay
       {
-        code: 'P1', name: 'Plett Top Pick', base: 'Plettenberg Bay',
-        lat: -34.055, lng: 23.375,
-        dates: 'Wed-Thu 25-26 Mar (2 nights)', price: '€125', rating: '4.97/5 (429 rev)',
-        url: 'https://www.airbnb.com/rooms/4478230?adults=2&children=1&check_in=2026-03-25&check_out=2026-03-27',
-        color: '#8b5cf6', placeholder: false
+        code: 'P1', name: 'Plett Option 1', base: 'Plettenberg Bay',
+        lat: -34.058, lng: 23.375,
+        dates: 'Wed-Thu 25-26 Mar (2 nights)', price: '€138', rating: '4.82/5 (218 rev)',
+        url: 'https://www.airbnb.com/rooms/21871593?adults=2&children=1&check_in=2026-03-25&check_out=2026-03-27',
+        color: '#8b5cf6', placeholder: false, source: 'airbnb'
       },
       {
-        code: 'P2', name: 'Plett Value', base: 'Plettenberg Bay',
-        lat: -34.060, lng: 23.380,
-        dates: 'Wed-Thu 25-26 Mar (2 nights)', price: '€142', rating: '4.81/5 (91 rev)',
-        url: 'https://www.airbnb.com/rooms/20968700?adults=2&children=1&check_in=2026-03-25&check_out=2026-03-27',
-        color: '#8b5cf6', placeholder: false
+        code: 'P2', name: 'Plett Option 2', base: 'Plettenberg Bay',
+        lat: -34.052, lng: 23.380,
+        dates: 'Wed-Thu 25-26 Mar (2 nights)', price: '€154', rating: '4.85/5 (59 rev)',
+        url: 'https://www.airbnb.com/rooms/50493967?adults=2&children=1&check_in=2026-03-25&check_out=2026-03-27',
+        color: '#8b5cf6', placeholder: false, source: 'airbnb'
       },
       {
-        code: 'P3', name: 'Plett Mid', base: 'Plettenberg Bay',
-        lat: -34.045, lng: 23.365,
+        code: 'P3', name: 'Plett Option 3', base: 'Plettenberg Bay',
+        lat: -34.045, lng: 23.368,
         dates: 'Wed-Thu 25-26 Mar (2 nights)', price: '€194', rating: '4.65/5 (257 rev)',
         url: 'https://www.airbnb.com/rooms/11540007?adults=2&children=1&check_in=2026-03-25&check_out=2026-03-27',
-        color: '#8b5cf6', placeholder: false
+        color: '#8b5cf6', placeholder: false, source: 'airbnb'
       },
       {
-        code: 'P4', name: 'Plett Luxury', base: 'Plettenberg Bay',
-        lat: -34.055, lng: 23.392,
-        dates: 'Wed-Thu 25-26 Mar (2 nights)', price: '€305', rating: '4.96/5 (321 rev)',
-        url: 'https://www.airbnb.com/rooms/27800381?adults=2&children=1&check_in=2026-03-25&check_out=2026-03-27',
-        color: '#8b5cf6', placeholder: false
-      },
-      // Addo — placeholder listings (search required)
-      {
-        code: 'A1', name: 'Addo Lodge Option 1', base: 'Addo',
-        lat: -33.460, lng: 25.770,
-        dates: 'Fri 27 Mar (1 night)', price: '~€120', rating: 'Search Airbnb',
-        url: 'https://www.airbnb.com/s/Addo--Eastern-Cape--South-Africa/homes?adults=2&children=1&checkin=2026-03-27&checkout=2026-03-28',
-        color: '#10b981', placeholder: true
+        code: 'P4', name: 'Plett Option 4', base: 'Plettenberg Bay',
+        lat: -34.055, lng: 23.390,
+        dates: 'Wed-Thu 25-26 Mar (2 nights)', price: '€250', rating: '4.81/5 (243 rev)',
+        url: 'https://www.airbnb.com/rooms/21870604?adults=2&children=1&check_in=2026-03-25&check_out=2026-03-27',
+        color: '#8b5cf6', placeholder: false, source: 'airbnb'
       },
       {
-        code: 'A2', name: 'Addo Lodge Option 2', base: 'Addo',
-        lat: -33.455, lng: 25.780,
-        dates: 'Fri 27 Mar (1 night)', price: '~€150', rating: 'Search Airbnb',
-        url: 'https://www.airbnb.com/s/Addo--Eastern-Cape--South-Africa/homes?adults=2&children=1&checkin=2026-03-27&checkout=2026-03-28',
-        color: '#10b981', placeholder: true
+        code: 'P5', name: 'Plett Option 5', base: 'Plettenberg Bay',
+        lat: -34.060, lng: 23.395,
+        dates: 'Wed-Thu 25-26 Mar (2 nights)', price: '€257', rating: '4.86/5 (100 rev)',
+        url: 'https://www.airbnb.com/rooms/4952067?adults=2&children=1&check_in=2026-03-25&check_out=2026-03-27',
+        color: '#8b5cf6', placeholder: false, source: 'airbnb'
+      },
+      // Addo
+      {
+        code: 'A1', name: 'Addo Option 1', base: 'Addo',
+        lat: -33.470, lng: 25.770,
+        dates: 'Fri 27 Mar (1 night)', price: '€35', rating: '4.88/5 (170 rev)',
+        url: 'https://www.airbnb.com/rooms/41519933?adults=2&children=1&check_in=2026-03-27&check_out=2026-03-28',
+        color: '#10b981', placeholder: false, source: 'airbnb'
       },
       {
-        code: 'A3', name: 'Addo Lodge Option 3', base: 'Addo',
-        lat: -33.465, lng: 25.760,
-        dates: 'Fri 27 Mar (1 night)', price: '~€200', rating: 'Search Airbnb',
-        url: 'https://www.airbnb.com/s/Addo--Eastern-Cape--South-Africa/homes?adults=2&children=1&checkin=2026-03-27&checkout=2026-03-28',
-        color: '#10b981', placeholder: true
+        code: 'A2', name: 'Addo Option 2', base: 'Addo',
+        lat: -33.480, lng: 25.780,
+        dates: 'Fri 27 Mar (1 night)', price: '€74', rating: '4.58/5 (40 rev)',
+        url: 'https://www.airbnb.com/rooms/53769274?adults=2&children=1&check_in=2026-03-27&check_out=2026-03-28',
+        color: '#10b981', placeholder: false, source: 'airbnb'
       },
       {
-        code: 'A4', name: 'Addo Lodge Option 4', base: 'Addo',
-        lat: -33.450, lng: 25.775,
-        dates: 'Fri 27 Mar (1 night)', price: '~€250', rating: 'Search Airbnb',
-        url: 'https://www.airbnb.com/s/Addo--Eastern-Cape--South-Africa/homes?adults=2&children=1&checkin=2026-03-27&checkout=2026-03-28',
-        color: '#10b981', placeholder: true
+        code: 'A3', name: 'Addo Option 3', base: 'Addo',
+        lat: -33.460, lng: 25.760,
+        dates: 'Fri 27 Mar (1 night)', price: '€94', rating: '4.88/5 (16 rev)',
+        url: 'https://www.airbnb.com/rooms/29615723?adults=2&children=1&check_in=2026-03-27&check_out=2026-03-28',
+        color: '#10b981', placeholder: false, source: 'airbnb'
+      },
+      {
+        code: 'A4', name: 'Addo Option 4', base: 'Addo',
+        lat: -33.500, lng: 25.690,
+        dates: 'Fri 27 Mar (1 night)', price: '€109', rating: '4.77/5 (56 rev)',
+        url: 'https://www.airbnb.com/rooms/995316491797537990?adults=2&children=1&check_in=2026-03-27&check_out=2026-03-28',
+        color: '#10b981', placeholder: false, source: 'airbnb'
+      },
+      {
+        code: 'A5', name: 'Addo Option 5', base: 'Addo',
+        lat: -33.455, lng: 25.775,
+        dates: 'Fri 27 Mar (1 night)', price: '€170', rating: '4.92/5 (39 rev)',
+        url: 'https://www.airbnb.com/rooms/40567996?adults=2&children=1&check_in=2026-03-27&check_out=2026-03-28',
+        color: '#10b981', placeholder: false, source: 'airbnb'
       },
     ];
 
@@ -355,28 +412,16 @@
         })
       }).addTo(map);
 
-      if (b.placeholder) {
-        marker.bindPopup(`
-          <div style="font-family:-apple-system,sans-serif;min-width:220px;">
-            <div style="font-size:14px;font-weight:700;color:${b.color};margin-bottom:4px;">${b.code} \u2014 ${b.base}</div>
-            <div style="font-size:13px;font-weight:600;">${b.name}</div>
-            <div style="font-size:12px;color:#666;margin:4px 0;">${b.dates}</div>
-            <div style="font-size:14px;font-weight:700;">${b.price}</div>
-            <div style="font-size:12px;color:#f59e0b;margin-top:6px;">&#9888; Listings not scraped &mdash; search manually</div>
-            <a href="${b.url}" target="_blank" style="display:inline-block;margin-top:8px;padding:6px 12px;background:${b.color};color:#fff;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;">Search Addo on Airbnb</a>
-          </div>
-        `);
-      } else {
-        marker.bindPopup(`
-          <div style="font-family:-apple-system,sans-serif;min-width:220px;">
-            <div style="font-size:14px;font-weight:700;color:${b.color};margin-bottom:4px;">${b.code} \u2014 ${b.base}</div>
-            <div style="font-size:13px;font-weight:600;">${b.name}</div>
-            <div style="font-size:12px;color:#666;margin:4px 0;">${b.dates}</div>
-            <div style="font-size:14px;font-weight:700;">${b.price} <span style="font-weight:400;color:#666;">| ${b.rating}</span></div>
-            <a href="${b.url}" target="_blank" style="display:inline-block;margin-top:8px;padding:6px 12px;background:${b.color};color:#fff;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;">View on Airbnb</a>
-          </div>
-        `);
-      }
+      const btnLabel = b.source === 'booking' ? 'View on Booking.com' : 'View on Airbnb';
+      marker.bindPopup(`
+        <div style="font-family:-apple-system,sans-serif;min-width:220px;">
+          <div style="font-size:14px;font-weight:700;color:${b.color};margin-bottom:4px;">${b.code} \u2014 ${b.base}</div>
+          <div style="font-size:13px;font-weight:600;">${b.name}</div>
+          <div style="font-size:12px;color:#666;margin:4px 0;">${b.dates}</div>
+          <div style="font-size:14px;font-weight:700;">${b.price} <span style="font-weight:400;color:#666;">| ${b.rating}</span></div>
+          <a href="${b.url}" target="_blank" style="display:inline-block;margin-top:8px;padding:6px 12px;background:${b.color};color:#fff;border-radius:6px;text-decoration:none;font-size:12px;font-weight:600;">${btnLabel}</a>
+        </div>
+      `);
     });
 
     // ── Add POI markers ──────────────────────────────────────────────────────────
