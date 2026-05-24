@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SW Mallorca &amp; Sant Elm — Family Sailing · Sat 13 – Sat 20 June 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --bg:#08131c; --panel:rgba(12,26,38,.82); --panel-solid:#0c1a26;
+    --line:rgba(255,255,255,.10); --txt:#e7f0f6; --muted:#90a8b8;
+    --teal:#2dd4bf; --cyan:#38bdf8; --amber:#f59e0b; --purple:#a78bfa; --coral:#fb7185;
+    --good:#34d399; --anchor:#60a5fa;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt)}
+  #map{position:absolute;inset:0;z-index:1}
+  .leaflet-container{background:#08131c}
+
+  .hdr{position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:1000;
+    background:var(--panel);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border:1px solid var(--line);border-radius:14px;padding:10px 18px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+  .hdr h1{margin:0;font-size:15px;letter-spacing:.3px;font-weight:700}
+  .hdr .sub{margin-top:3px;font-size:11.5px;color:var(--muted)}
+  .hdr .sub b{color:var(--teal)}
+
+  .side{position:absolute;top:0;left:0;height:100%;width:344px;z-index:900;
+    background:linear-gradient(180deg,rgba(8,19,28,.96),rgba(8,19,28,.86));
+    border-right:1px solid var(--line);overflow-y:auto;padding:14px 14px 120px;backdrop-filter:blur(8px)}
+  .side h2{font-size:11px;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted);margin:6px 4px 10px}
+  .card{background:rgba(255,255,255,.035);border:1px solid var(--line);border-left:3px solid var(--teal);
+    border-radius:10px;padding:10px 12px;margin-bottom:9px;cursor:pointer;transition:.18s}
+  .card:hover{background:rgba(45,212,191,.10);transform:translateX(2px)}
+  .card .top{display:flex;align-items:center;gap:9px}
+  .card .num{flex:0 0 26px;height:26px;border-radius:50%;background:var(--teal);color:#04222b;font-weight:800;
+    font-size:12px;display:flex;align-items:center;justify-content:center}
+  .card .ttl{font-weight:700;font-size:13.5px}
+  .card .day{font-size:10.5px;color:var(--muted);font-weight:600}
+  .card .leg{font-size:11px;color:var(--cyan);margin-top:6px;font-weight:600}
+  .card .desc{font-size:11.5px;color:#c5d6e1;margin-top:5px;line-height:1.45}
+  .card .moor{font-size:11px;color:#bfe9e2;margin-top:7px;line-height:1.4;border-top:1px dashed rgba(45,212,191,.25);padding-top:6px}
+  .card .moor b{color:var(--teal)}
+  .card .bk{font-size:10.5px;color:var(--anchor);margin-top:4px}
+
+  .toggle{position:absolute;top:14px;left:360px;z-index:1000;background:var(--panel);border:1px solid var(--line);
+    color:var(--txt);border-radius:10px;padding:8px 11px;font-size:12px;cursor:pointer;backdrop-filter:blur(10px)}
+  .info{position:absolute;top:58px;right:14px;z-index:950;width:316px;max-height:calc(100% - 150px);overflow-y:auto;
+    background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:14px;
+    padding:14px 16px;box-shadow:0 8px 30px rgba(0,0,0,.45);font-size:12px;line-height:1.5}
+  .info h3{margin:0 0 8px;font-size:13px;color:var(--teal)}
+  .info h4{margin:14px 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+  .info .row{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px dashed rgba(255,255,255,.06)}
+  .info .row span:last-child{color:#cfe0ea;text-align:right}
+  .info .note{color:#c5d6e1;margin:4px 0}
+  .info .note b{color:var(--cyan)}
+  .warn{background:rgba(251,113,133,.10);border:1px solid rgba(251,113,133,.35);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:11px;color:#ffd7dd}
+  .warn b{color:var(--coral)}
+  .ok{background:rgba(52,211,153,.10);border:1px solid rgba(52,211,153,.35);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:11px;color:#c9f5e3}
+  .ok b{color:var(--good)}
+  .cmp{background:rgba(245,158,11,.10);border:1px solid rgba(245,158,11,.35);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:11px;color:#fde6bf}
+  .cmp b{color:var(--amber)}
+  .pill{display:inline-block;background:rgba(56,189,248,.14);border:1px solid rgba(56,189,248,.35);color:#bfe6fb;
+    border-radius:999px;padding:1px 8px;font-size:10.5px;margin:2px 3px 0 0}
+
+  .budget{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:1000;display:flex;gap:0;
+    background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:14px;
+    overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+  .budget .b{padding:8px 16px;text-align:center;border-right:1px solid var(--line)}
+  .budget .b:last-child{border-right:none;background:rgba(45,212,191,.12)}
+  .budget .lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+  .budget .val{font-size:14px;font-weight:800;margin-top:2px}
+  .budget .b:last-child .val{color:var(--teal)}
+
+  .legend{position:absolute;bottom:14px;left:360px;z-index:950;background:var(--panel);backdrop-filter:blur(12px);
+    border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:11px}
+  .legend .li{display:flex;align-items:center;gap:8px;padding:2px 0}
+  .legend .dot{width:13px;height:13px;border-radius:50%;flex:0 0 13px}
+  .legend .ring{width:13px;height:13px;border-radius:50%;flex:0 0 13px;border:2px solid var(--anchor);background:transparent}
+  .legend .ln{width:18px;height:0;border-top:3px dashed var(--cyan);flex:0 0 18px}
+
+  .mk{display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:800;
+    color:#04222b;border:2px solid rgba(255,255,255,.85);box-shadow:0 3px 8px rgba(0,0,0,.5)}
+  .mk-poi{width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.5)}
+  .mk-anc{width:13px;height:13px;border-radius:50%;border:2px solid var(--anchor);background:rgba(96,165,250,.25);box-shadow:0 2px 6px rgba(0,0,0,.5)}
+  .leaflet-popup-content-wrapper{background:var(--panel-solid);color:var(--txt);border-radius:10px;border:1px solid var(--line)}
+  .leaflet-popup-tip{background:var(--panel-solid)}
+  .pop b{color:var(--teal)} .pop .s{color:var(--muted);font-size:11px} .pop .l{color:var(--cyan);font-size:11px}
+  .pop .m{font-size:11px;color:#bfe9e2;margin-top:5px} .pop .bk{font-size:11px;color:var(--anchor);margin-top:4px}
+
+  @media (max-width:760px){
+    .side{width:100%;height:46%;top:auto;bottom:0;border-right:none;border-top:1px solid var(--line)}
+    #map{bottom:46%;inset:auto;top:0;left:0;right:0;height:54%}
+    .info,.legend,.toggle{display:none}
+    .budget{bottom:auto;top:64px}
+  }
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div class="hdr">
+  <h1>⛵ SW Mallorca &amp; Sant Elm — Family Bareboat Catamaran</h1>
+  <div class="sub"><b>Sat 13 → Sat 20 June 2026</b> · 7 nights · ~56 NM gentle loop · David, Lobke &amp; Noah (5)</div>
+</div>
+
+<button class="toggle" onclick="toggleInfo()">ℹ︎ Trip facts &amp; skipper's notes</button>
+
+<div class="info" id="info">
+  <h3>Trip at a glance</h3>
+  <div class="row"><span>Crew</span><span>2 adults + Noah (5)</span></div>
+  <div class="row"><span>Boat</span><span>4-cabin catamaran, bareboat</span></div>
+  <div class="row"><span>Skipper</span><span>David (self-skipper)</span></div>
+  <div class="row"><span>Base</span><span>Port d'Andratx (SW)</span></div>
+  <div class="row"><span>Route</span><span>SW + Bay of Palma · ~56 NM</span></div>
+  <div class="row"><span>Sailing</span><span>~2 h/day, morning legs</span></div>
+  <div class="row"><span>Fly</span><span>BRU → Palma (PMI) <b>nonstop</b></span></div>
+  <div class="row"><span>Transfer</span><span>PMI → Andratx ~35 min</span></div>
+
+  <h4>Why these dates</h4>
+  <div><span class="pill">Sat–Sat changeover</span><span class="pill">Nonstop BRU→PMI (home airport)</span><span class="pill">Back before Munich (25th)</span></div>
+
+  <h4>Before you book</h4>
+  <div class="warn"><b>Small base — book early:</b> Port d'Andratx is exclusive but has only a <b>handful of bareboat cats</b> (vs dozens at Palma). Reserve well ahead; if your week is gone, Palma (45 min away) is the fallback fleet.</div>
+  <div class="warn"><b>Licence:</b> Spain/Balearics need a recognised licence — bring the <b>original ICC</b>; one crew (Lobke) needs a <b>VHF / SRC certificate</b>. Spain accepts Belgian licences; carry all crew passports for the list.</div>
+  <div class="ok">✓ <b>Custody sorted</b> — Noah with you Sat 13–Fri 19.</div>
+  <div class="cmp">⚖︎ <b>vs the Lefkada plan (≈ €5,460):</b> ~€3,900 more (upmarket SW marinas &amp; dining) — but the <b>shortest, gentlest legs of any option</b> (~2 h/day), nonstop home-airport flights, and Sant Elm as the star. Cabrera is sacrificed — it's at the opposite end of the island.</div>
+
+  <h4>⚓ Skipper's notes</h4>
+  <div class="note"><b>Wind:</b> June = SW sea-breeze (<i>Llebeig/Garbí</i>), F2–4, building early-afternoon and dying at dusk. <b>Sail mornings</b> — the westbound leg to Sant Elm is upwind against the Llebeig if you leave it late. Rare N <b>Tramuntana</b> brings katabatic gusts off the SW hills — check the forecast.</div>
+  <div class="note"><b>Sant Elm / Sa Dragonera:</b> the beach anchorage is <b>open to W/SW swell</b> — in a Llebeig, take the sheltered <b>Cala Lladó</b> buoys on Dragonera or drop back to Port d'Andratx marina (5 NM). Dragonera is a <b>marine reserve</b> — anchoring restricted, use the buoys; landing to hike the lighthouse trails is free, no services (bring water).</div>
+  <div class="note"><b>Fuel/water:</b> Port d'Andratx base, Port Adriano, Puerto Portals &amp; Palma (Club de Mar) all have fuel + water. The coves don't.</div>
+  <div class="note"><b>Provisioning:</b> big shop in Andratx town before departure; SW resorts have small shops only; Palma = full supermarkets.</div>
+  <div class="note"><b>Marinas:</b> the SW is Mallorca's most upmarket strip — Andratx, Puerto Portals &amp; Port Adriano berths are pricey. Anchor the coves; limit marina nights to the base + Palma.</div>
+  <div class="note"><b>Forecast:</b> AEMET + Windy / Windguru. The Llebeig builds most afternoons.</div>
+  <div class="note"><b>VHF:</b> monitor <b>Ch 16</b>; marinas <b>Ch 9</b>; Salvamento Marítimo (coastguard) <b>112</b> / Ch 16.</div>
+  <div class="warn">🛟 <b>Child lifejacket:</b> charter cats rarely carry child sizes — <b>bring Noah's own</b> (CE 50/100N, crotch strap + grab handle) and pre-request one in writing. Lifejacket on whenever he's on deck or in the dinghy.</div>
+  <div class="note" style="margin-top:6px"><b>Pre-request:</b> SUP/kayak · snorkel gear · extra fenders · autopilot · full bimini &amp; sun-shade (strong June sun).</div>
+
+  <h4>Candidate catamarans (mid-June/wk)</h4>
+  <div class="row"><span>Lagoon 40 ’22 (4cab)</span><span>~€5,200–6,800</span></div>
+  <div class="row"><span>Bali 4.2 (4cab)</span><span>~€6,200–8,200</span></div>
+  <div class="row"><span>Lagoon 42 (4cab)</span><span>~€6,400–8,400</span></div>
+  <div class="row"><span>FP Astrea 42 (4cab)</span><span>~€6,800–9,000</span></div>
+  <div style="color:var(--muted);font-size:10.5px;margin-top:6px">Bases: The Charter Yard / small operators (Port d'Andratx) — tiny fleet, book early. Palma fleets (Naviera Balear, Navigare, Dream Yacht) = fallback. + extras: clean ~€350, fuel ~€300, deposit €4–5k (refundable). Marinas €70–130/night.</div>
+</div>
+
+<div class="side">
+  <h2>Day-by-day · click to fly</h2>
+  <div id="cards"></div>
+  <h2 style="margin-top:14px">Highlights &amp; backup anchorages</h2>
+  <div id="pcards"></div>
+</div>
+
+<div class="legend">
+  <div class="li"><span class="dot" style="background:var(--teal)"></span> Overnight stop</div>
+  <div class="li"><span class="dot" style="background:var(--amber)"></span> Charter base (marina)</div>
+  <div class="li"><span class="ring"></span> Backup anchorage / marina</div>
+  <div class="li"><span class="dot" style="background:var(--purple)"></span> Sight / swim waypoint</div>
+  <div class="li"><span class="dot" style="background:var(--coral)"></span> By-land / off-route extra</div>
+  <div class="li"><span class="ln"></span> Sailing route</div>
+</div>
+
+<div class="budget">
+  <div class="b"><div class="lbl">Flights</div><div class="val">€700</div></div>
+  <div class="b"><div class="lbl">Catamaran</div><div class="val">€6,500</div></div>
+  <div class="b"><div class="lbl">Boat extras</div><div class="val">€750</div></div>
+  <div class="b"><div class="lbl">Marinas</div><div class="val">€450</div></div>
+  <div class="b"><div class="lbl">Food/tapas</div><div class="val">€950</div></div>
+  <div class="b"><div class="lbl">Est. total</div><div class="val">≈ €9,350</div></div>
+</div>
+
+<script>
+const map = L.map('map',{zoomControl:true,attributionControl:false}).setView([39.53,2.50],11);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd'}).addTo(map);
+
+// --- Overnight stops (the loop) ---
+const stops = [
+  {n:1, day:"Sat 13 Jun", name:"Port d'Andratx", island:"SW Mallorca", lat:39.542, lng:2.388,
+   leg:"Embark 17:00 · provision", desc:"Land PMI 08:35, ~35-min taxi west to the marina. Board, big-shop in Andratx town, dinner around the exclusive harbour. Sheltered all-weather start.",
+   moor:"Marina berth, <b>lazy-lines</b> — the most enclosed, all-weather harbour in the SW (your bolthole all week). Water + power on the quay.",
+   bk:"Backup: anchor in the inner bay off the fish quay (busy)."},
+  {n:2, day:"Sun 14 Jun", name:"Camp de Mar", island:"SW Mallorca", lat:39.535, lng:2.425,
+   leg:"Andratx → ~7 NM · ~1.5 h", desc:"Gentle shakedown E. A pretty horseshoe cove with a tiny islet linked by a wooden footbridge to a beach restaurant — easy swimming for Noah.",
+   moor:"<b>Anchor in sand, 4–7 m</b>, good holding. Sheltered N/NE/E; <b>open to S/SW</b> swell. Day-busy — settle in by mid-afternoon.",
+   bk:"Backup: Cala Llamp (1 NM W) or back to Port d'Andratx."},
+  {n:3, day:"Mon 15 Jun", name:"Santa Ponsa", island:"SW Mallorca", lat:39.508, lng:2.470,
+   leg:"→ ~6 NM · ~1.5 h", desc:"Wide sandy bay with shallow turquoise water — Mallorca's most kid-friendly anchorage. Long beach, easy dinghy landing, gelato ashore.",
+   moor:"<b>Anchor in sand, 3–6 m</b>, excellent holding (mind the swim-zone buoys). Good shelter N/NW; rolly in S/SW. Lots of room.",
+   bk:"Backup: Port Adriano marina (El Toro, 2 NM E, all-weather)."},
+  {n:4, day:"Tue 16 Jun", name:"Palma — Club de Mar", island:"Bay of Palma", lat:39.563, lng:2.628,
+   leg:"→ ~12 NM · ~2.5 h (via El Toro)", desc:"The city night. Berth under the cathedral, walk La Seu &amp; the old town, tapas off the boat. The eastern turn-around — biggest 'wow' for the grown-ups.",
+   moor:"<b>Marina berth, lazy-lines</b> — fully sheltered, full services. Book ahead (busy). Or anchor off Illetes/Cala Major just W if you'd rather swim.",
+   bk:"Backup: Real Club Náutico de Palma, or Puerto Portals (glam) 6 NM W."},
+  {n:5, day:"Wed 17 Jun", name:"Cala Portals Vells", island:"SW Bay of Palma", lat:39.470, lng:2.530,
+   leg:"→ ~10 NM · ~2 h W", desc:"Back out of the bay to the cliff-backed sea caves (Cova de la Mare de Déu) and clear turquoise water. Swim, snorkel, paddle the SUP into the caves.",
+   moor:"<b>Anchor in sand, 4–8 m</b>, excellent holding. Sheltered N/NW/E; <b>open to S/SW</b>. Arrive by 14:00 for space.",
+   bk:"Backup: Port Adriano marina (El Toro, all-weather) just N."},
+  {n:6, day:"Thu 18 Jun", name:"Sant Elm / Sa Dragonera", island:"Far SW tip", lat:39.578, lng:2.350,
+   leg:"→ ~16 NM · ~3.5 h W (morning leg)", desc:"The star. Round the SW corner to the low-key village facing the wild Sa Dragonera reserve. Anchor off the beach; dinghy across to hike the island's lighthouse trails &amp; snorkel.",
+   moor:"<b>Anchor off Sant Elm in sand, 4–8 m</b> (settled weather) — open to W/SW. In any Llebeig take the <b>Cala Lladó buoys</b> on Dragonera (sheltered) instead.",
+   bk:"Backup: Cala Lladó buoys (Dragonera) or Port d'Andratx (5 NM)."},
+  {n:7, day:"Fri 19 Jun", name:"Sant Elm — layover", island:"Sa Dragonera", lat:39.578, lng:2.350,
+   leg:"Layover · 0 NM", desc:"A full day to do the star justice — Dragonera reserve hike to the Far de Tramuntana lighthouse, snorkel the clear coves, kayak, a last sunset off Sant Elm. Finish on a high, 5 NM from base.",
+   moor:"Stay on the same <b>anchor / Cala Lladó buoy</b>. Pre-clean &amp; pack tonight for the short morning hand-back.",
+   bk:"Drop to Port d'Andratx marina tonight if the Llebeig is up."},
+  {n:8, day:"Sat 20 Jun", name:"→ Port d'Andratx", island:"Disembark", lat:39.542, lng:2.388,
+   leg:"→ ~5 NM · ~1 h · hand back by 09:00", desc:"Short calm morning hop round the headland. Refuel at the dock, hand back, taxi to PMI. Fly home BRU, then on to ESGE Munich.",
+   moor:"Marina hand-back — top up fuel before handover; be alongside by 09:00.",
+   bk:""}
+];
+
+// --- POIs / highlights ---
+const pois = [
+  {name:"Sa Dragonera lighthouse", t:"Far de Tramuntana — hike the reserve's trails for cliff &amp; sea views (Day 6–7)", lat:39.575, lng:2.310, c:"var(--purple)"},
+  {name:"Portals Vells sea caves", t:"Cova de la Mare de Déu — chapel carved in the cliff, snorkel &amp; SUP in (Day 5)", lat:39.469, lng:2.531, c:"var(--purple)"},
+  {name:"Palma Cathedral (La Seu)", t:"Walk the old town &amp; cathedral on the city night (Day 4)", lat:39.567, lng:2.649, c:"var(--purple)"},
+  {name:"Puerto Portals", t:"Glam marina — celeb-spotting &amp; dining, all-weather Palma-approach bolthole", lat:39.532, lng:2.580, c:"var(--purple)"},
+  {name:"Valldemossa / Deià", t:"Tramuntana mountain villages — visit by LAND from Andratx (pre/post charter)", lat:39.711, lng:2.622, c:"var(--coral)"},
+  {name:"Sa Calobra / Torrent de Pareis", t:"Dramatic NW gorge — by LAND; too exposed to sail to with a 5-yr-old", lat:39.851, lng:2.797, c:"var(--coral)"}
+];
+
+// --- Backup anchorages / all-weather boltholes ---
+const anchorages = [
+  {name:"Cala Lladó (Sa Dragonera)", t:"Sheltered reserve buoys — the all-weather alternative to Sant Elm beach", lat:39.585, lng:2.328},
+  {name:"Port Adriano (El Toro)", t:"Norman Foster marina — central all-weather bolthole (Santa Ponsa / Portals Vells)", lat:39.483, lng:2.498},
+  {name:"Puerto Portals", t:"Glam all-weather marina — Palma-approach backup", lat:39.532, lng:2.580},
+  {name:"Cala Llamp", t:"Rocky cove just W of Port d'Andratx — quick Camp de Mar alternative", lat:39.539, lng:2.398},
+  {name:"Real Club Náutico de Palma", t:"All-weather city berth — Club de Mar backup", lat:39.566, lng:2.633}
+];
+
+// route polyline through the loop (Sant Elm layover de-duped)
+const route = [[39.542,2.388],[39.535,2.425],[39.508,2.470],[39.563,2.628],[39.470,2.530],[39.578,2.350],[39.542,2.388]];
+L.polyline(route,{color:'#38bdf8',weight:3,dashArray:'8,8',opacity:.9}).addTo(map);
+
+function stopIcon(n,base){
+  const col = base ? 'var(--amber)' : 'var(--teal)';
+  return L.divIcon({className:'',html:`<div class="mk" style="width:30px;height:30px;background:${col};font-size:13px">${base?'⚓':n}</div>`,iconSize:[30,30],iconAnchor:[15,15]});
+}
+function poiIcon(c){return L.divIcon({className:'',html:`<div class="mk-poi" style="background:${c}"></div>`,iconSize:[14,14],iconAnchor:[7,7]});}
+function ancIcon(){return L.divIcon({className:'',html:`<div class="mk-anc"></div>`,iconSize:[13,13],iconAnchor:[7,7]});}
+
+const markers=[];
+stops.forEach((s,i)=>{
+  const base = (s.n===1);
+  const m=L.marker([s.lat,s.lng],{icon:stopIcon(s.n,base)}).addTo(map);
+  m.bindPopup(`<div class="pop"><b>${base?'⚓ ':'Night '+s.n+' · '}${s.name}</b><br><span class="s">${s.island} · ${s.day}</span><br><span class="l">${s.leg}</span><div style="margin-top:5px">${s.desc}</div><div class="m">⚓ ${s.moor}</div>${s.bk?`<div class="bk">↳ ${s.bk}</div>`:''}</div>`,{maxWidth:280});
+  markers[i]=m;
+});
+pois.forEach(p=>{
+  L.marker([p.lat,p.lng],{icon:poiIcon(p.c)}).addTo(map)
+   .bindPopup(`<div class="pop"><b>${p.name}</b><div style="margin-top:4px">${p.t}</div></div>`,{maxWidth:240});
+});
+anchorages.forEach(a=>{
+  L.marker([a.lat,a.lng],{icon:ancIcon()}).addTo(map)
+   .bindPopup(`<div class="pop"><b style="color:var(--anchor)">⚓ ${a.name}</b><div style="margin-top:4px">${a.t}</div></div>`,{maxWidth:240});
+});
+
+// sidebar day cards
+const cw=document.getElementById('cards');
+stops.forEach((s,i)=>{
+  const d=document.createElement('div');d.className='card';
+  d.innerHTML=`<div class="top"><div class="num" style="${s.n===1?'background:var(--amber)':''}">${s.n===1?'⚓':s.n}</div>
+    <div><div class="ttl">${s.name}</div><div class="day">${s.island} · ${s.day}</div></div></div>
+    <div class="leg">${s.leg}</div><div class="desc">${s.desc}</div>
+    <div class="moor">⚓ ${s.moor}</div>${s.bk?`<div class="bk">↳ ${s.bk}</div>`:''}`;
+  d.onclick=()=>{map.flyTo([s.lat,s.lng],13,{duration:1.1});markers[i].openPopup();};
+  cw.appendChild(d);
+});
+// highlight + anchorage cards
+const pw=document.getElementById('pcards');
+pois.forEach(p=>{
+  const d=document.createElement('div');d.className='card';d.style.borderLeftColor=p.c;
+  d.innerHTML=`<div class="ttl" style="font-size:12.5px">${p.name}</div><div class="desc">${p.t}</div>`;
+  d.onclick=()=>map.flyTo([p.lat,p.lng],13,{duration:1.1});
+  pw.appendChild(d);
+});
+anchorages.forEach(a=>{
+  const d=document.createElement('div');d.className='card';d.style.borderLeftColor='var(--anchor)';
+  d.innerHTML=`<div class="ttl" style="font-size:12.5px;color:var(--anchor)">⚓ ${a.name}</div><div class="desc">${a.t}</div>`;
+  d.onclick=()=>map.flyTo([a.lat,a.lng],13,{duration:1.1});
+  pw.appendChild(d);
+});
+
+function toggleInfo(){const e=document.getElementById('info');e.style.display=(e.style.display==='none')?'block':'none';}
+
+map.fitBounds(L.latLngBounds(route).pad(0.2));
+</script>
+</body>
+</html>
