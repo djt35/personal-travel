@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Garden Route — Weather Go / No-Go Matrix — Thu 24 – Sun 27 Sep 2026</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="weather-data.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e5e5e5; }
+    #map { width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 1; }
+    .panel {
+      position: fixed; z-index: 1000;
+      background: rgba(15, 15, 15, 0.88);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px; padding: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    .left-col { position: fixed; z-index: 1000; top: 16px; left: 16px; bottom: 16px; width: 400px; display: flex; flex-direction: column; gap: 12px; pointer-events: none; }
+    .left-col .panel { position: static; pointer-events: auto; }
+    .title-panel { flex: none; }
+    .title-panel h1 { font-size: 18px; font-weight: 700; color: #fff; }
+    .title-panel .subtitle { font-size: 12px; color: #a3a3a3; margin-top: 2px; }
+    .slot-bar { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 10px; }
+    .slot-btn {
+      font-size: 11px; font-weight: 600; padding: 5px 8px; border-radius: 8px;
+      background: rgba(255,255,255,0.06); color: #d4d4d4; border: 1px solid rgba(255,255,255,0.1); cursor: pointer;
+    }
+    .slot-btn.active { background: #fff; color: #111; }
+
+    .plan-panel { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+    .plan-panel h2, .matrix-panel h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .6px; color: #a3a3a3; margin: 4px 0 8px; }
+    .day-card { padding: 10px 12px; margin-bottom: 8px; border-radius: 10px; border-left: 4px solid; background: rgba(255,255,255,0.03); cursor: pointer; }
+    .day-card:hover { background: rgba(255,255,255,0.07); }
+    .day-card .d { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+    .day-card .t { font-size: 14px; font-weight: 600; color: #fff; margin: 2px 0; }
+    .day-card .x { font-size: 12px; color: #bdbdbd; line-height: 1.45; }
+    .day-card .x b { color: #fff; }
+    .note { font-size: 11px; color: #8a8a8a; line-height: 1.5; margin-top: 10px; }
+    .note a { color: #7dd3fc; }
+
+    .matrix-panel { top: 16px; right: 16px; width: 560px; max-height: calc(100vh - 32px); overflow: auto; }
+    table.mx { border-collapse: separate; border-spacing: 2px; width: 100%; font-size: 11px; }
+    table.mx th { color: #a3a3a3; font-weight: 600; padding: 3px 2px; text-align: center; }
+    table.mx th.l, table.mx td.l { text-align: left; }
+    table.mx td { padding: 4px 3px; text-align: center; border-radius: 5px; cursor: pointer; white-space: nowrap; }
+    table.mx td.l { color: #e5e5e5; padding-left: 4px; }
+    table.mx td.l .k { display: inline-block; width: 22px; font-weight: 700; color: #fff; }
+    table.mx td.l .kind { color: #737373; font-size: 10px; }
+    table.mx tr.grp td { color: #737373; font-size: 10px; text-transform: uppercase; letter-spacing: .6px; padding-top: 8px; cursor: default; }
+    table.mx td.sel { outline: 2px solid #fff; }
+    .v-go { background: rgba(16,185,129,0.75); color: #03140d; }
+    .v-caution { background: rgba(245,158,11,0.8); color: #1a1003; }
+    .v-avoid { background: rgba(239,68,68,0.8); color: #fff; }
+    .v-na { background: rgba(255,255,255,0.05); color: #666; }
+    .cell-sub { display: block; font-size: 9px; opacity: .8; }
+    .legend { display: flex; gap: 10px; flex-wrap: wrap; font-size: 11px; margin: 6px 0 8px; color: #bdbdbd; }
+    .legend span i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+
+    .spot-label { background: none; border: none; box-shadow: none; color: #111; font-weight: 800; font-size: 11px; }
+    .leaflet-popup-content-wrapper { background: rgba(20,20,20,0.96); color: #e5e5e5; border-radius: 12px; }
+    .leaflet-popup-tip { background: rgba(20,20,20,0.96); }
+    .leaflet-popup-content { margin: 12px 14px; min-width: 320px; }
+    .pp h3 { font-size: 14px; color: #fff; }
+    .pp .meta { font-size: 11px; color: #a3a3a3; margin-bottom: 6px; }
+    .pp .verdict { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; margin: 4px 0; }
+    .pp ul { font-size: 11px; color: #d4d4d4; margin: 4px 0 6px 16px; }
+    .pp table { width: 100%; font-size: 11px; border-collapse: collapse; }
+    .pp th, .pp td { padding: 2px 4px; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .pp th:first-child, .pp td:first-child { text-align: left; }
+    .pp .ens { font-size: 11px; color: #d4d4d4; margin-top: 6px; }
+
+    @media (max-width: 1100px) {
+      .matrix-panel { top: auto; bottom: 16px; right: 16px; left: 16px; width: auto; max-height: 45vh; }
+      .left-col { bottom: calc(45vh + 28px); }
+    }
+    @media (max-width: 700px) {
+      .left-col { width: calc(100vw - 32px); }
+      .plan-panel { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+
+<div class="left-col">
+<div class="panel title-panel">
+  <h1>Garden Route — Weather Go / No-Go</h1>
+  <div class="subtitle">Thu 24 – Sun 27 Sep 2026 · Plett base · 7 models + ECMWF 51-member ensemble + yr.no + sea state</div>
+  <div class="subtitle" id="fetched"></div>
+  <div class="slot-bar" id="slotBar"></div>
+</div>
+
+<div class="panel plan-panel">
+  <h2>What to do each day</h2>
+  <div id="plan"></div>
+  <div class="note">
+    <b>How the colours are set</b> (per half-day, 07–13h / 13–19h): the middle (median) rainfall across all models, how many models expect rain, thunder flags,
+    gusts and waves for exposed spots, and the ECMWF ensemble's chance of a &gt;10 mm day. Gravel passes turn red on any wet day <i>and the day after</i>.
+    Spots are colour-coded by activity, so a drizzly forest walk can be amber while a cliff hike next to it is red.<br><br>
+    <b>Confidence:</b> Thu–Fri high (all models agree). Sat–Sun medium — models all see a front on Sat but disagree on how much rain (ECMWF ~20–45 mm vs ICON ~0).
+    The weather service issues impact warnings 1–3 days out — re-check <b>Tue 22 / Wed 23</b>: <code>python3 fetch_weather.py</code>, then reload.<br><br>
+    Official: <a href="https://www.weathersa.co.za/home/warnings" target="_blank">SAWS warnings</a> ·
+    <a href="https://www.gardenroute.gov.za/category/severe-weather-alert/" target="_blank">Garden Route District alerts</a> ·
+    <a href="https://www.sanparks.org/parks/garden-route" target="_blank">SANParks Garden Route</a> ·
+    <a href="https://www.capenature.co.za/reserves/robberg-nature-reserve" target="_blank">Robberg (CapeNature)</a>
+  </div>
+</div>
+</div>
+
+<div class="panel matrix-panel">
+  <h2>Location × half-day matrix</h2>
+  <div class="legend">
+    <span><i class="v-go"></i>Go</span><span><i class="v-caution"></i>Caution / plan B ready</span><span><i class="v-avoid"></i>Avoid</span>
+    <span style="color:#8a8a8a">Cell = median rain mm · click for per-model detail</span>
+  </div>
+  <table class="mx" id="matrix"></table>
+</div>
+
+<script>
+const W = window.WEATHER;
+const DAY_NAME = { "2026-09-24": "Thu 24", "2026-09-25": "Fri 25", "2026-09-26": "Sat 26", "2026-09-27": "Sun 27" };
+const KIND_LABEL = { beach: "beach/coast", "coast-hike": "exposed coastal hike", forest: "forest walk", inland: "inland drive",
+  pass: "mountain pass / gorge", indoor: "indoor / caves", wildlife: "game drive", town: "town / airport" };
+const GROUPS = [
+  ["West + airports", ["CT", "MB", "GE"]],
+  ["Lakes + Knysna", ["WI", "SE", "KN", "KF"]],
+  ["Plett + Tsitsikamma", ["PB", "RO", "NV", "BK", "SR"]],
+  ["East (long day trips)", ["JB", "AD"]],
+  ["Inland Klein Karoo / passes", ["UN", "DR", "OU", "PA", "CD"]],
+];
+const SPOTS = Object.fromEntries(W.spots.map(s => [s.code, s]));
+const median = a => { if (!a.length) return null; const b = [...a].sort((x, y) => x - y); const m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; };
+const RANK = { go: 0, caution: 1, avoid: 2 };
+const worse = (a, b) => (RANK[b] > RANK[a] ? b : a);
+
+function assess(spot, day, slot) {
+  const rec = spot.days[day], sl = rec.slots[slot];
+  const ms = Object.values(sl.models);
+  if (!ms.length) return { v: "na", reasons: ["no data"], rain: null };
+  const rains = ms.map(m => m.rain);
+  const rain = median(rains);
+  const wetShare = rains.filter(r => r >= 1).length / rains.length;
+  const thunderN = ms.filter(m => m.thunder).length;
+  const gusts = ms.map(m => m.gust).filter(g => g != null);
+  const gust = gusts.length ? median(gusts) : 0;
+  const gustHi = gusts.length ? Math.max(...gusts) : 0;
+  const p10 = rec.ens.p10 ?? 0;
+  const reasons = [];
+  let v = "go";
+  const k = spot.kind;
+  const avoidMm = k === "forest" ? 6 : k === "wildlife" || k === "town" ? 8 : k === "indoor" ? 999 : 4;
+
+  if (rain >= avoidMm || (wetShare >= 0.6 && rain >= avoidMm / 2)) { v = "avoid"; reasons.push(`wet: median ${rain.toFixed(1)} mm, ${Math.round(wetShare * 100)}% of models ≥1 mm`); }
+  else if (rain >= 1 || wetShare >= 0.35) { v = worse(v, "caution"); reasons.push(`showers: median ${rain.toFixed(1)} mm, ${Math.round(wetShare * 100)}% of models ≥1 mm`); }
+  if (thunderN >= 2) { v = worse(v, k === "coast-hike" || k === "pass" ? "avoid" : "caution"); reasons.push(`thunder in ${thunderN} models`); }
+  else if (thunderN === 1) reasons.push("thunder in 1 model (low confidence)");
+  if (p10 >= 50 && k !== "indoor") { v = worse(v, "caution"); reasons.push(`ensemble: ${p10}% chance of >10 mm today`); }
+
+  if (spot.exposed) {
+    if (gust >= 60) { v = "avoid"; reasons.push(`gusts ~${Math.round(gust)} km/h`); }
+    else if (gust >= 45 || gustHi >= 60) { v = worse(v, "caution"); reasons.push(`gusts to ${Math.round(gustHi)} km/h`); }
+    if (sl.wave != null && sl.wave >= 3) { v = worse(v, k === "coast-hike" ? "avoid" : "caution"); reasons.push(`waves ${sl.wave} m`); }
+    else if (sl.wave != null && sl.wave >= 2.3 && k === "coast-hike") { v = worse(v, "caution"); reasons.push(`swell ${sl.wave} m — rock shelves/Robberg gap wet`); }
+  }
+  if (spot.code === "BK") {
+    if (thunderN >= 2 || gust >= 45) { v = "avoid"; reasons.push("bungee stops in lightning / high wind"); }
+    else if (thunderN === 1 || gustHi >= 50) { v = worse(v, "caution"); reasons.push("bungee: phone ahead — may pause for wind/lightning"); }
+  }
+  if (k === "pass") {
+    const i = W.days.indexOf(day);
+    const prev = i > 0 ? spot.days[W.days[i - 1]].ens.p10 : 0;
+    if (p10 >= 40 || rain >= 2) { v = "avoid"; reasons.push("gravel/gorge road in rain — slick, rockfall, drifts"); }
+    else if (prev >= 50) { v = worse(v, "caution"); reasons.push("day after heavy rain — check road status"); }
+  }
+  if (k === "indoor") {
+    if (v === "avoid") v = "caution";
+    reasons.push("caves are rain-proof — the risk is the drive over Outeniqua/Robinson pass");
+  }
+  if (!reasons.length) reasons.push("dry, light wind across models");
+  return { v, reasons, rain, gust: gustHi, p10, wave: sl.wave };
+}
+
+function dayVerdict(spot, day) {
+  const a = assess(spot, day, "AM"), b = assess(spot, day, "PM");
+  return { v: worse(a.v, b.v), rain: (a.rain ?? 0) + (b.rain ?? 0), am: a, pm: b };
+}
+
+// ---------- slot selector ----------
+const SLOT_KEYS = [];
+W.days.forEach(d => { SLOT_KEYS.push([d, "DAY"]); W.slots.forEach(s => SLOT_KEYS.push([d, s])); });
+let current = ["2026-09-24", "DAY"];
+const bar = document.getElementById("slotBar");
+W.days.forEach(d => {
+  ["DAY", ...W.slots].forEach(s => {
+    const b = document.createElement("button");
+    b.className = "slot-btn"; b.dataset.key = d + "|" + s;
+    b.textContent = s === "DAY" ? DAY_NAME[d] : s;
+    b.onclick = () => select(d, s);
+    bar.appendChild(b);
+  });
+});
+document.getElementById("fetched").textContent = "Forecast fetched " + W.fetched.replace("T", " ").replace("+00:00", " UTC");
+
+// ---------- map ----------
+const map = L.map("map", { zoomControl: false }).setView([-33.75, 23.0], 8);
+L.control.zoom({ position: "bottomright" }).addTo(map);
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+  { attribution: "Tiles &copy; Esri", maxZoom: 16 }).addTo(map);
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}",
+  { maxZoom: 16, opacity: 0.8 }).addTo(map);
+function fitAll() {
+  const wide = window.innerWidth > 1100;
+  map.fitBounds(L.latLngBounds(W.spots.filter(s => s.code !== "CT").map(s => [s.lat, s.lon])), wide
+    ? { paddingTopLeft: [440, 30], paddingBottomRight: [600, 30] }
+    : { paddingTopLeft: [20, window.innerWidth > 700 ? 260 : 200], paddingBottomRight: [20, window.innerHeight * 0.47] });
+}
+
+const COLORS = { go: "#10b981", caution: "#f59e0b", avoid: "#ef4444", na: "#525252" };
+const markers = {};
+W.spots.forEach(s => {
+  const m = L.circleMarker([s.lat, s.lon], { radius: 15, weight: 2, color: "#fff", fillOpacity: 0.95 }).addTo(map);
+  m.bindTooltip(s.code, { permanent: true, direction: "center", className: "spot-label" });
+  m.on("click", () => m.setPopupContent(popupHtml(s)));
+  m.bindPopup("", { maxWidth: 420 });
+  markers[s.code] = m;
+});
+// base + airport rings
+L.circle([-34.05, 23.37], { radius: 6000, color: "#8b5cf6", weight: 1, dashArray: "4 4", fill: false }).addTo(map)
+  .bindTooltip("Plett base", { direction: "top" });
+// indicative drive lines from Plett
+[["KN", "30 min"], ["SR", "1 h"], ["GE", "1 h"], ["OU", "2 h via Knysna–Uniondale or George"], ["AD", "3 h"]].forEach(([c, t]) => {
+  const s = SPOTS[c];
+  L.polyline([[-34.05, 23.37], [s.lat, s.lon]], { color: "#8b5cf6", weight: 1.5, opacity: 0.5, dashArray: "6 6" })
+    .addTo(map).bindTooltip("Plett → " + s.name + ": ~" + t, { sticky: true });
+});
+
+function popupHtml(s) {
+  const [d, slot] = current;
+  const slots = slot === "DAY" ? W.slots : [slot];
+  let html = `<div class="pp"><h3>${s.code} · ${s.name}</h3><div class="meta">${KIND_LABEL[s.kind]} · ${s.note}</div>`;
+  slots.forEach(sl => {
+    const a = assess(s, d, sl);
+    html += `<div><span class="verdict v-${a.v}">${DAY_NAME[d]} ${sl}: ${a.v.toUpperCase()}</span></div><ul>${a.reasons.map(r => `<li>${r}</li>`).join("")}</ul>`;
+    const ms = s.days[d].slots[sl].models;
+    html += `<table><tr><th>Model</th><th>Rain mm</th><th>Gust km/h</th><th>°C</th><th>Rain chance %</th></tr>`;
+    Object.entries(ms).forEach(([k, m]) => {
+      html += `<tr><td>${k}${m.thunder ? " ⚡" : ""}</td><td>${m.rain}</td><td>${m.gust ?? "–"}</td><td>${m.tmin}–${m.tmax}</td><td>${m.pop ?? "–"}</td></tr>`;
+    });
+    html += `</table>`;
+    if (s.days[d].slots[sl].wave != null) html += `<div class="ens">Max wave height: <b>${s.days[d].slots[sl].wave} m</b></div>`;
+  });
+  const e = s.days[d].ens;
+  html += `<div class="ens">ECMWF ensemble, whole day (51 runs): median <b>${e.rain_med} mm</b> · P(&gt;10 mm) <b>${e.p10}%</b> · P(&gt;25 mm) <b>${e.p25}%</b> · P(gust &gt;60) <b>${e.g60}%</b></div></div>`;
+  return html;
+}
+
+// ---------- matrix ----------
+function renderMatrix() {
+  const t = document.getElementById("matrix");
+  let h = `<tr><th class="l">Spot</th>${W.days.map(d => `<th colspan="2">${DAY_NAME[d]}</th>`).join("")}</tr>`;
+  h += `<tr><th></th>${W.days.map(() => W.slots.map(s => `<th>${s}</th>`).join("")).join("")}</tr>`;
+  GROUPS.forEach(([g, codes]) => {
+    h += `<tr class="grp"><td colspan="9">${g}</td></tr>`;
+    codes.forEach(c => {
+      const s = SPOTS[c];
+      h += `<tr><td class="l" data-code="${c}"><span class="k">${c}</span>${s.name}<br><span class="kind">${KIND_LABEL[s.kind]}</span></td>`;
+      W.days.forEach(d => W.slots.forEach(sl => {
+        const a = assess(s, d, sl);
+        const sel = current[0] === d && (current[1] === sl || current[1] === "DAY") ? " sel" : "";
+        h += `<td class="v-${a.v}${sel}" data-code="${c}" data-day="${d}" data-slot="${sl}" title="${a.reasons.join(" · ")}">${a.rain == null ? "–" : a.rain.toFixed(1)}</td>`;
+      }));
+      h += `</tr>`;
+    });
+  });
+  t.innerHTML = h;
+  t.querySelectorAll("td[data-code]").forEach(td => td.onclick = () => {
+    if (td.dataset.day) select(td.dataset.day, td.dataset.slot, false);
+    const s = SPOTS[td.dataset.code];
+    map.flyTo([s.lat, s.lon], 10, { duration: 0.6 });
+    markers[s.code].setPopupContent(popupHtml(s)).openPopup();
+  });
+}
+
+function select(d, s, fly = true) {
+  current = [d, s];
+  document.querySelectorAll(".slot-btn").forEach(b => b.classList.toggle("active", b.dataset.key === d + "|" + s));
+  W.spots.forEach(sp => {
+    const v = s === "DAY" ? dayVerdict(sp, d).v : assess(sp, d, s).v;
+    markers[sp.code].setStyle({ fillColor: COLORS[v] });
+  });
+  renderMatrix();
+  if (fly) fitAll();
+}
+
+// ---------- day plan (auto-ranked from the matrix + editorial notes) ----------
+const EDITORIAL = {
+  "2026-09-24": { t: "Best day — do the exposed stuff", x: "Dry or near-dry in all 8 sources. Afternoon gusts ~50 km/h (easterly) on the coast. <b>Robberg Peninsula</b> (full loop), Knysna Heads, or the Wilderness → Sedgefield → Knysna drive into Plett. Swell ~2 m — fine for Robberg." },
+  "2026-09-25": { t: "Good morning, showery afternoon", x: "<b>Morning is dry everywhere</b> → Tsitsikamma: Storms River Mouth suspension bridge + Nature's Valley, or Bloukrans bungee early. Afternoon: showers and some thunder possible, mostly <b>inland</b> (Klein Karoo, Uniondale) — don't do Swartberg / Prince Alfred passes Friday afternoon. Very warm (up to ~30°C) before the front." },
+  "2026-09-26": { t: "Front arrives — keep it flexible", x: "Every spot is wet, <b>including inland</b>: the Klein Karoo isn't drier this time (ensemble 51–63% chance of >10 mm there too). ECMWF puts the heaviest rain <b>Saturday morning</b> around George–Knysna–Plett (15–30 mm), with gusts 50–57 km/h. The far east (Addo / J-Bay) is slightly less wet but 3 h away. Options: short forest walk (Knysna forest is sheltered), Knysna waterfront, an early move towards George. <b>Skip Robberg, the passes and any boat trip.</b>" },
+  "2026-09-27": { t: "Showers easing, cool and windy", x: "Most models: scattered light showers, 14–18°C, gustier afternoon (GFS alone keeps it wet). Cape Town mostly light rain. Passes still wet from Saturday." },
+};
+function renderPlan() {
+  const el = document.getElementById("plan");
+  el.innerHTML = W.days.map(d => {
+    const scored = W.spots.map(s => ({ s, dv: dayVerdict(s, d) }))
+      .sort((a, b) => RANK[a.dv.v] - RANK[b.dv.v] || a.dv.rain - b.dv.rain);
+    const go = scored.filter(x => x.dv.v === "go").map(x => x.s.code);
+    const avoid = scored.filter(x => x.dv.v === "avoid").map(x => x.s.code);
+    const worst = scored.reduce((w, x) => worse(w, x.dv.v), "go");
+    const col = COLORS[go.length > W.spots.length / 2 ? "go" : avoid.length > W.spots.length / 2 ? "avoid" : "caution"];
+    const e = EDITORIAL[d];
+    return `<div class="day-card" style="border-color:${col}" data-day="${d}">
+      <div class="d" style="color:${col}">${DAY_NAME[d]}</div><div class="t">${e.t}</div><div class="x">${e.x}</div>
+      <div class="x" style="margin-top:4px"><b style="color:${COLORS.go}">GO all day:</b> ${go.join(", ") || "—"}<br><b style="color:${COLORS.avoid}">AVOID:</b> ${avoid.join(", ") || "—"}</div></div>`;
+  }).join("");
+  el.querySelectorAll(".day-card").forEach(c => c.onclick = () => select(c.dataset.day, "DAY"));
+}
+
+renderPlan();
+select("2026-09-24", "DAY", false);
+fitAll();
+</script>
+</body>
+</html>
