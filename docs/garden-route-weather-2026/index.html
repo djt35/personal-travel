@@ -102,7 +102,7 @@
     <b>How the colours are set</b> (per half-day, 07–13h / 13–19h): the middle (median) rainfall across all models, how many models expect rain, thunder flags,
     gusts and waves for exposed spots, and the ECMWF ensemble's chance of a &gt;10 mm day. Gravel passes turn red on any wet day <i>and the day after</i>.
     Spots are colour-coded by activity, so a drizzly forest walk can be amber while a cliff hike next to it is red.<br><br>
-    <b>Confidence:</b> Thu–Fri high (all models agree). Sat–Sun medium — models all see a front on Sat but disagree on how much rain (ECMWF ~20–45 mm vs ICON ~0).
+    <b>Confidence:</b> Thu high (all models agree, unchanged across runs). Fri–Sat medium-high — three of four global models (ECMWF, ICON, UKMO) now agree the front arrives Fri afternoon and clears Sat afternoon; GFS is the outlier (dry Fri, wet Sat night/Sun). The 20 Sep run moved the rain ~18 h earlier than the 19 Sep run.
     The weather service issues impact warnings 1–3 days out — re-check <b>Tue 22 / Wed 23</b>: <code>python3 fetch_weather.py</code>, then reload.<br><br>
     Official: <a href="https://www.weathersa.co.za/home/warnings" target="_blank">SAWS warnings</a> ·
     <a href="https://www.gardenroute.gov.za/category/severe-weather-alert/" target="_blank">Garden Route District alerts</a> ·
@@ -299,10 +299,10 @@ function select(d, s, fly = true) {
 
 // ---------- day plan (auto-ranked from the matrix + editorial notes) ----------
 const EDITORIAL = {
-  "2026-09-24": { t: "Best day — do the exposed stuff", x: "Dry or near-dry in all 8 sources. Afternoon gusts ~50 km/h (easterly) on the coast. <b>Robberg Peninsula</b> (full loop), Knysna Heads, or the Wilderness → Sedgefield → Knysna drive into Plett. Swell ~2 m — fine for Robberg." },
-  "2026-09-25": { t: "Good morning, showery afternoon", x: "<b>Morning is dry everywhere</b> → Tsitsikamma: Storms River Mouth suspension bridge + Nature's Valley, or Bloukrans bungee early. Afternoon: showers and some thunder possible, mostly <b>inland</b> (Klein Karoo, Uniondale) — don't do Swartberg / Prince Alfred passes Friday afternoon. Very warm (up to ~30°C) before the front." },
-  "2026-09-26": { t: "Front arrives — keep it flexible", x: "Every spot is wet, <b>including inland</b>: the Klein Karoo isn't drier this time (ensemble 51–63% chance of >10 mm there too). ECMWF puts the heaviest rain <b>Saturday morning</b> around George–Knysna–Plett (15–30 mm), with gusts 50–57 km/h. The far east (Addo / J-Bay) is slightly less wet but 3 h away. Options: short forest walk (Knysna forest is sheltered), Knysna waterfront, an early move towards George. <b>Skip Robberg, the passes and any boat trip.</b>" },
-  "2026-09-27": { t: "Showers easing, cool and windy", x: "Most models: scattered light showers, 14–18°C, gustier afternoon (GFS alone keeps it wet). Cape Town mostly light rain. Passes still wet from Saturday." },
+  "2026-09-24": { t: "Best day — do the exposed stuff", x: "Dry in all 8 sources, unchanged. Afternoon easterly gusts ~50 km/h on the coast. <b>Robberg Peninsula</b> in the morning (full loop), then Knysna Heads or the Wilderness → Sedgefield → Knysna drive into Plett. Swell ~2 m — fine for Robberg." },
+  "2026-09-25": { t: "CHANGED: dry morning, front arrives after lunch", x: "The front has moved <b>a day earlier</b>. ECMWF, ICON and UKMO now all bring rain into Plett from ~13:00 (4–9 mm 13–18h, then <b>11–20 mm Friday evening/night</b>). Ensemble chance of a >10 mm day jumped from ~10% to <b>60–75%</b>. George is wetter earlier (ECMWF 8 mm by midday). GFS alone stays dry Friday. <b>Tsitsikamma / Storms River must be a morning job — be off the trail by 13:00.</b> No Nature's Valley afternoon." },
+  "2026-09-26": { t: "Wet start, clearing through the afternoon", x: "Heaviest rain now <b>overnight Fri→Sat and Saturday morning</b> (ECMWF 17 mm 00–06h, 8 mm 06–12h at Plett; George similar). <b>Afternoon dries out</b> (medians 0.6–1.1 mm) but stays very gusty: 55–58 km/h Plett/Knysna, <b>~70 km/h at Storms River</b>. Cool, 14–18°C. Sheltered forest walk or Knysna Elephant Park is a fair afternoon; no Robberg, no passes, no boats." },
+  "2026-09-27": { t: "IMPROVED: dry and calmer", x: "ECMWF, ICON and yr.no all dry; ensemble chance of >10 mm down to 12–22%. Only GFS holds rain over (it's the outlier all weekend). Easy drive to George. Cape Town: dry but a strong south-easter (gusts ~70 km/h)." },
 };
 function renderPlan() {
   const el = document.getElementById("plan");
