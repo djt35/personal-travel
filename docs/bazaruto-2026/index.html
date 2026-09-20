@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bazaruto Archipelago — Thu 24 – Sun 27 Sep 2026</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e5e5e5; }
+    #map { width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 1; }
+    .panel { position: fixed; z-index: 1000; background: rgba(15,15,15,0.88); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+    .left { top: 16px; left: 16px; width: 400px; max-height: calc(100vh - 32px); overflow-y: auto; }
+    h1 { font-size: 18px; color: #fff; }
+    .sub { font-size: 12px; color: #a3a3a3; margin: 2px 0 10px; }
+    h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .6px; color: #a3a3a3; margin: 12px 0 6px; }
+    .wx { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+    .wx div { background: rgba(16,185,129,0.18); border: 1px solid rgba(16,185,129,0.5); border-radius: 8px; padding: 6px; font-size: 11px; text-align: center; }
+    .wx b { display: block; color: #fff; font-size: 12px; }
+    .day { padding: 8px 10px; margin-bottom: 6px; border-left: 3px solid #06b6d4; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 12px; color: #d4d4d4; line-height: 1.45; }
+    .day b { color: #fff; }
+    .warn { border-left-color: #f59e0b; }
+    .right { top: 16px; right: 16px; width: 520px; max-height: calc(100vh - 32px); overflow-y: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th { color: #a3a3a3; text-align: left; padding: 4px 3px; font-weight: 600; }
+    td { padding: 5px 3px; border-top: 1px solid rgba(255,255,255,0.06); vertical-align: top; cursor: pointer; }
+    tr:hover td { background: rgba(255,255,255,0.05); }
+    .code { display: inline-block; width: 26px; height: 26px; border-radius: 50%; color: #111; font-weight: 800; font-size: 11px; text-align: center; line-height: 26px; }
+    .pick { background: #10b981; } .island { background: #06b6d4; } .main { background: #8b5cf6; color: #fff; } .poi { background: #f59e0b; }
+    .note { font-size: 11px; color: #8a8a8a; line-height: 1.5; margin-top: 10px; }
+    .note a { color: #7dd3fc; }
+    .lbl { background: none; border: none; box-shadow: none; color: #111; font-weight: 800; font-size: 11px; }
+    .leaflet-popup-content-wrapper { background: rgba(20,20,20,0.96); color: #e5e5e5; border-radius: 12px; }
+    .leaflet-popup-tip { background: rgba(20,20,20,0.96); }
+    .leaflet-popup-content { font-size: 12px; line-height: 1.45; }
+    @media (max-width: 1000px) { .right { top: auto; bottom: 16px; left: 16px; width: auto; max-height: 45vh; } .left { max-height: 50vh; width: calc(100vw - 32px); } }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+
+<div class="panel left">
+  <h1>Bazaruto Archipelago — 3 nights</h1>
+  <div class="sub">Thu 24 – Sun 27 Sep 2026 · solo · CPT → JNB → Vilanculos, boat to the island</div>
+  <h2>Forecast (20 Sep run) — dry, warm, light trade wind</h2>
+  <div class="wx">
+    <div><b>Thu</b>0 mm · 10 h sun<br>21–27°</div>
+    <div><b>Fri</b>0 mm · 9.3 h sun<br>20–26°</div>
+    <div><b>Sat</b>0 mm · 10.2 h sun<br>19–26°</div>
+    <div><b>Sun</b>0 mm · 9.7 h sun<br>21–29°</div>
+  </div>
+  <h2>Schedule</h2>
+  <div class="day"><b>Thu</b> · ~06:30 CPT→JNB · <b>11:15 Airlink 4Z260 → Vilanculos 12:50</b> · ETA + $10 at immigration · boat 30 min / heli 10 min · 14:30 lodge · sunset dhow</div>
+  <div class="day"><b>Fri</b> · 09:00 Two Mile Reef dive/snorkel · 15:00 horse ride on the beach · sundowner on the dunes</div>
+  <div class="day"><b>Sat</b> · castaway picnic on a sandbank + dugong channel by boat · second dive or nothing · humpbacks off the deck</div>
+  <div class="day"><b>Sun</b> · 10:30 boat to Vilanculos · <b>13:30 4Z261 → JNB 15:15</b> · JNB→CPT ~17:00 → 19:10 · 23:00 flight home</div>
+  <h2>Dangerous?</h2>
+  <div class="day warn"><b>Security: no.</b> FCDO (20 Aug 2026) restricts only Cabo Delgado + parts of Nampula/Niassa, 1,300 km north. Inhambane/Vilanculos/Bazaruto unrestricted; petty theft in town only.<br>
+  <b>Health: yes, plan for it.</b> Malaria risk HIGH year-round → <b>Malarone</b> from the day before + 7 days after. Bottled water (2026 cholera outbreak elsewhere). Dive/snorkel with the lodge — strong channel currents.</div>
+  <div class="note">
+    <b>ETA required</b> even for UK/Belgian passports: evisa.gov.mz, 650 MZN, apply ≥48 h ahead — <b>Monday</b>.<br><br>
+    <a href="https://github.com/djt35/personal-travel/blob/main/docs/bazaruto-2026/plan.md" target="_blank">Full plan, flights, booking order →</a> ·
+    <a href="https://www.gov.uk/foreign-travel-advice/mozambique" target="_blank">FCDO</a> ·
+    <a href="https://travelhealthpro.org.uk/country/155/mozambique" target="_blank">NaTHNaC</a>
+  </div>
+</div>
+
+<div class="panel right">
+  <h2 style="margin-top:0">Lodges (US$ pp/night, all-in unless noted, Sept = standard season)</h2>
+  <table id="lodges"></table>
+  <div class="note">Solo: neither &Beyond nor Azura publish a 2026 single supplement — ask. &Beyond 3 nights ≈ $3,250 + boat ~$300 + flights ~$700 ≈ <b>$4.3k</b>. Mainland version ≈ $1.5–2k with two island day trips.</div>
+</div>
+
+<script>
+const PLACES = [
+  ["B1","&Beyond Benguerra Island","pick",-21.865,35.435,"$1,080 (cabana)","THE PICK. Casinhas/cabanas with plunge pools; diving, horse riding, dhow, kayaks, castaway picnic all included; medevac included."],
+  ["B2","Azura Benguerra","island",-21.845,35.430,"$955–1,950","10 villas, butler, adults-only feel. Same beach + activities."],
+  ["B3","Kisawa Sanctuary","island",-21.885,35.455,"from €5,000/night","12 one-acre bungalows. For reference."],
+  ["A1","Anantara Bazaruto","island",-21.535,35.490,"~$1,255 per room","44 villas on the dune island; spa; activities extra."],
+  ["V1","Santorini Mozambique","main",-21.905,35.365,"~$450 pp","Cliff-top white villa on the mainland point; island day trips by dhow/speedboat."],
+  ["V2","Bahia Mar Boutique","main",-21.975,35.340,"~$241 per room","On Vilanculos beach; Bazaruto day trips ~$100–150."],
+  ["V3","Vilanculos Beach Lodge","main",-22.000,35.330,"$340 per unit B&B","Budget; free airport shuttle; dive centre adjacent."],
+  ["P1","Two Mile Reef","poi",-21.78,35.49,"","Main dive/snorkel reef between Bazaruto and Benguerra; best on morning slack."],
+  ["P2","Magaruque Island","poi",-21.96,35.43,"","Sandbank picnic / snorkel island, 20 min by boat."],
+  ["P3","Santa Carolina (Paradise Island)","poi",-21.62,35.34,"","Tiny island with the ruined 1950s hotel; snorkel, dugong channel nearby."],
+];
+const COL = { pick: "#10b981", island: "#06b6d4", main: "#8b5cf6", poi: "#f59e0b" };
+const map = L.map("map", { zoomControl: false }).setView([-21.78, 35.42], 10);
+L.control.zoom({ position: "bottomright" }).addTo(map);
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", { attribution: "Tiles &copy; Esri", maxZoom: 16 }).addTo(map);
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}", { maxZoom: 16, opacity: 0.8 }).addTo(map);
+
+const VNX = [-22.018, 35.313];
+L.circleMarker(VNX, { radius: 12, color: "#fff", weight: 2, fillColor: "#ef4444", fillOpacity: 0.95 }).addTo(map)
+  .bindTooltip("VNX", { permanent: true, direction: "center", className: "lbl" })
+  .bindPopup("<b>Vilanculos airport</b><br>Thu 12:50 in (4Z260 from JNB) · Sun 13:30 out (4Z261 to JNB)<br>Boat jetty 10 min; helipad on site");
+const markers = {}; let rows = "";
+PLACES.forEach(([c, name, kind, lat, lon, rate, note]) => {
+  const m = L.circleMarker([lat, lon], { radius: kind === "poi" ? 10 : 14, color: "#fff", weight: 2, fillColor: COL[kind], fillOpacity: 0.95 }).addTo(map)
+    .bindTooltip(c, { permanent: true, direction: "center", className: "lbl" })
+    .bindPopup(`<b>${c} · ${name}</b><br>${rate ? rate + "<br>" : ""}${note}`);
+  if (kind !== "poi" && kind !== "main") L.polyline([VNX, [lat, lon]], { color: "#fff", weight: 1, opacity: 0.35, dashArray: "4 6" }).addTo(map);
+  markers[c] = m;
+  rows += `<tr data-c="${c}"><td><span class="code ${kind}">${c}</span></td><td><b style="color:#fff">${name}</b><br><span style="color:#a3a3a3">${note}</span></td><td style="white-space:nowrap">${rate}</td></tr>`;
+});
+document.getElementById("lodges").innerHTML = `<tr><th></th><th>Place</th><th>Rate</th></tr>` + rows;
+document.querySelectorAll("tr[data-c]").forEach(tr => tr.onclick = () => { const m = markers[tr.dataset.c]; map.flyTo(m.getLatLng(), 12, { duration: 0.6 }); m.openPopup(); });
+</script>
+</body>
+</html>
