@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>West Coast beach loop — Thu 24 – Sun 27 Sep 2026</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e5e5e5; }
+    #map { width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 1; }
+    .panel { position: fixed; z-index: 1000; background: rgba(15,15,15,0.9); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+    .left { top: 16px; left: 16px; width: 400px; max-height: calc(100vh - 32px); overflow-y: auto; }
+    h1 { font-size: 18px; color: #fff; }
+    .sub { font-size: 12px; color: #a3a3a3; margin: 2px 0 10px; }
+    h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .6px; color: #a3a3a3; margin: 12px 0 6px; }
+    .day { padding: 9px 11px; margin-bottom: 6px; border-left: 4px solid; background: rgba(255,255,255,0.03); border-radius: 8px; font-size: 12px; color: #d4d4d4; line-height: 1.45; cursor: pointer; }
+    .day:hover { background: rgba(255,255,255,0.07); }
+    .day b { color: #fff; }
+    .wx { font-size: 11px; color: #a3a3a3; display: block; margin-top: 3px; }
+    .right { top: 16px; right: 16px; width: 520px; max-height: calc(100vh - 32px); overflow-y: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th { color: #a3a3a3; text-align: left; padding: 4px 3px; font-weight: 600; }
+    td { padding: 6px 3px; border-top: 1px solid rgba(255,255,255,0.06); vertical-align: top; }
+    tr:hover td { background: rgba(255,255,255,0.05); }
+    .code { display: inline-block; width: 26px; height: 26px; border-radius: 50%; color: #111; font-weight: 800; font-size: 11px; text-align: center; line-height: 26px; cursor: pointer; }
+    .book a { display: inline-block; font-size: 10px; font-weight: 600; padding: 3px 7px; border-radius: 6px; background: #7dd3fc; color: #06283a; text-decoration: none; margin: 2px 2px 0 0; }
+    .book a.site { background: rgba(255,255,255,0.12); color: #e5e5e5; }
+    .grp td { color: #737373; font-size: 10px; text-transform: uppercase; letter-spacing: .6px; padding-top: 10px; }
+    .note { font-size: 11px; color: #8a8a8a; line-height: 1.5; margin-top: 10px; }
+    .note a { color: #7dd3fc; }
+    .lbl { background: none; border: none; box-shadow: none; color: #111; font-weight: 800; font-size: 11px; }
+    .leaflet-popup-content-wrapper { background: rgba(20,20,20,0.96); color: #e5e5e5; border-radius: 12px; }
+    .leaflet-popup-tip { background: rgba(20,20,20,0.96); }
+    .leaflet-popup-content { font-size: 12px; line-height: 1.45; }
+    .leaflet-popup-content a { color: #7dd3fc; }
+    @media (max-width: 1000px) { .right { top: auto; bottom: 16px; left: 16px; width: auto; max-height: 45vh; } .left { max-height: 50vh; width: calc(100vw - 32px); } }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+
+<div class="panel left">
+  <h1>West Coast beach loop</h1>
+  <div class="sub">Thu 24 – Sun 27 Sep 2026 · two hotels, three nights · car CPT Thu 10:00 → Sun 21:00 · no wine</div>
+  <h2>Days (click to fly)</h2>
+  <div id="days"></div>
+  <div class="note">
+    Sea: Atlantic 13–15°, <b>Langebaan lagoon 18–20°</b> (the swim). Forecast 22 Sep 00Z: rain only Fri evening → small hours Sat; Sat/Sun 10+ h sun; Sun SE gusts ~47 (Atlantic beaches offshore = flat).<br><br>
+    Dinner: <a href="https://wolfgat.co.za" target="_blank">Wolfgat</a> Sat (email now) · <a href="https://www.gaaitjie.co.za" target="_blank">Gaaitjie</a> Fri · Voorstrandt crayfish lunch on the sand.<br>
+    <a href="https://github.com/djt35/personal-travel/blob/main/docs/west-coast-beach-2026/plan.md" target="_blank">Full plan + all links →</a>
+  </div>
+</div>
+
+<div class="panel right">
+  <h2 style="margin-top:0">Hotels — click a code to fly, blue button to book (dates pre-filled)</h2>
+  <table id="tbl"></table>
+</div>
+
+<script>
+const DAYS = [
+  { d: "Thu 24", col: "#f59e0b", t: "Peninsula, Atlantic side", x: "10:00 car → Kommetjie 11:00 → Long Beach walk to the Kakapo wreck → lunch Kommetjie → Chapman's Peak Drive → Slangkop lighthouse → sundowner on the sand at the hotel", wx: "dry · 22° · 10 h sun · calm", c: [-34.14, 18.33], z: 12 },
+  { d: "Fri 25", col: "#f59e0b", t: "Up the coast to Paternoster", x: "Blouberg → Yzerfontein 16-Mile Beach 10:30 → Langebaan: Kraalbaai / Preekstoel warm swim 12:00–14:30, Geelbek lunch → Paternoster 16:00, beach walk before the rain → Gaaitjie", wx: "8 h sun · ~8 mm arrives in the evening · 21°", c: [-33.1, 18.05], z: 10 },
+  { d: "Sat 26", col: "#10b981", t: "Paternoster all day", x: "Tietiesbaai + Cape Columbine → kayak / boat off the beach → crayfish lunch at Voorstrandt → Bek Bay → Wolfgat or Gaaitjie", wx: "10.5 h sun · 18° · gusts 30", c: [-32.81, 17.88], z: 13 },
+  { d: "Sun 27", col: "#10b981", t: "Langebaan lagoon → airport", x: "Last beach walk → Postberg flowers (last week) → Kraalbaai beach (west shore, out of the SE) → 16:30 leave → Bloubergstrand sunset ~18:20 → car back 21:00", wx: "dry · 10 h sun · 19° · SE gusts 47", c: [-33.15, 18.1], z: 11 },
+];
+const HOTELS = [
+  ["T1","The Last Word Long Beach — Kommetjie","#f59e0b",-34.1385,18.3245,"Thu · R5,700–6,600 B&B","6 suites on the sand, Long Beach at the door.","https://www.booking.com/hotel/za/the-last-word-long-beach.html?checkin=2026-09-24&checkout=2026-09-25","https://thelastword.co.za/welcome/long-beach","pick"],
+  ["T2","Tintswalo Boulders — Simon's Town","#f59e0b",-34.1975,18.4515,"Thu alt · R4,400–5,200 B&B","On the water at Boulders; penguins on the beach at breakfast.","https://www.booking.com/hotel/za/tintswalo-at-boulders.html?checkin=2026-09-24&checkout=2026-09-25","https://www.tintswalo.com/boulders/villa","alt"],
+  ["W1","Strandloper Ocean Boutique Hotel — Paternoster","#10b981",-32.8035,17.8865,"Fri+Sat · ~R4,000–5,500 B&B","Rooms open straight onto the beach. The pick.","https://www.booking.com/searchresults.html?ss=Strandloper+Ocean+Boutique+Hotel+Paternoster&checkin=2026-09-25&checkout=2026-09-27","https://www.strandloperocean.com/rates/","pick"],
+  ["W2","Abalone House & Villas — Paternoster","#10b981",-32.8085,17.8925,"Fri+Sat alt · ~R2,500–4,000","5★, two heated pools, sauna, spa; 2 min from the beach.","https://www.booking.com/hotel/za/abalone-house.html?checkin=2026-09-25&checkout=2026-09-27","https://www.abalonehouse.co.za","alt"],
+  ["W3","Gonana Guesthouse — Paternoster","#10b981",-32.8005,17.8835,"Fri+Sat alt · ~R2,000–3,000","Afro-Scandi design, beachfront, off-grid.","https://www.booking.com/hotel/za/gonana-guest-house.html?checkin=2026-09-25&checkout=2026-09-27","https://www.gonanaguesthouse.com","alt"],
+  ["W4","ah! Guest House — Paternoster","#10b981",-32.8065,17.8895,"Fri+Sat alt · ~R2,500–3,500","5 artist-decorated rooms, chef’s-table dinners, 2 min from the beach.","https://www.booking.com/hotel/za/ah-guest-house.html?checkin=2026-09-25&checkout=2026-09-27","https://ahguesthouse.com/book-online/","alt"],
+];
+const POIS = [
+  ["A","CPT airport",-33.969,18.602,"Car Thu 10:00 → Sun 21:00"],
+  ["P1","Long Beach + Kakapo wreck",-34.12,18.34,"8 km of sand Kommetjie → Noordhoek, Thu"],
+  ["P2","Chapman's Peak Drive",-34.09,18.36,"Thu afternoon"],
+  ["P3","Boulders Beach (penguins)",-34.197,18.452,"Thu alt; sheltered swim ~17°"],
+  ["P4","Bloubergstrand",-33.80,18.46,"Table Mountain across the bay; Fri AM + Sun sunset"],
+  ["P5","Yzerfontein 16-Mile Beach",-33.35,18.15,"Fri 10:30"],
+  ["P6","Kraalbaai / Preekstoel (lagoon)",-33.155,18.10,"Warm swim, Fri + Sun"],
+  ["P7","Postberg flowers",-33.13,18.05,"Sun; open to 30 Sep, 09–17, R220"],
+  ["P8","Geelbek",-33.19,18.12,"Lunch in the park, Fri or Sun"],
+  ["P9","Tietiesbaai + Cape Columbine",-32.828,17.848,"Sat morning"],
+  ["P10","Wolfgat / Gaaitjie / Voorstrandt",-32.808,17.888,"Dinners + crayfish lunch"],
+];
+const map = L.map("map", { zoomControl: false });
+L.control.zoom({ position: "bottomright" }).addTo(map);
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", { attribution: "Tiles &copy; Esri", maxZoom: 17 }).addTo(map);
+L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}", { maxZoom: 17, opacity: 0.85 }).addTo(map);
+const ROUTE = [[-33.969,18.602],[-34.05,18.45],[-34.1385,18.3245],[-34.09,18.36],[-33.90,18.50],[-33.80,18.46],[-33.35,18.15],[-33.155,18.10],[-32.8035,17.8865],[-32.828,17.848],[-33.13,18.05],[-33.19,18.12],[-33.80,18.46],[-33.969,18.602]];
+L.polyline(ROUTE, { color: "#7dd3fc", weight: 2.5, opacity: 0.75, dashArray: "8 6" }).addTo(map);
+const markers = {}; let rows = `<tr><th></th><th>Hotel</th><th>Book</th></tr><tr class="grp"><td colspan="3">Thursday</td></tr>`;
+HOTELS.forEach(([c, name, col, lat, lon, rate, note, bk, site, kind], i) => {
+  const m = L.circleMarker([lat, lon], { radius: kind === "pick" ? 15 : 12, color: "#fff", weight: 2, fillColor: col, fillOpacity: 0.95 }).addTo(map)
+    .bindTooltip(c, { permanent: true, direction: "center", className: "lbl" })
+    .bindPopup(`<b>${c} · ${name}</b><br>${rate}<br>${note}<br><a href="${bk}" target="_blank">Book (Booking.com)</a> · <a href="${site}" target="_blank">Hotel site</a>`);
+  markers[c] = m;
+  if (i === 2) rows += `<tr class="grp"><td colspan="3">Friday + Saturday (same hotel)</td></tr>`;
+  rows += `<tr><td><span class="code" style="background:${col}" data-c="${c}">${c}</span></td><td><b style="color:#fff">${name}</b>${kind === "pick" ? ' <span style="color:#10b981;font-weight:700">PICK</span>' : ""}<br><span style="color:#a3a3a3">${rate} · ${note}</span></td><td class="book"><a href="${bk}" target="_blank">Book</a><a class="site" href="${site}" target="_blank">Site</a></td></tr>`;
+});
+document.getElementById("tbl").innerHTML = rows;
+document.querySelectorAll(".code[data-c]").forEach(el => el.onclick = () => { const m = markers[el.dataset.c]; map.flyTo(m.getLatLng(), 14, { duration: 0.6 }); m.openPopup(); });
+POIS.forEach(([c, name, lat, lon, note]) => {
+  L.circleMarker([lat, lon], { radius: c === "A" ? 11 : 8, color: "#fff", weight: 1.5, fillColor: c === "A" ? "#ef4444" : "#8b5cf6", fillOpacity: 0.95 }).addTo(map)
+    .bindTooltip(c, { permanent: c === "A", direction: c === "A" ? "center" : "top", className: "lbl", offset: c === "A" ? [0,0] : [0,-6] })
+    .bindPopup(`<b>${c} · ${name}</b><br>${note}`);
+});
+document.getElementById("days").innerHTML = DAYS.map((d, i) => `<div class="day" style="border-color:${d.col}" data-i="${i}"><b>${d.d} · ${d.t}</b><br>${d.x}<span class="wx">${d.wx}</span></div>`).join("");
+document.querySelectorAll(".day").forEach(el => el.onclick = () => { const d = DAYS[el.dataset.i]; map.flyTo(d.c, d.z, { duration: 0.7 }); });
+map.fitBounds(L.latLngBounds(ROUTE), { paddingTopLeft: [430, 30], paddingBottomRight: [550, 30] });
+</script>
+</body>
+</html>
