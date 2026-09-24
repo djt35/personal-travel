@@ -1,7 +1,7 @@
 # Route 62 — Peninsula, Tradouw loop, two nights in Montagu · Thu 24 → Sun 27 Sep 2026
 
 Car: CPT airport Thu 10:00 → Sun 21:00. Flight 23:00.
-Forecast (23 Sep run): Thu dry, bright overcast, 20° coast / 28° inland · **Fri inland 27°, dry until ~18:00** (best day of the weekend) · Sat Montagu showers, ~10 mm, 21°, calm, no thunder → hot-springs day · **Sun inland wet + cold (5–11 mm, 11–16°), coast clear 17–21°** → leave Montagu early, finish on the coast.
+Forecast (24 Sep run): Thu dry, 21° coast / 28–29° inland · **Fri inland 25–27°, dry in 4 of 5 models** (ECMWF alone: shower 12–18h), very grey (Swellendam 1 h sun) · Sat Montagu: **morning mostly dry**, showers from ~midday, ~8 mm, 20°, calm, no thunder · **Sun inland wet till ~midday + cold (5–10 mm, 10–17°, 60–88% chance of >10 mm); coast dry, 10.7 h sun, but SE gale gusting 55–60** → leave early, finish at Clifton/Camps Bay (sheltered), not Blouberg.
 
 ## Hotels — booking links
 
@@ -25,15 +25,15 @@ Hot springs: [Avalon Springs](https://www.avalonsprings.co.za) (day visitors, ~4
 **Fri 25 — Tradouw loop to Montagu (27°, dry till evening) ~3 h 15 driving**
 08:30 leave → N2 east → **Swellendam** 10:30 (Drostdy Museum, oldest town streets, coffee at the Old Gaol) → **Tradouw Pass** (R324, 45 min of gorge) → **Barrydale** 12:30 lunch (Diesel & Crème / Ronnie's Sex Shop pub 20 min east if you must) → R62 west over the Op-de-Tradouw → **Montagu** 15:00 · check in · walk the Long Street Victorian/Cape Dutch houses · sundowner at Bluevine or the hotel · dinner Mimosa.
 
-**Sat 26 — Montagu, the wet day (showers ~10 mm, 21°, calm)**
-Lie in → **Avalon Springs** 10:00–13:00, warm pools in the rain → lunch Montagu (Bluevine / Ye Olde Tavern) → afternoon: if it clears, the **Lovers' Walk** into the kloof (2 km, 1 h) or the Cogmanskloof "Kalkoenkrans" viewpoint; if not, Montagu Museum + Joubert House, or 30 min to **McGregor** for the village and Tebaldi's → dinner in town.
+**Sat 26 — Montagu (dry morning, showers from ~midday, ~8 mm, 20°, calm)**
+08:30 **Lovers' Walk** into the kloof (2 km, 1 h) + Kalkoenkrans viewpoint while it's dry → 10:30 Long Street, Montagu Museum + Joubert House → lunch Bluevine / Ye Olde Tavern → **Avalon Springs** 14:00–17:00, warm pools in the showers → dinner in town. (McGregor, 30 min, if you want a drive.)
 
-**Sun 27 — early out, sunny finish on the coast (inland 5–11 mm, 11–16°; coast dry, 17–21°) ~2 h 45 + coast**
-08:00 breakfast → 09:00 leave via **Cogmanskloof tunnel** → **Robertson** (Graham Beck for a glass of Cap Classique at 10:00 if you want one; skip if "no wine" stands) → R60 Worcester → **Du Toitskloof Pass** (the old pass, not the tunnel, 20 min longer, views) → Paarl → N1 → **Bloubergstrand** 13:30 lunch (On the Rocks / Blowfish) with Table Mountain across the bay, beach walk in the sun · 17:00 Big Bay sunset drinks → fuel → car back **21:00** (Blouberg → airport 25 min).
-Alt Sunday afternoon: Boulders penguins + Kalk Bay instead of Blouberg (both dry; Blouberg has the view, Kalk Bay the fish).
+**Sun 27 — early out, sunny finish on the coast (inland wet till ~midday, 10–17°; coast dry, 10.7 h sun, SE gale 55–60 km/h) ~2 h 45 + coast**
+08:00 breakfast → 09:00 leave via **Cogmanskloof tunnel** → **Robertson** → R60 Worcester → **Huguenot tunnel** (the old Du Toitskloof pass will be in cloud/rain; skip it) → N1 → **Clifton / Camps Bay** 13:00: the mountain blocks the south-easter, Clifton 4th is the classic SE-day beach; lunch on the Camps Bay strip · 17:30 sunset from Maiden's Cove → fuel → car back **21:00** (Camps Bay → airport 35 min).
+Avoid on a SE gale: Blouberg (sand-blasting), Kalk Bay / False Bay (exposed), Noordhoek.
 
-Drives: airport → Kommetjie 45 min · Kommetjie → Swellendam 2 h 30 · Swellendam → Barrydale via Tradouw 55 min · Barrydale → Montagu 45 min · Montagu → Robertson 25 min · Robertson → Bloubergstrand 2 h 15 (via Du Toitskloof) · Blouberg → airport 25 min.
+Drives: airport → Kommetjie 45 min · Kommetjie → Swellendam 2 h 30 · Swellendam → Barrydale via Tradouw 55 min · Barrydale → Montagu 45 min · Montagu → Robertson 25 min · Robertson → Camps Bay 2 h 15 (Huguenot tunnel) · Camps Bay → airport 35 min.
 
 ## If the forecast moves
-- Sunday inland dries out → keep the Sunday Route 62 drive (Barrydale → Tradouw → Swellendam → N2 → airport, 3 h).
-- Friday rain arrives earlier → do the Tradouw loop first (it's dry both ways until 18:00 in all models) and skip the Swellendam stop.
+- Friday: if ECMWF's afternoon shower shows up, be through the Tradouw Pass before 13:00 (Swellendam coffee short, Barrydale lunch late).
+- Sunday: if the SE eases (<40 km/h), Blouberg is back on for the Table Mountain view.

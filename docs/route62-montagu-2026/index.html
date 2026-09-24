@@ -47,7 +47,7 @@
   <h2>Days (click to fly)</h2>
   <div id="days"></div>
   <div class="note">
-    Forecast 23 Sep: <b>Fri inland 27° and dry till ~18:00</b> — best day of the weekend. Sat Montagu showers ~10 mm, calm, no thunder → springs. <b>Sun inland 5–11 mm and 11–16°, coast dry 17–21°</b> → leave by 09:00, finish at the sea.<br><br>
+    Forecast 24 Sep: <b>Fri inland 25–27°, dry in 4 of 5 models</b> (ECMWF: shower 12–18h), grey. Sat Montagu: dry morning, showers from midday, calm, no thunder. <b>Sun inland wet till midday, 10–17°; coast dry, 10.7 h sun, SE gale 55–60</b> → leave by 09:00, finish at Clifton/Camps Bay (sheltered), not Blouberg.<br><br>
     Hot springs: <a href="https://www.avalonsprings.co.za" target="_blank">Avalon Springs</a> · <a href="https://www.montagusprings.co.za" target="_blank">Montagu Springs</a>.
     <a href="https://github.com/djt35/personal-travel/blob/main/docs/route62-montagu-2026/plan.md" target="_blank">Full plan →</a>
   </div>
@@ -62,8 +62,8 @@
 const DAYS = [
   { d: "Thu 24", col: "#f59e0b", t: "Peninsula", x: "10:00 car → Kommetjie → Long Beach walk → Chapman's Peak → Slangkop → sundowner on the sand", wx: "dry · 20° · bright overcast", c: [-34.14, 18.33], z: 12 },
   { d: "Fri 25", col: "#10b981", t: "Tradouw loop to Montagu — the good day", x: "N2 → Swellendam 10:30 (Drostdy, Old Gaol coffee) → Tradouw Pass → Barrydale lunch → R62 → Montagu 15:00 → Long Street walk → dinner Mimosa", wx: "27° · dry till ~18:00 · 6 h sun · ~3 h 15 driving", c: [-33.95, 20.5], z: 9 },
-  { d: "Sat 26", col: "#f59e0b", t: "Montagu — hot-springs day", x: "Avalon Springs 10:00–13:00 in the rain → lunch in town → Lovers' Walk into the kloof if it clears, else Montagu Museum / McGregor → dinner", wx: "showers ~10 mm · 21° · calm · no thunder", c: [-33.785, 20.12], z: 13 },
-  { d: "Sun 27", col: "#10b981", t: "Out early, sunny coast finish", x: "09:00 Cogmanskloof → Robertson → Worcester → Du Toitskloof Pass (old road) → Bloubergstrand 13:30 lunch + beach → Big Bay sunset → car back 21:00", wx: "inland 5–11 mm, 11–16° · coast dry, 17–21°, SE gusts ~50", c: [-33.75, 19.3], z: 9 },
+  { d: "Sat 26", col: "#f59e0b", t: "Montagu — kloof walk AM, springs PM", x: "08:30 Lovers' Walk into the kloof while dry → Long Street, museum → lunch → Avalon Springs 14:00–17:00 in the showers → dinner", wx: "dry AM, showers from ~12:00 · ~8 mm · 20° · calm · no thunder", c: [-33.785, 20.12], z: 13 },
+  { d: "Sun 27", col: "#10b981", t: "Out early, sunny coast finish", x: "09:00 Cogmanskloof → Robertson → Worcester → Huguenot tunnel → Clifton / Camps Bay 13:00 lunch + beach (sheltered from the SE) → Maiden's Cove sunset → car back 21:00", wx: "inland wet till midday, 10–17° · coast dry, 10.7 h sun · SE gale 55–60 — Blouberg off", c: [-33.75, 19.3], z: 9 },
 ];
 const HOTELS = [
   ["T1","The Last Word Long Beach — Kommetjie","#f59e0b",-34.1385,18.3245,"Thu · R5,700–6,600 B&B","6 suites on the sand.","https://www.booking.com/hotel/za/the-last-word-long-beach.html?checkin=2026-09-24&checkout=2026-09-25","https://thelastword.co.za/welcome/long-beach","pick"],
@@ -82,8 +82,8 @@ const POIS = [
   ["P6","Lovers' Walk / Cogmanskloof",-33.80,20.11,"Sat PM if it clears; Sun 09:00 through the tunnel"],
   ["P7","McGregor",-33.94,19.83,"Sat PM alt, 30 min: whitewashed village, Tebaldi's"],
   ["P8","Robertson",-33.80,19.89,"Sun 09:30 pass-through (Graham Beck if wine allowed)"],
-  ["P9","Du Toitskloof Pass (old road)",-33.72,19.10,"Sun, views, 20 min longer than the tunnel"],
-  ["P10","Bloubergstrand / Big Bay",-33.80,18.46,"Sun 13:30 lunch, beach, sunset; 25 min to airport"],
+  ["P9","Huguenot tunnel",-33.72,19.10,"Sun — old pass will be in cloud; take the tunnel"],
+  ["P10","Clifton / Camps Bay",-33.94,18.38,"Sun 13:00 lunch, beach out of the SE, Maiden's Cove sunset; 35 min to airport"],
 ];
 const map = L.map("map", { zoomControl: false });
 L.control.zoom({ position: "bottomright" }).addTo(map);
@@ -92,7 +92,7 @@ L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/Worl
 // Thu (amber) · Fri (green, N2 → Tradouw → R62) · Sun (blue, R60 → Du Toitskloof → Blouberg)
 L.polyline([[-33.969,18.602],[-34.05,18.45],[-34.1385,18.3245],[-34.09,18.36]], { color: "#f59e0b", weight: 3, opacity: 0.8, dashArray: "8 6" }).addTo(map);
 L.polyline([[-34.1385,18.3245],[-34.05,18.50],[-34.08,18.85],[-34.15,19.05],[-34.20,19.40],[-34.15,19.90],[-34.02,20.44],[-33.97,20.70],[-33.91,20.72],[-33.85,20.45],[-33.7865,20.1195]], { color: "#10b981", weight: 3, opacity: 0.8, dashArray: "8 6" }).addTo(map);
-L.polyline([[-33.7865,20.1195],[-33.80,20.11],[-33.80,19.89],[-33.65,19.45],[-33.72,19.10],[-33.75,18.95],[-33.80,18.46],[-33.969,18.602]], { color: "#7dd3fc", weight: 3, opacity: 0.8, dashArray: "8 6" }).addTo(map);
+L.polyline([[-33.7865,20.1195],[-33.80,20.11],[-33.80,19.89],[-33.65,19.45],[-33.72,19.10],[-33.85,18.70],[-33.94,18.38],[-33.969,18.602]], { color: "#7dd3fc", weight: 3, opacity: 0.8, dashArray: "8 6" }).addTo(map);
 const markers = {}; let rows = `<tr><th></th><th>Hotel</th><th>Book</th></tr><tr class="grp"><td colspan="3">Thursday — Peninsula</td></tr>`;
 HOTELS.forEach(([c, name, col, lat, lon, rate, note, bk, site, kind], i) => {
   const m = L.circleMarker([lat, lon], { radius: kind === "pick" ? 15 : 12, color: "#fff", weight: 2, fillColor: col, fillOpacity: 0.95 }).addTo(map)
