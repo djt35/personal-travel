@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+  <name>London City Trip - Mar 17-20, 2026</name>
+  <description>David &amp; Lobke - NoMad London base - Shows, Dinners, Running</description>
+
+  <!-- Styles -->
+  <Style id="hotel"><IconStyle><color>ff0000ff</color><scale>1.2</scale><Icon><href>http://maps.google.com/mapfiles/kml/paddle/red-circle.png</href></Icon></IconStyle></Style>
+  <Style id="theatre"><IconStyle><color>ff00aaff</color><scale>1.1</scale><Icon><href>http://maps.google.com/mapfiles/kml/paddle/orange-circle.png</href></Icon></IconStyle></Style>
+  <Style id="restaurant"><IconStyle><color>ff00ff00</color><scale>1.0</scale><Icon><href>http://maps.google.com/mapfiles/kml/paddle/grn-circle.png</href></Icon></IconStyle></Style>
+  <Style id="bar"><IconStyle><color>ff00ffff</color><scale>0.9</scale><Icon><href>http://maps.google.com/mapfiles/kml/paddle/ylw-circle.png</href></Icon></IconStyle></Style>
+  <Style id="attraction"><IconStyle><color>ffff0000</color><scale>1.0</scale><Icon><href>http://maps.google.com/mapfiles/kml/paddle/blu-circle.png</href></Icon></IconStyle></Style>
+  <Style id="running"><IconStyle><color>ffff00ff</color><scale>0.9</scale><Icon><href>http://maps.google.com/mapfiles/kml/paddle/purple-circle.png</href></Icon></IconStyle></Style>
+
+  <!-- HOTEL -->
+  <Folder><name>Hotel</name>
+    <Placemark><name>NoMad London</name><description>Base - 28 Bow Street, Covent Garden. Classic room ~€1,290/3 nights. Check-in 15:00, check-out 12:00.</description><styleUrl>#hotel</styleUrl><Point><coordinates>-0.1222,51.5128,0</coordinates></Point></Placemark>
+  </Folder>
+
+  <!-- THEATRES -->
+  <Folder><name>Theatres</name>
+    <Placemark><name>Tue: Dracula - Noel Coward Theatre</name><description>Cynthia Erivo one-woman show, 23 roles. 19:30, 1h50m no interval. From £30.</description><styleUrl>#theatre</styleUrl><Point><coordinates>-0.1268,51.5115,0</coordinates></Point></Placemark>
+    <Placemark><name>Wed: Romeo &amp; Juliet - Harold Pinter Theatre</name><description>Sadie Sink &amp; Noah Jupe. Opening night! Robert Icke directs. 2h40m. From £20.</description><styleUrl>#theatre</styleUrl><Point><coordinates>-0.1317,51.5094,0</coordinates></Point></Placemark>
+    <Placemark><name>Thu: Inter Alia - Wyndham's Theatre</name><description>Rosamund Pike. Opening night! By the writer of Prima Facie. From £25.</description><styleUrl>#theatre</styleUrl><Point><coordinates>-0.1282,51.5116,0</coordinates></Point></Placemark>
+  </Folder>
+
+  <!-- RESTAURANTS -->
+  <Folder><name>Restaurants</name>
+    <Placemark><name>Tue Dinner: Kiln</name><description>58 Brewer St, Soho. Thai open-fire. Walk-in only, arrive 18:00. £30-40pp.</description><styleUrl>#restaurant</styleUrl><Point><coordinates>-0.1351,51.5118,0</coordinates></Point></Placemark>
+    <Placemark><name>Wed Dinner: Osteria Vibrato</name><description>6 Greek St, Soho. Italian new opening. £60-80pp. Book via SevenRooms.</description><styleUrl>#restaurant</styleUrl><Point><coordinates>-0.1310,51.5131,0</coordinates></Point></Placemark>
+    <Placemark><name>Thu Dinner: Bonheur by Matt Abe</name><description>43 Upper Brook St, Mayfair. 2 MICHELIN STARS. £195-225pp tasting menu. BOOK TODAY.</description><styleUrl>#restaurant</styleUrl><Point><coordinates>-0.1547,51.5130,0</coordinates></Point></Placemark>
+    <Placemark><name>Wed Lunch: Speedboat Bar</name><description>58 Shaftesbury Ave. Bangkok street food. £20-30pp.</description><styleUrl>#restaurant</styleUrl><Point><coordinates>-0.1290,51.5128,0</coordinates></Point></Placemark>
+    <Placemark><name>Thu Breakfast: The Wolseley</name><description>160 Piccadilly. Grand European cafe breakfast. £25-30pp.</description><styleUrl>#restaurant</styleUrl><Point><coordinates>-0.1400,51.5070,0</coordinates></Point></Placemark>
+    <Placemark><name>Fri Breakfast: The Delaunay</name><description>55 Aldwych. Viennese cafe. Kaiserschmarrn, pastries. £20-25pp.</description><styleUrl>#restaurant</styleUrl><Point><coordinates>-0.1168,51.5133,0</coordinates></Point></Placemark>
+    <Placemark><name>Thu Lunch: Borough Market</name><description>Southwark St. Graze: Padella, Bread Ahead, oysters. £15-20pp.</description><styleUrl>#restaurant</styleUrl><Point><coordinates>-0.0910,51.5055,0</coordinates></Point></Placemark>
+  </Folder>
+
+  <!-- BARS -->
+  <Folder><name>Bars</name>
+    <Placemark><name>The Lamb and Flag</name><description>33 Rose St. Oldest pub in Covent Garden (1623). Dickens drank here. 3 min from NoMad.</description><styleUrl>#bar</styleUrl><Point><coordinates>-0.1250,51.5128,0</coordinates></Point></Placemark>
+    <Placemark><name>Opium</name><description>15-16 Gerrard St, Chinatown. Hidden speakeasy, 3 themed bars. Post-show Tue.</description><styleUrl>#bar</styleUrl><Point><coordinates>-0.1310,51.5115,0</coordinates></Point></Placemark>
+    <Placemark><name>Christopher's Martini Bar</name><description>18 Wellington St. Art-deco cocktails. Pre-show Wed. 3 min from NoMad.</description><styleUrl>#bar</styleUrl><Point><coordinates>-0.1210,51.5125,0</coordinates></Point></Placemark>
+    <Placemark><name>The Connaught Bar</name><description>Carlos Place, Mayfair. World #6 cocktail bar. Legendary trolley martini.</description><styleUrl>#bar</styleUrl><Point><coordinates>-0.1490,51.5120,0</coordinates></Point></Placemark>
+  </Folder>
+
+  <!-- ATTRACTIONS -->
+  <Folder><name>Attractions</name>
+    <Placemark><name>British Museum</name><description>Great Russell St. Free. Rosetta Stone, Parthenon Marbles. Wed morning.</description><styleUrl>#attraction</styleUrl><Point><coordinates>-0.1270,51.5194,0</coordinates></Point></Placemark>
+    <Placemark><name>Tower of London</name><description>Tower Hill. Crown Jewels, Beefeater tours. £34pp, book online. Thu morning.</description><styleUrl>#attraction</styleUrl><Point><coordinates>-0.0759,51.5081,0</coordinates></Point></Placemark>
+    <Placemark><name>Tate Modern</name><description>Bankside. Free + Theatre Picasso exhibition. Thu afternoon.</description><styleUrl>#attraction</styleUrl><Point><coordinates>-0.0994,51.5076,0</coordinates></Point></Placemark>
+    <Placemark><name>Serpentine North Gallery</name><description>Hyde Park. David Hockney exhibition, free. Opens 12 March. Fri morning.</description><styleUrl>#attraction</styleUrl><Point><coordinates>-0.1750,51.5050,0</coordinates></Point></Placemark>
+    <Placemark><name>Trafalgar Square</name><description>St Patrick's Day celebrations Tue 17 Mar. National Gallery (free) adjacent.</description><styleUrl>#attraction</styleUrl><Point><coordinates>-0.1276,51.5080,0</coordinates></Point></Placemark>
+  </Folder>
+
+  <!-- RUNNING -->
+  <Folder><name>Running Routes</name>
+    <Placemark><name>Wed Run: Thames South Bank 5K</name><description>Waterloo Bridge → east along South Bank → Millennium Bridge → return. Flat, river views. 06:30.</description><styleUrl>#running</styleUrl><Point><coordinates>-0.1165,51.5075,0</coordinates></Point></Placemark>
+    <Placemark><name>Thu Run: St James's Park 5K</name><description>The Mall → St James's Park lake → Green Park → Hyde Park edge → return. 06:30.</description><styleUrl>#running</styleUrl><Point><coordinates>-0.1340,51.5025,0</coordinates></Point></Placemark>
+    <Placemark><name>Fri Run: Regent's Canal 5K</name><description>King's Cross → canal towpath → Camden Lock → return. Flat, locks, narrowboats. 07:00.</description><styleUrl>#running</styleUrl><Point><coordinates>-0.1248,51.5350,0</coordinates></Point></Placemark>
+  </Folder>
+
+</Document>
+</kml>
