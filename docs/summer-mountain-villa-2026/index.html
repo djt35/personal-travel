@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summer Villa Week — 10–18 July 2026 · Airbnb + Booking.com normalised</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --M:#f59e0b; --C:#14b8a6; --U:#ec4899; --S:#3b82f6; --P:#8b5cf6; --R:#ef4444;
+    --ink:#0b0f16; --panel:rgba(15,22,33,.86); --line:rgba(255,255,255,.10);
+    --txt:#e8edf5; --mut:#9aa7b8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--ink);color:var(--txt)}
+  #map{position:fixed;inset:0;z-index:1}
+  .leaflet-popup-content-wrapper{background:#0f1620;color:var(--txt);border-radius:12px;border:1px solid var(--line)}
+  .leaflet-popup-tip{background:#0f1620}
+  .leaflet-popup-content{margin:11px 13px;font-size:12.5px;line-height:1.45}
+  .leaflet-popup-content a{color:#7dd3fc;font-weight:600}
+  .pin{display:flex;align-items:center;justify-content:center;color:#08101c;font-weight:800;font-size:10px;
+       border:2px solid rgba(255,255,255,.92);box-shadow:0 2px 7px rgba(0,0,0,.55);padding:0 5px;height:22px;white-space:nowrap}
+  .pin.A{border-radius:12px}          /* Airbnb = rounded pill */
+  .pin.B{border-radius:4px;border-style:dashed}  /* Booking = dashed square */
+
+  .top{position:fixed;top:12px;left:12px;z-index:1000;background:var(--panel);backdrop-filter:blur(14px);
+       border:1px solid var(--line);border-radius:14px;padding:10px 14px;box-shadow:0 8px 30px rgba(0,0,0,.45);max-width:56vw}
+  .top h1{margin:0;font-size:13.5px}
+  .top p{margin:3px 0 0;font-size:11px;color:var(--mut)}
+  .filters{margin-top:8px;display:flex;gap:6px}
+  .fbtn{font-size:11px;font-weight:600;padding:4px 11px;border-radius:20px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--txt);cursor:pointer}
+  .fbtn.on{background:#e8edf5;color:#0b0f16;border-color:#e8edf5}
+
+  .side{position:fixed;top:12px;right:12px;bottom:12px;width:412px;max-width:94vw;z-index:1000;overflow-y:auto;
+        background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 8px 40px rgba(0,0,0,.55)}
+  .side::-webkit-scrollbar{width:8px}.side::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:8px}
+
+  .note{font-size:11px;line-height:1.55;color:var(--mut);background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:12px}
+  .note b{color:var(--txt)}
+  .note .k{color:#7dd3fc}
+
+  .region{border:1px solid var(--line);border-radius:14px;margin-bottom:11px;overflow:hidden}
+  .region h2{margin:0;padding:10px 12px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.03)}
+  .dot{width:11px;height:11px;border-radius:50%;flex:none}
+  .region .fly{font-size:10.5px;color:var(--mut);padding:0 12px;margin:6px 0 2px;line-height:1.5}
+  .cols{display:flex;gap:8px;padding:4px 10px 10px}
+  .col{flex:1;min-width:0}
+  .col h4{margin:4px 0 3px;font-size:10px;letter-spacing:.4px;text-transform:uppercase;color:var(--mut)}
+  .col.airbnb h4::before{content:"● ";color:#e8edf5}
+  .col.booking h4::before{content:"▪ ";color:#e8edf5}
+  .row{padding:5px 0;border-top:1px solid var(--line);cursor:pointer}
+  .row:hover{background:rgba(255,255,255,.03)}
+  .rn{font-size:11px;font-weight:600;line-height:1.2}
+  .rm{font-size:10px;color:var(--mut);margin-top:1px}
+  .rp{font-size:11px;font-weight:700}
+  .win{color:#34d399}
+
+  .legend{position:fixed;bottom:12px;left:12px;z-index:1000;background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-size:10.5px}
+  .legend div{display:flex;align-items:center;gap:7px;margin:2px 0}
+  .legend .sq{width:11px;height:11px;border:2px solid #fff;flex:none}
+  @media(max-width:700px){.side{position:static;width:auto;margin:120px 8px 8px}.legend,.top{position:static}}
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div class="top">
+  <h1>🏡 Summer Villa Week · Airbnb + Booking.com (normalised)</h1>
+  <p>10–18 Jul 2026 · 8 nts · family of 3 · 6 regions · price shown = €/night</p>
+  <div class="filters">
+    <button class="fbtn on" id="f-all" onclick="setF('all')">Both</button>
+    <button class="fbtn" id="f-A" onclick="setF('A')">● Airbnb</button>
+    <button class="fbtn" id="f-B" onclick="setF('B')">▪ Booking</button>
+  </div>
+</div>
+
+<div class="side">
+  <div class="note">
+    <b>How this is normalised.</b> Common comparator = <span class="k">€/night</span> (both platforms report it). Ratings unified to <span class="k">/5</span> (Booking's /10 ÷ 2). Type inferred from the listing.<br>
+    ⚠️ <b>Caveats:</b> Airbnb 8-nt totals exclude fees; Booking totals are <b>fee-inclusive</b>. Booking has <b>no entire-home/pool filter</b>, so hotels/B&Bs appear — I kept villas/masserie/fincas where they exist and flagged hotels. Booking was searched <b>2 adults</b> (its API rejected the child param). <b>Ronda's Booking layer is all town hotels</b> — no secluded pool villas exist there.
+  </div>
+  <div id="regions"></div>
+  <div class="note" style="margin-top:4px">
+    <b>Platform takeaways:</b> Airbnb wins for <b>secluded private-pool villas</b> everywhere. Booking is cheaper/at-parity and stronger for <b>Puglia masserie</b> (Masseria Asciano €114/nt!), <b>Mallorca fincas</b>, and <b>Crete boutique hotels</b>. For Andalucía & Provence, Booking = mostly hotels/gîtes, so Airbnb keeps the edge on the "villa + pool" brief.
+  </div>
+</div>
+
+<div class="legend" id="legend"></div>
+
+<script>
+const map=L.map('map',{zoomControl:true}).setView([40.2,9.0],4);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
+function fly(la,ln,z){map.flyTo([la,ln],z,{duration:1.0})}
+
+const REG={
+ C:{name:'Crete · Chania / Apokoronas',c:'#14b8a6',ctr:[35.45,24.10],fly:'✈️ €464 direct (TUIfly 4h) · gorge + lagoon beaches'},
+ M:{name:'Mallorca · Tramuntana',c:'#f59e0b',ctr:[39.74,2.70],fly:'✈️ €298 direct · mountains + sea'},
+ U:{name:'Puglia · Valle d’Itria (Ostuni)',c:'#ec4899',ctr:[40.72,17.55],fly:'✈️ €528 1-stop · trulli & masserie'},
+ S:{name:'Sardinia · Gallura coast',c:'#3b82f6',ctr:[40.80,9.62],fly:'✈️ €670+ 1-stop · dream beaches, priciest'},
+ P:{name:'Provence · Luberon',c:'#8b5cf6',ctr:[43.90,5.20],fly:'✈️ €593 direct (awkward) · lavender + mas'},
+ R:{name:'Andalucía · Ronda sierra',c:'#ef4444',ctr:[36.78,-5.20],fly:'✈️ €472 direct · hottest · Booking=hotels only'},
+};
+const ORDER=['C','M','U','S','P','R'];
+
+// [reg,plat,name,perNight,total8,rating5,reviews,type,lat,lng,url]
+const D=[
+ // CRETE
+ ['C','A','Villa Xalom',297,2376,5.0,6,'villa',35.4443,24.2195,'https://www.airbnb.com/rooms/888976844796470234?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['C','A','Villa Calliope w/ Jacuzzi',244,1952,5.0,4,'villa',35.4507,24.2358,'https://www.airbnb.com/rooms/1038318326765364123?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['C','A','Villa Christy · pool, 150m from sea',293,2344,4.9,59,'villa',35.5123,23.9479,'https://www.airbnb.com/rooms/3101835?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['C','A','Magnolia Home, Katochori',365,2920,5.0,24,'villa',35.4395,24.0583,'https://www.airbnb.com/rooms/26356546?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['C','B','Olive Chrysi Luxury Villa · plunge pool',584,4676,4.8,6,'villa',35.5248,23.7984,'https://www.booking.com/hotel/gr/olive-chrysi-luxury-villa.html'],
+ ['C','B','Madame Hortense Boutique',153,1222,4.85,98,'boutique hotel',35.5155,24.0200,'https://www.booking.com/hotel/gr/madame-hortense.html'],
+ ['C','B','Splanzia Boutique',157,1257,4.6,266,'boutique hotel',35.5157,24.0216,'https://www.booking.com/hotel/gr/splanzia-boutique.html'],
+ ['C','B','Vranas Ambiance',204,1633,4.65,493,'apart-hotel',35.5156,24.0185,'https://www.booking.com/hotel/gr/vranas-studios.html'],
+ // MALLORCA
+ ['M','A','Ca Sa Cosidora',388,3104,4.96,27,'villa',39.7482,2.6465,'https://www.airbnb.com/rooms/32119822?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['M','A','Sensations of Tramuntana',365,2920,5.0,48,'villa',39.6961,2.5568,'https://www.airbnb.com/rooms/20892642?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['M','A','Olive Grove, Fornalutx',324,2592,4.8,30,'villa',39.7895,2.7288,'https://www.airbnb.com/rooms/23674883?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['M','A','Heart of the Mountain',264,2112,4.7,183,'villa',39.7810,2.7518,'https://www.airbnb.com/rooms/5586543?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['M','B',"Ca'n Puig de Sòller",365,2918,4.7,294,'finca',39.7667,2.7136,'https://www.booking.com/hotel/es/ca-n-puig-de-soller-soller3.html'],
+ ['M','B','Filoses 18A',311,2492,4.65,36,'villa',39.7110,2.6247,'https://www.booking.com/hotel/es/filoses-18a.html'],
+ ['M','B',"S'Olivaret, Fornalutx",358,2868,4.5,3,'villa',39.7887,2.7292,'https://www.booking.com/hotel/es/oliveret-des-puig.html'],
+ ['M','B',"Hotel Rural S'Olivaret & Spa",297,2375,4.6,548,'rural hotel',39.7354,2.8031,'https://www.booking.com/hotel/es/olivaret-rural.html'],
+ // PUGLIA
+ ['U','A','Trullo degli Emme · exclusive pool',436,3490,5.0,10,'trullo',40.6971,17.5394,'https://www.airbnb.com/rooms/39120058?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['U','A','Trullo w/ pool among olives',330,2640,5.0,5,'trullo',40.6786,17.5746,'https://www.airbnb.com/rooms/1405840385244769264?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['U','A','The Fifth Element residence',189,1512,5.0,34,'house',40.7313,17.5783,'https://www.airbnb.com/rooms/654825364025901483?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['U','A','VolteInPietra',148,1184,4.97,115,'house',40.7291,17.5810,'https://www.airbnb.com/rooms/37789861?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['U','B','Masseria Asciano',114,911,4.5,202,'masseria',40.7457,17.6235,'https://www.booking.com/hotel/it/masseria-asciano.html'],
+ ['U','B','Casa Lantana con piscina',175,1403,5.0,3,'villa + pool',40.7065,17.5884,'https://www.booking.com/hotel/it/appartamento-lantana-con-piscina.html'],
+ ['U','B','Tenuta Ermes (masseria)',315,2524,4.4,132,'masseria',40.7165,17.5086,'https://www.booking.com/hotel/it/tenuta-ermes.html'],
+ ['U','B',"Tenuta Fico d'India · luxury trulli+pool",879,7029,5.0,1,'trulli',40.7089,17.4694,'https://www.booking.com/hotel/it/tenuta-fico-d-india-luxury-villa-with-swimming-pool.html'],
+ // SARDINIA
+ ['S','A','Charming Villa in greenery',195,1560,4.6,25,'villa',40.8431,9.6564,'https://www.airbnb.com/rooms/21773889?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['S','A','Semi-detached villa · Tavolara view',252,2016,4.9,10,'villa',40.8737,9.6228,'https://www.airbnb.com/rooms/1455079641997496473?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['S','A','18th-C house · Capo Coda Cavallo',434,3472,4.94,16,'house',40.8348,9.6628,'https://www.airbnb.com/rooms/37936573?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['S','A','Stylish Designer Villa',540,4320,4.93,41,'villa',40.8247,9.6611,'https://www.airbnb.com/rooms/36497091?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['S','B','Bandi B&B',135,1079,4.7,98,'B&B',40.7644,9.6381,'https://www.booking.com/hotel/it/b-amp-b-bandi.html'],
+ ['S','B','Miriacheddu',149,1192,4.15,166,'apt',40.7588,9.6794,'https://www.booking.com/hotel/it/miriacheddu.html'],
+ ['S','B','Villa Quai (near centre)',174,1389,4.5,4,'villa',40.7692,9.6635,'https://www.booking.com/hotel/it/villa-quai-4-posti-letto-vicino-al-centro.html'],
+ ['S','B','Casa Vacanza Li Menduli',337,2695,4.95,34,'casa',40.7750,9.6682,'https://www.booking.com/hotel/it/san-teodoro-localita-li-menduli.html'],
+ // PROVENCE
+ ['P','A','Authentic Mas',230,1840,4.96,73,'mas',43.8541,5.1570,'https://www.airbnb.com/rooms/20049303?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['P','A','La Maison S(auv)AGE, Gordes',339,2712,5.0,5,'villa',43.8953,5.1888,'https://www.airbnb.com/rooms/552903185583056296?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['P','A','Rare "Netflix" pool',421,3368,5.0,28,'villa',43.9264,5.3335,'https://www.airbnb.com/rooms/43786645?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['P','A','IN ELSAMA · heated pool',479,3832,4.94,123,'villa',43.9389,5.0641,'https://www.airbnb.com/rooms/33929449?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['P','B','Gîte de Catherine',179,1432,4.9,22,'gîte',44.0061,5.1129,'https://www.booking.com/hotel/fr/gite-de-catherine.html'],
+ ['P','B','Les Chambres du Perussier',164,1309,4.55,36,'B&B',43.7505,5.4409,'https://www.booking.com/hotel/fr/les-chambres-du-perussier.html'],
+ ['P','B','Maison de James',193,1546,4.4,6,'house',43.9611,5.2426,'https://www.booking.com/hotel/fr/maison-de-james.html'],
+ ['P','B','La Chaleureuse · villa w/ private pool',788,6301,null,0,'villa',43.8951,5.1584,'https://www.booking.com/hotel/fr/la-chaleureuse-cadre-privilge-et-srnit.html'],
+ // ANDALUCÍA
+ ['R','A','Rural Villa Dornajo',190,1520,4.7,46,'villa',36.8789,-5.4221,'https://www.airbnb.com/rooms/10901907?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['R','A','The Fairytale Trail',254,2032,4.88,17,'villa',36.7324,-5.2498,'https://www.airbnb.com/rooms/997569092385577902?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['R','A','Holiday House Tenorio',287,2296,4.71,147,'house',36.7390,-5.1664,'https://www.airbnb.com/rooms/17985620?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['R','A','Luxury Villa · private pool',737,5896,5.0,56,'villa',36.7624,-5.1532,'https://www.airbnb.com/rooms/50866616?check_in=2026-07-10&check_out=2026-07-18&adults=2&children=1'],
+ ['R','B','Soho Boutique Palacio San Gabriel',70,557,4.35,3071,'hotel',36.7385,-5.1655,'https://www.booking.com/hotel/es/soho-boutique-palacio-san-gabriel.html'],
+ ['R','B','Hotel El Tajo & SPA',77,619,4.1,3422,'hotel',36.7442,-5.1634,'https://www.booking.com/hotel/es/el-tajo.html'],
+ ['R','B','Catalonia Ronda',153,1225,4.65,4483,'hotel',36.7427,-5.1666,'https://www.booking.com/hotel/es/catalonia-ronda.html'],
+ ['R','B','Parador de Ronda',189,1512,4.45,3072,'hotel',36.7411,-5.1663,'https://www.booking.com/hotel/es/parador-de-ronda.html'],
+];
+
+const layers={A:L.layerGroup().addTo(map),B:L.layerGroup().addTo(map)};
+const markers={};
+function icon(plat,color,perNight){return L.divIcon({className:'',iconSize:[46,22],iconAnchor:[23,11],
+  html:`<div class="pin ${plat}" style="background:${color}">€${perNight}</div>`});}
+
+D.forEach((p,i)=>{
+  const [reg,plat,name,pn,tot,rt,rv,type,la,ln,url]=p;
+  const col=REG[reg].c;
+  const platName=plat==='A'?'Airbnb':'Booking.com';
+  const rating=rt?`★${rt}/5 (${rv})`:'new';
+  const m=L.marker([la,ln],{icon:icon(plat,col,pn)});
+  m.bindPopup(`<b>${name}</b><br>${type} · ${platName}<br><b>€${pn}</b>/night · ~€${tot.toLocaleString()}/8 nts<br>${rating}<br><a href="${url}" target="_blank">Open ↗</a>`);
+  m.addTo(layers[plat]); markers[i]=m;
+});
+
+// sidebar
+const regionsEl=document.getElementById('regions');
+ORDER.forEach(reg=>{
+  const meta=REG[reg];
+  const card=document.createElement('div');card.className='region';
+  const h=document.createElement('h2');h.innerHTML=`<span class="dot" style="background:${meta.c}"></span>${meta.name}`;
+  h.onclick=()=>fly(meta.ctr[0],meta.ctr[1],9);
+  card.appendChild(h);
+  const fl=document.createElement('div');fl.className='fly';fl.textContent=meta.fly;card.appendChild(fl);
+  const cols=document.createElement('div');cols.className='cols';
+  ['A','B'].forEach(plat=>{
+    const col=document.createElement('div');col.className='col '+(plat==='A'?'airbnb':'booking');
+    col.innerHTML=`<h4>${plat==='A'?'Airbnb':'Booking·com'}</h4>`;
+    const items=D.map((p,i)=>({p,i})).filter(x=>x.p[0]===reg&&x.p[1]===plat).sort((a,b)=>a.p[3]-b.p[3]);
+    const cheapest=Math.min(...items.map(x=>x.p[3]));
+    items.forEach(({p,i})=>{
+      const [,,name,pn,tot,rt,rv,type]=p;
+      const row=document.createElement('div');row.className='row';
+      row.innerHTML=`<div class="rn">${name}</div><div class="rm">${type} · ${rt?'★'+rt+'/5':'new'} · <span class="rp ${pn===cheapest?'win':''}">€${pn}/nt</span></div>`;
+      row.onclick=()=>{fly(p[8],p[9],12);markers[i].openPopup();};
+      col.appendChild(row);
+    });
+    cols.appendChild(col);
+  });
+  card.appendChild(cols);regionsEl.appendChild(card);
+});
+
+// filter
+function setF(f){
+  ['all','A','B'].forEach(x=>document.getElementById('f-'+x).classList.toggle('on',x===f));
+  if(f==='all'){map.addLayer(layers.A);map.addLayer(layers.B);}
+  else if(f==='A'){map.addLayer(layers.A);map.removeLayer(layers.B);}
+  else{map.removeLayer(layers.A);map.addLayer(layers.B);}
+}
+
+// legend
+const legendEl=document.getElementById('legend');
+legendEl.innerHTML=`<div><span class="sq" style="border-radius:11px;background:#e8edf5"></span>● Airbnb (pill)</div>
+  <div><span class="sq" style="border-radius:3px;border-style:dashed;background:#e8edf5"></span>▪ Booking (dashed)</div>`;
+Object.keys(REG).forEach(r=>{const d=document.createElement('div');d.innerHTML=`<span class="sq" style="border-radius:11px;background:${REG[r].c}"></span>${REG[r].name.split(' · ')[0]}`;legendEl.appendChild(d);});
+</script>
+</body>
+</html>
