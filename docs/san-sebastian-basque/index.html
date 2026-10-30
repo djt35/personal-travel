@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cantabria + Basque Road Trip — 17–21 Jun 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --g:#f59e0b; --c:#8b5cf6; --poi:#38bdf8; --trip:#34d399; --air:#f43f5e;
+    --ink:#e8edf4; --muted:#9fb0c3; --glass:rgba(15,23,38,.82);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1b2b;color:var(--ink)}
+  #map{position:absolute;inset:0;z-index:1}
+  .panel{position:absolute;z-index:1000;background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.10);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.45)}
+  #title{top:14px;left:14px;padding:14px 18px;max-width:340px}
+  #title h1{margin:0;font-size:18px;letter-spacing:.2px}
+  #title .sub{color:var(--muted);font-size:12.5px;margin-top:4px;line-height:1.5}
+  #title .tags{margin-top:9px;display:flex;flex-wrap:wrap;gap:6px}
+  .tag{font-size:11px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}
+  #timeline{top:14px;right:14px;width:274px;max-height:calc(100vh-28px);overflow:auto;padding:12px}
+  #timeline h2{margin:2px 4px 10px;font-size:12px;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted)}
+  .day{display:flex;gap:10px;padding:10px;border-radius:12px;cursor:pointer;transition:.15s;border:1px solid transparent}
+  .day:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
+  .day .dot{flex:0 0 auto;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-weight:700;font-size:12px;color:#0d1b2b}
+  .day .meta b{font-size:13px}
+  .day .meta span{display:block;color:var(--muted);font-size:11.5px;margin-top:2px;line-height:1.45}
+  #legend{bottom:62px;left:14px;padding:11px 14px;font-size:12px}
+  #legend .row{display:flex;align-items:center;gap:8px;margin:5px 0}
+  #legend .pin{width:13px;height:13px;border-radius:50%;border:2px solid #fff}
+  #budget{bottom:14px;left:14px;right:14px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:11px 14px}
+  #budget .item{font-size:12px;color:var(--muted)}
+  #budget .item b{color:var(--ink);font-size:13.5px}
+  #budget .total{margin-left:auto;font-size:13px;color:var(--muted)}
+  #budget .total b{color:#fff;font-size:18px;margin-left:6px}
+  .chip{font-size:10.5px;padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.07)}
+  .stay-marker{border-radius:50%;border:2.5px solid #fff;display:grid;place-items:center;font-weight:800;font-size:11px;color:#0d1b2b;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+  .poi-marker{border-radius:50%;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.5)}
+  .air-marker{border-radius:7px;border:2px solid #fff;background:var(--air);display:grid;place-items:center;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+  .leaflet-popup-content-wrapper{background:#0f1726;color:var(--ink);border-radius:12px;border:1px solid rgba(255,255,255,.12)}
+  .leaflet-popup-tip{background:#0f1726}
+  .leaflet-popup-content{margin:11px 13px;font-size:12.5px;line-height:1.5}
+  .leaflet-popup-content b{font-size:13.5px}
+  .leaflet-popup-content a{color:#5ec2ff;font-weight:600}
+  .pp-row{color:var(--muted);margin-top:3px}
+  .pp-code{display:inline-block;font-weight:800;color:#0d1b2b;padding:1px 7px;border-radius:6px;margin-bottom:4px}
+  @media (max-width:680px){#title{max-width:none;right:14px}#timeline,#legend{display:none}#budget{font-size:11px}}
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div id="title" class="panel">
+  <h1>🌿 Cantabria + Basque Road Trip</h1>
+  <div class="sub">Wed 17 → Sun 21 Jun 2026 · 4 nights · 2 adults + Noah (5)<br>Ryanair CRL↔Santander · rental car · central rural Basque hub → Cantabria</div>
+  <div class="tags">
+    <span class="tag">🍢 San Sebastián</span>
+    <span class="tag">🏖️ Flysch coast</span>
+    <span class="tag">⛪ Gaztelugatxe</span>
+    <span class="tag">🦁 Cabárceno</span>
+    <span class="tag">🏰 Santillana</span>
+  </div>
+</div>
+
+<div id="timeline" class="panel">
+  <h2>Day by day — tap to fly</h2>
+  <div id="days"></div>
+</div>
+
+<div id="legend" class="panel">
+  <div class="row"><span class="pin" style="background:var(--air);border-radius:3px"></span> Santander airport (in/out)</div>
+  <div class="row"><span class="pin" style="background:var(--g)"></span> Base 1 · Areitio (central rural) · 3n</div>
+  <div class="row"><span class="pin" style="background:var(--c)"></span> Base 2 · Santemar, Santander · 1n</div>
+  <div class="row"><span class="pin" style="background:var(--poi)"></span> Towns & coast sights</div>
+  <div class="row"><span class="pin" style="background:var(--trip)"></span> Nature & parks</div>
+</div>
+
+<div id="budget" class="panel">
+  <span class="item">✈️ Ryanair <b>~€230</b></span>
+  <span class="item">🚗 Car 4d <b>~€300</b></span>
+  <span class="item">🏠 Stays 4n <b>~€1,330</b></span>
+  <span class="item">⛽ Fuel/tolls <b>~€120</b></span>
+  <span class="chip">excl. food & activities</span>
+  <span class="total">Est. trip total <b>~€2,000</b></span>
+</div>
+
+<script>
+const map = L.map('map',{zoomControl:true}).setView([43.34,-3.0], 9);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+  attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:'abcd', maxZoom:19
+}).addTo(map);
+
+const COL={G:'#f59e0b',C:'#8b5cf6'};
+
+// ---- Accommodation ----
+const stays=[
+ // Base 1 — Areitio Etxea · central rural Basque hub (Wed→Sat, 3 nights)
+ {c:'★',n:'Areitio Etxea · 4-bed rural house, pool & hot tub',lat:43.175,lng:-2.515,pn:367,r:4.95,rv:81,tag:'⭐ Guest Fav · Superhost · 🏊',base:'G',id:'50866167'},
+ // Base 2 — Santemar, beachfront Santander (Sat→Sun, 1 night)
+ {c:'★',n:'Santemar · beachfront, El Sardinero',lat:43.4738,lng:-3.7766,pn:230,r:'8.9/10',rv:'8,124',tag:'4★ · 👶 kids free · ~15 min SDR',base:'C',url:'https://www.booking.com/hotel/es/santemar.html'},
+];
+const dates={G:['2026-06-17','2026-06-20'],C:['2026-06-20','2026-06-21']};
+const nights={G:'3 nights',C:'1 night'};
+stays.forEach(s=>{
+  const [din,dout]=dates[s.base];
+  const url=s.url || `https://www.airbnb.com/rooms/${s.id}?check_in=${din}&check_out=${dout}&adults=2`;
+  const icon=L.divIcon({className:'',html:`<div class="stay-marker" style="width:32px;height:32px;background:${COL[s.base]}">${s.c}</div>`,iconSize:[32,32],iconAnchor:[16,16]});
+  L.marker([s.lat,s.lng],{icon}).addTo(map).bindPopup(
+    `<span class="pp-code" style="background:${COL[s.base]}">${s.c}</span><br><b>${s.n}</b>`+
+    `<div class="pp-row">€${s.pn}/night · ★ ${s.r} (${s.rv}) · ${s.tag}</div>`+
+    `<div class="pp-row">${din} → ${dout} (${nights[s.base]})</div>`+
+    `<a href="${url}" target="_blank">${s.url?'Open on Booking.com':'Open on Airbnb'} →</a>`);
+});
+
+// ---- Airport ----
+const air=L.divIcon({className:'',html:'<div class="air-marker" style="width:30px;height:30px">✈️</div>',iconSize:[30,30],iconAnchor:[15,15]});
+L.marker([43.4271,-3.8200],{icon:air}).addTo(map).bindPopup('<b>✈️ Santander Airport (SDR)</b><div class="pp-row">Arrive Wed 15:00 · Depart Sun 09:20 (early!)</div>');
+
+// ---- POIs ----
+const pois=[
+ {n:'San Sebastián · La Concha + pintxos',lat:43.3183,lng:-1.9812,d:'Beach + Parte Vieja pintxos crawl · 25 min from base 1',t:'town'},
+ {n:'Zumaia flysch cliffs',lat:43.2986,lng:-2.2547,d:'Dragonstone cliffs, coastal walk/boat · 10 min',t:'nat'},
+ {n:'Getaria fishing village',lat:43.3047,lng:-2.2010,d:'Txakoli wine, grilled fish, Balenciaga museum',t:'town'},
+ {n:'Pagoeta natural park (Aia)',lat:43.2447,lng:-2.1733,d:'Waterfalls, forest, farm animals · 15 min above Zarautz',t:'nat'},
+ {n:'San Juan de Gaztelugatxe',lat:43.4433,lng:-2.7847,d:'241-step island chapel · Friday day-trip (~1h) — book entry',t:'nat'},
+ {n:'Mundaka',lat:43.4075,lng:-2.6969,d:'Famous left-hand surf wave + estuary · pairs with Gaztelugatxe',t:'town'},
+ {n:'Gernika',lat:43.3110,lng:-2.6800,d:'Peace town, Tree of Gernika · on the way west',t:'town'},
+ {n:'Bilbao · Guggenheim',lat:43.2687,lng:-2.9340,d:'Optional stop on the Saturday drive west',t:'town'},
+ {n:'Santillana del Mar',lat:43.3936,lng:-4.1075,d:'Storybook medieval village — one of Spain\'s prettiest',t:'town'},
+ {n:'Altamira caves museum',lat:43.3776,lng:-4.1230,d:'Prehistoric cave-art replica — great for Noah · by Santillana',t:'town'},
+ {n:'Cabárceno wildlife park',lat:43.3550,lng:-3.8330,d:'Huge open-range animal park (elephants, bears!) — Noah highlight',t:'nat'},
+ {n:'Comillas · Gaudí El Capricho',lat:43.3879,lng:-4.2906,d:'Gaudí villa + beaches · optional, ~50 min west',t:'town'},
+ {n:'Santander · El Sardinero',lat:43.4720,lng:-3.7770,d:'City beaches + Magdalena palace · near the airport',t:'town'},
+];
+pois.forEach(p=>{
+  const col=p.t==='nat'?'var(--trip)':'var(--poi)';
+  const icon=L.divIcon({className:'',html:`<div class="poi-marker" style="width:13px;height:13px;background:${col}"></div>`,iconSize:[13,13],iconAnchor:[7,7]});
+  L.marker([p.lat,p.lng],{icon}).addTo(map).bindPopup(`<b>${p.n}</b><div class="pp-row">${p.d}</div>`);
+});
+
+// ---- Routes ----
+const seg=(pts,col,dash)=>L.polyline(pts,{color:col,weight:3.5,opacity:.85,dashArray:dash||'8,9'}).addTo(map);
+seg([[43.4271,-3.8200],[43.175,-2.515]],COL.G);            // SDR → Areitio (arrival)
+seg([[43.175,-2.515],[43.3183,-1.9812]],'var(--trip)','3,8'); // Thu: base → San Sebastián
+seg([[43.175,-2.515],[43.4433,-2.7847]],'var(--trip)','3,8'); // Fri day-trip → Gaztelugatxe
+seg([[43.175,-2.515],[43.4738,-3.7766]],COL.C);            // Sat move west → Santemar (Santander)
+seg([[43.4738,-3.7766],[43.4271,-3.8200]],'#64748b');      // Sun → SDR
+
+// ---- Timeline ----
+const days=[
+ {t:'Wed 17',col:COL.G,h:'Land Santander → central base',s:'SDR 15:00, pick up car, ~1h30 to your rural hub near Mallabia. Settle in + pool.',z:[43.18,-2.52,11]},
+ {t:'Thu 18',col:COL.G,h:'San Sebastián + flysch',s:'~40 min to La Concha + Parte Vieja pintxos, Zumaia cliffs / Getaria, Pagoeta for Noah.',z:[43.31,-2.10,11]},
+ {t:'Fri 19',col:'#34d399',h:'Gaztelugatxe day-trip',s:'~50 min to San Juan de Gaztelugatxe + Mundaka surf + Gernika. Back for a pool evening.',z:[43.41,-2.74,11]},
+ {t:'Sat 20',col:COL.C,h:'Drive west → Cantabria',s:'~2h30 west (Bilbao Guggenheim stop?). Santillana del Mar + Altamira / Cabárceno animals.',z:[43.39,-3.95,10]},
+ {t:'Sun 21',col:'#64748b',h:'Santander → fly home',s:'Short hop to SDR for the early FR6058 09:20 → CRL 11:10.',z:[43.42,-3.85,11]},
+];
+const dwrap=document.getElementById('days');
+days.forEach(d=>{
+  const el=document.createElement('div');el.className='day';
+  el.innerHTML=`<div class="dot" style="background:${d.col}">${d.t.split(' ')[1]}</div>`+
+    `<div class="meta"><b>${d.t} · ${d.h}</b><span>${d.s}</span></div>`;
+  el.onclick=()=>map.flyTo([d.z[0],d.z[1]],d.z[2],{duration:1.1});
+  dwrap.appendChild(el);
+});
+
+map.fitBounds([[43.12,-4.35],[43.50,-1.85]],{padding:[40,40]});
+</script>
+</body>
+</html>

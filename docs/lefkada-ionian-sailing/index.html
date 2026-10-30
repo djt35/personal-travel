@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lefkada Ionian — Family Sailing · Sat 5 – Sat 12 September 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --bg:#08131c; --panel:rgba(12,26,38,.82); --panel-solid:#0c1a26;
+    --line:rgba(255,255,255,.10); --txt:#e7f0f6; --muted:#90a8b8;
+    --teal:#2dd4bf; --cyan:#38bdf8; --amber:#f59e0b; --purple:#a78bfa; --coral:#fb7185;
+    --good:#34d399; --anchor:#60a5fa;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt)}
+  #map{position:absolute;inset:0;z-index:1}
+  .leaflet-container{background:#08131c}
+
+  .hdr{position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:1000;
+    background:var(--panel);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border:1px solid var(--line);border-radius:14px;padding:10px 18px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+  .hdr h1{margin:0;font-size:15px;letter-spacing:.3px;font-weight:700}
+  .hdr .sub{margin-top:3px;font-size:11.5px;color:var(--muted)}
+  .hdr .sub b{color:var(--teal)}
+
+  .side{position:absolute;top:0;left:0;height:100%;width:344px;z-index:900;
+    background:linear-gradient(180deg,rgba(8,19,28,.96),rgba(8,19,28,.86));
+    border-right:1px solid var(--line);overflow-y:auto;padding:14px 14px 120px;backdrop-filter:blur(8px)}
+  .side h2{font-size:11px;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted);margin:6px 4px 10px}
+  .card{background:rgba(255,255,255,.035);border:1px solid var(--line);border-left:3px solid var(--teal);
+    border-radius:10px;padding:10px 12px;margin-bottom:9px;cursor:pointer;transition:.18s}
+  .card:hover{background:rgba(45,212,191,.10);transform:translateX(2px)}
+  .card .top{display:flex;align-items:center;gap:9px}
+  .card .num{flex:0 0 26px;height:26px;border-radius:50%;background:var(--teal);color:#04222b;font-weight:800;
+    font-size:12px;display:flex;align-items:center;justify-content:center}
+  .card .ttl{font-weight:700;font-size:13.5px}
+  .card .day{font-size:10.5px;color:var(--muted);font-weight:600}
+  .card .leg{font-size:11px;color:var(--cyan);margin-top:6px;font-weight:600}
+  .card .desc{font-size:11.5px;color:#c5d6e1;margin-top:5px;line-height:1.45}
+  .card .moor{font-size:11px;color:#bfe9e2;margin-top:7px;line-height:1.4;border-top:1px dashed rgba(45,212,191,.25);padding-top:6px}
+  .card .moor b{color:var(--teal)}
+  .card .bk{font-size:10.5px;color:var(--anchor);margin-top:4px}
+
+  .toggle{position:absolute;top:14px;left:360px;z-index:1000;background:var(--panel);border:1px solid var(--line);
+    color:var(--txt);border-radius:10px;padding:8px 11px;font-size:12px;cursor:pointer;backdrop-filter:blur(10px)}
+  .info{position:absolute;top:58px;right:14px;z-index:950;width:316px;max-height:calc(100% - 150px);overflow-y:auto;
+    background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:14px;
+    padding:14px 16px;box-shadow:0 8px 30px rgba(0,0,0,.45);font-size:12px;line-height:1.5}
+  .info h3{margin:0 0 8px;font-size:13px;color:var(--teal)}
+  .info h4{margin:14px 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+  .info .row{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px dashed rgba(255,255,255,.06)}
+  .info .row span:last-child{color:#cfe0ea;text-align:right}
+  .info .note{color:#c5d6e1;margin:4px 0}
+  .info .note b{color:var(--cyan)}
+  .warn{background:rgba(251,113,133,.10);border:1px solid rgba(251,113,133,.35);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:11px;color:#ffd7dd}
+  .warn b{color:var(--coral)}
+  .ok{background:rgba(52,211,153,.10);border:1px solid rgba(52,211,153,.35);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:11px;color:#c9f5e3}
+  .ok b{color:var(--good)}
+  .pill{display:inline-block;background:rgba(56,189,248,.14);border:1px solid rgba(56,189,248,.35);color:#bfe6fb;
+    border-radius:999px;padding:1px 8px;font-size:10.5px;margin:2px 3px 0 0}
+
+  .budget{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:1000;display:flex;gap:0;
+    background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:14px;
+    overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+  .budget .b{padding:8px 16px;text-align:center;border-right:1px solid var(--line)}
+  .budget .b:last-child{border-right:none;background:rgba(45,212,191,.12)}
+  .budget .lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+  .budget .val{font-size:14px;font-weight:800;margin-top:2px}
+  .budget .b:last-child .val{color:var(--teal)}
+
+  .legend{position:absolute;bottom:14px;left:360px;z-index:950;background:var(--panel);backdrop-filter:blur(12px);
+    border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:11px}
+  .legend .li{display:flex;align-items:center;gap:8px;padding:2px 0}
+  .legend .dot{width:13px;height:13px;border-radius:50%;flex:0 0 13px}
+  .legend .ring{width:13px;height:13px;border-radius:50%;flex:0 0 13px;border:2px solid var(--anchor);background:transparent}
+  .legend .ln{width:18px;height:0;border-top:3px dashed var(--cyan);flex:0 0 18px}
+
+  .mk{display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:800;
+    color:#04222b;border:2px solid rgba(255,255,255,.85);box-shadow:0 3px 8px rgba(0,0,0,.5)}
+  .mk-poi{width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.5)}
+  .mk-anc{width:13px;height:13px;border-radius:50%;border:2px solid var(--anchor);background:rgba(96,165,250,.25);box-shadow:0 2px 6px rgba(0,0,0,.5)}
+  .leaflet-popup-content-wrapper{background:var(--panel-solid);color:var(--txt);border-radius:10px;border:1px solid var(--line)}
+  .leaflet-popup-tip{background:var(--panel-solid)}
+  .pop b{color:var(--teal)} .pop .s{color:var(--muted);font-size:11px} .pop .l{color:var(--cyan);font-size:11px}
+  .pop .m{font-size:11px;color:#bfe9e2;margin-top:5px} .pop .bk{font-size:11px;color:var(--anchor);margin-top:4px}
+
+  @media (max-width:760px){
+    .side{width:100%;height:46%;top:auto;bottom:0;border-right:none;border-top:1px solid var(--line)}
+    #map{bottom:46%;inset:auto;top:0;left:0;right:0;height:54%}
+    .info,.legend,.toggle{display:none}
+    .budget{bottom:auto;top:64px}
+  }
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div class="hdr">
+  <h1>⛵ Lefkada Ionian — Family Bareboat Catamaran</h1>
+  <div class="sub"><b>Sat 5 → Sat 12 September 2026</b> · 7 nights · ~75 NM loop · David, Lobke &amp; Noah (5)</div>
+</div>
+
+<button class="toggle" onclick="toggleInfo()">ℹ︎ Trip facts &amp; skipper's notes</button>
+
+<div class="info" id="info">
+  <h3>Trip at a glance</h3>
+  <div class="row"><span>Crew</span><span>2 adults + Noah (5)</span></div>
+  <div class="row"><span>Boat</span><span>3-cabin catamaran, bareboat</span></div>
+  <div class="row"><span>Skipper</span><span>David (self-skipper)</span></div>
+  <div class="row"><span>Base</span><span>Lefkas Marina, Lefkada</span></div>
+  <div class="row"><span>Route</span><span>Round-trip loop · ~75 NM</span></div>
+  <div class="row"><span>Sailing</span><span>~2.2 h/day, morning legs</span></div>
+  <div class="row"><span>Fly</span><span>AMS → Preveza (PVK) · verify Sept Sat</span></div>
+  <div class="row"><span>Transfer</span><span>PVK → marina ~25 min</span></div>
+  <div class="note" style="margin-top:6px"><b>Flights (checked 22 Aug):</b> nonstop AMS→PVK is <b>Transavia HV5791 out / HV5792 back</b>, runs Saturdays and the season reaches ~mid-Oct, so <b>Sat 5 Sep is in-season</b>. ⚠️ <b>Book direct on transavia.com</b> — this charter route is invisible to Google Flights / aggregators (verified). UK-routing (Gatwick→PVK on Jet2) also runs in Sept. Athens is bookable/cheap (~€146 o/w) but a poor gateway (~4.5 h drive).</div>
+
+  <h4>Why these dates</h4>
+  <div><span class="pill">Sat–Sat = full fleet</span><span class="pill">Sea ~25°C, thinning crowds</span><span class="pill">3+ wks clear before ENDO 2026 (SA, 20 Sep)</span></div>
+  <div class="ok" style="margin-top:8px">☀︎ <b>September in the Ionian:</b> arguably better than June — warmest sea of the year (~24–26°C), the <i>maïstros</i> is <b>lighter</b> and the July/Aug crowds have thinned. Quays are easier to get, tavernas calmer. Near-zero rain risk early Sept.</div>
+
+  <h4>Before you book</h4>
+  <div class="warn"><b>Licence:</b> Greece doesn't accept RYA Day Skipper alone (since 2019). Bring the <b>original ICC</b> (ICC was ordered for the June plan — confirm the card is in hand). Lobke signs a <b>“competent crew” declaration</b>; bring all passports for the crew list.</div>
+  <div class="warn">🐈 <b>Catamaran checkout:</b> David has only ever skippered <b>monohulls</b> — never a cat. Book a <b>checkout sail / handover briefing</b> with the base (twin-throttle close-quarters handling, no keel = different feel) before slipping lines.</div>
+  <div class="warn">📅 <b>Custody:</b> confirm Noah is with David for the full Sat 5–Sat 12 Sep window (the June arrangement was date-specific — re-confirm for September).</div>
+
+  <h4>⚓ Skipper's notes</h4>
+  <div class="note"><b>Wind (Sept):</b> NW <i>maïstros</i> sea-breeze, typically <b>lighter than mid-summer</b> — calm at dawn, builds to F3–4 by mid-afternoon, dies at dusk. Sail mornings, anchor by ~14:00, swim all afternoon. Watch for rare <b>S winds</b> (kills Fiskardo &amp; Kastos) and the odd early-autumn thundery breakdown — check the forecast each morning.</div>
+  <div class="note"><b>Fuel:</b> leave Lefkas <b>full</b> — no diesel at Kioni / Fiskardo / Kastos / Kalamos. Refuel only at the Lefkas marina dock (also Nidri/Vlicho).</div>
+  <div class="note"><b>Water:</b> top up tanks at Spilia, Kioni (card), Fiskardo &amp; Sivota. Carry full leaving Vathi.</div>
+  <div class="note"><b>Provisioning:</b> big shop in Lefkada town first — Sklavenitis / AB / Lidl. Islands = bread, fruit, snacks only (Fiskardo pricey).</div>
+  <div class="note"><b>Forecast:</b> Poseidon/HCMR + Windy / Windguru.</div>
+  <div class="note"><b>VHF:</b> monitor <b>Ch 16</b>; call port police on <b>Ch 12</b>. Coastguard <b>108</b> (or 112).</div>
+  <div class="note"><b>Lefkas Canal bridge:</b> floating swing bridge opens ≈ on the hour, one-way convoy — <b>verify times with the marina on the day</b> (2026 works schedule). Be back ~16:00 on hand-back day.</div>
+  <div class="note"><b>Paperwork &amp; cash:</b> confirm in writing that <b>TEPAI tax is pre-paid</b>. Carry the crew list (Belgian passports). Keep <b>€100–150 cash</b> for quay fees / water cards.</div>
+  <div class="warn">🛟 <b>Child lifejacket:</b> charter cats rarely carry child sizes — <b>bring Noah's own</b> (CE 50/100N, crotch strap + grab handle) and pre-request one in writing. Lifejacket on whenever he's on deck or in the dinghy.</div>
+  <div class="note" style="margin-top:6px"><b>Pre-request:</b> SUP/kayak · extra fenders (6+) · autopilot · 30–50 m long line + shackle (for line-ashore bays) · full bimini.</div>
+
+  <h4>Candidate catamarans (early-Sept/wk)</h4>
+  <div class="note" style="margin:0 0 6px;color:#c5d6e1"><b>Sept price band:</b> Sat 5 Sep is still upper-shoulder/high season in the Ionian — a 3-cabin cat realistically <b>~€3,000–4,500/wk</b> depending on model &amp; age, + extras below. Get live quotes by enquiry (Kavas / Istion / Sail Ionian / Dream Yacht); nothing prices live online.</div>
+  <div class="row"><span>FP Isla 40 ’22 (4cab)</span><span>~€1,960–2,650</span></div>
+  <div class="row"><span>Lagoon 40 ’24 (4cab)</span><span>~€2,390–3,240</span></div>
+  <div class="row"><span>Nautitech 40 Open</span><span>~€2,800–3,400</span></div>
+  <div class="row"><span>Lagoon 42 (6cab)</span><span>~€2,780–3,700</span></div>
+  <div style="color:var(--muted);font-size:10.5px;margin-top:6px">Bases: Kavas, Istion, Dream Yacht, Sail Ionian. + extras: clean ~€220, fuel ~€250, deposit €2–3k (refundable).</div>
+</div>
+
+<div class="side">
+  <h2>Day-by-day · click to fly</h2>
+  <div id="cards"></div>
+  <h2 style="margin-top:14px">Highlights &amp; backup anchorages</h2>
+  <div id="pcards"></div>
+</div>
+
+<div class="legend">
+  <div class="li"><span class="dot" style="background:var(--teal)"></span> Overnight stop</div>
+  <div class="li"><span class="dot" style="background:var(--amber)"></span> Charter base (marina)</div>
+  <div class="li"><span class="ring"></span> Backup anchorage</div>
+  <div class="li"><span class="dot" style="background:var(--purple)"></span> Sight / swim waypoint</div>
+  <div class="li"><span class="dot" style="background:var(--coral)"></span> West-coast beach (by land)</div>
+  <div class="li"><span class="ln"></span> Sailing route</div>
+</div>
+
+<div class="budget">
+  <div class="b"><div class="lbl">Flights</div><div class="val">€1,150</div></div>
+  <div class="b"><div class="lbl">Catamaran</div><div class="val">€2,800</div></div>
+  <div class="b"><div class="lbl">Boat extras</div><div class="val">€560</div></div>
+  <div class="b"><div class="lbl">Transfers</div><div class="val">€150</div></div>
+  <div class="b"><div class="lbl">Food/tavernas</div><div class="val">€800</div></div>
+  <div class="b"><div class="lbl">Est. total</div><div class="val">≈ €5,460</div></div>
+</div>
+
+<script>
+const map = L.map('map',{zoomControl:true,attributionControl:false}).setView([38.62,20.72],10);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd'}).addTo(map);
+
+// --- Overnight stops (the loop) ---
+const stops = [
+  {n:1, day:"Sat 5 Sep", name:"Lefkas Marina", island:"Lefkada", lat:38.834, lng:20.711,
+   leg:"Embark 17:00 · provision", desc:"Board, big-shop in Lefkada town, dinner in the old town across the floating bridge. Easiest first night.",
+   moor:"Marina berth, <b>lazy-lines</b> (no anchor) — fully enclosed, the most sheltered stop. Water €12/m³ + metered power.",
+   bk:"Backup: Lefkada town municipal quay (~€10–15)."},
+  {n:2, day:"Sun 6 Sep", name:"Porto Spilia / Spartochori", island:"Meganisi", lat:38.665, lng:20.760,
+   leg:"Lefkada → ~10 NM · ~2 h (via Lefkas Canal)", desc:"Gentle confidence-builder down the channel. Walk/shuttle up to Spartochori; swim straight off the boat.",
+   moor:"<b>Taverna pontoon / laid mooring</b> — free if you dine (water+power incl). Sand/mud, good holding. Shelter N/NW/W; exposed S/SE. Arrive 15:00–16:00.",
+   bk:"Backup: anchor Atherinos Bay (≈9 m, good holding)."},
+  {n:3, day:"Mon 7 Sep", name:"Port Vathi", island:"Meganisi", lat:38.673, lng:20.787,
+   leg:"→ ~6 NM · ~1.5 h (via Papanikolis Cave)", desc:"Visit the Papanikolis sea-cave first — by dinghy/swim, don't anchor inside. Sleepy harbour village; lunch swim at Abelike.",
+   moor:"<b>Town quay stern-to, own anchor</b> (mooring rings); mud, excellent holding. Quay edge shallow ~1.5 m — cat draft an asset. SE quay free / taverna free with dinner. Limited water.",
+   bk:"Backup: Abelike Bay — anchor + long line ashore."},
+  {n:4, day:"Tue 8 Sep", name:"Kioni", island:"Ithaca", lat:38.450, lng:20.690,
+   leg:"→ ~13 NM · ~2.5–3 h (leave early)", desc:"One of the prettiest horseshoe harbours — three windmills at the mouth, crystal water. Mythos Taverna on the quay for kids.",
+   moor:"<b>Town quay stern-to, own anchor.</b> Weed over mud — moderate holding, may take 2–3 goes; drop 60 m+ chain for the NW gusts. ~€15 + power card €15. Arrive by 14:00.",
+   bk:"Backup: Frikes (2 NM N) or SW rocks (line ashore)."},
+  {n:5, day:"Wed 9 Sep", name:"Fiskardo", island:"Kefalonia", lat:38.457, lng:20.577,
+   leg:"→ ~8 NM · ~1.5–2 h", desc:"Picture-postcard Venetian port — the only village to survive the 1953 quake. Lighthouse walk; swim at Emblisi/Foki. Dine at Tassia or Elli's.",
+   moor:"<b>E quay stern-to, own anchor</b> (calmer than the main quay). Sand/weed — check it's set. Safe W/NW; exposed E, bad in S swell. Water on quay, <b>NO power</b>. Busiest — arrive 13:00–14:00.",
+   bk:"Backup: Foki Bay just S, or N-shore anchor 10–12 m."},
+  {n:6, day:"Thu 10 Sep", name:"Port Kastos", island:"Kastos", lat:38.571, lng:20.915,
+   leg:"→ ~15 NM · ~3 h (longest leg — start early)", desc:"Tiny, almost car-free island; the slow authentic Ionian. Windmill walk, sunset swims. Tavernas Belos & Windmill.",
+   moor:"<b>Town quay stern-to, own anchor</b>; sand/mud, good holding. Limited shelter — katabatic gusts; <b>avoid in E/NE/SE</b>. Free; water on quay, no power/fuel. Arrive early.",
+   bk:"ALT: Kalamos Town (free, George's Taverna) or Sarakiniko Bay."},
+  {n:7, day:"Fri 11 Sep", name:"Sivota", island:"Lefkada", lat:38.615, lng:20.692,
+   leg:"→ ~14 NM · ~3 h (morning passage north)", desc:"Landlocked, exceptionally calm bay ringed with tavernas — superb last night. Safe shallow swimming. Dinner at Ionion Taverna (Yanni's).",
+   moor:"<b>Taverna pontoon, lazy-lines</b> — free if you dine (power+water). Mud/weed; almost landlocked = superb shelter. <b>Pre-book the pontoon</b> in season. Top up water here.",
+   bk:"Backup: Vlicho Bay — vast all-weather anchorage 5 NM away."},
+  {n:8, day:"Sat 12 Sep", name:"Sivota → Lefkas Marina", island:"Disembark", lat:38.842, lng:20.709,
+   leg:"→ ~9 NM · ~2 h · hand back by 09:00", desc:"Calm early-morning motor up the canal. Final swim the evening before. Refuel at the marina dock. Fly home AMS. ~3 weeks clear before ENDO 2026 (Cape Town, 20 Sep).",
+   moor:"Marina hand-back. Catch a morning bridge opening; refuel at the fuel berth before handover.",
+   bk:""}
+];
+
+// --- POIs / highlights ---
+const pois = [
+  {name:"Papanikolis Sea Cave", t:"Greece's 2nd-largest sea cave — visit by dinghy/swim, NO anchoring (Day 3)", lat:38.642, lng:20.755, c:"var(--purple)"},
+  {name:"Atherinos / Abelike Bay", t:"Turquoise daytime swim stop & backup anchorage off Meganisi (Day 3)", lat:38.665, lng:20.790, c:"var(--purple)"},
+  {name:"Kalamos Town", t:"Sheltered quay & friendly tavernas — Day 6 alternative to Kastos", lat:38.623, lng:20.932, c:"var(--purple)"},
+  {name:"Porto Katsiki", t:"Iconic white-cliff beach — visit by LAND (exposed west coast)", lat:38.585, lng:20.602, c:"var(--coral)"},
+  {name:"Egremni Beach", t:"Long white-pebble west-coast beach — by LAND, pre/post charter", lat:38.610, lng:20.605, c:"var(--coral)"}
+];
+
+// --- Backup anchorages (Plan B if the quay is full / wind shifts) ---
+const anchorages = [
+  {name:"Abelike Bay", t:"Meganisi — anchor 5–10 m mud + long line ashore; high shelter (Vathi backup)", lat:38.668, lng:20.793},
+  {name:"Frikes", t:"Ithaca — small harbour 2 NM N of Kioni (Kioni backup)", lat:38.467, lng:20.682},
+  {name:"Foki Bay", t:"Kefalonia — anchor in sand just S of Fiskardo (Fiskardo backup)", lat:38.450, lng:20.578},
+  {name:"Sarakiniko Bay", t:"Kastos NW — quiet anchorage (Kastos backup)", lat:38.580, lng:20.905},
+  {name:"Vlicho Bay", t:"Lefkada — vast all-weather mud anchorage, ~5 NM from base (Sivota backup)", lat:38.685, lng:20.715}
+];
+
+// route polyline through the loop (incl. cave waypoint)
+const route = [[38.834,20.711],[38.665,20.760],[38.642,20.755],[38.673,20.787],[38.450,20.690],[38.457,20.577],[38.571,20.915],[38.615,20.692],[38.834,20.711]];
+L.polyline(route,{color:'#38bdf8',weight:3,dashArray:'8,8',opacity:.9}).addTo(map);
+
+function stopIcon(n,base){
+  const col = base ? 'var(--amber)' : 'var(--teal)';
+  return L.divIcon({className:'',html:`<div class="mk" style="width:30px;height:30px;background:${col};font-size:13px">${base?'⚓':n}</div>`,iconSize:[30,30],iconAnchor:[15,15]});
+}
+function poiIcon(c){return L.divIcon({className:'',html:`<div class="mk-poi" style="background:${c}"></div>`,iconSize:[14,14],iconAnchor:[7,7]});}
+function ancIcon(){return L.divIcon({className:'',html:`<div class="mk-anc"></div>`,iconSize:[13,13],iconAnchor:[7,7]});}
+
+const markers=[];
+stops.forEach((s,i)=>{
+  const base = (s.n===1);
+  const m=L.marker([s.lat,s.lng],{icon:stopIcon(s.n,base)}).addTo(map);
+  m.bindPopup(`<div class="pop"><b>${base?'⚓ ':'Night '+s.n+' · '}${s.name}</b><br><span class="s">${s.island} · ${s.day}</span><br><span class="l">${s.leg}</span><div style="margin-top:5px">${s.desc}</div><div class="m">⚓ ${s.moor}</div>${s.bk?`<div class="bk">↳ ${s.bk}</div>`:''}</div>`,{maxWidth:280});
+  markers[i]=m;
+});
+pois.forEach(p=>{
+  L.marker([p.lat,p.lng],{icon:poiIcon(p.c)}).addTo(map)
+   .bindPopup(`<div class="pop"><b>${p.name}</b><div style="margin-top:4px">${p.t}</div></div>`,{maxWidth:240});
+});
+anchorages.forEach(a=>{
+  L.marker([a.lat,a.lng],{icon:ancIcon()}).addTo(map)
+   .bindPopup(`<div class="pop"><b style="color:var(--anchor)">⚓ ${a.name}</b><div style="margin-top:4px">${a.t}</div></div>`,{maxWidth:240});
+});
+
+// sidebar day cards
+const cw=document.getElementById('cards');
+stops.forEach((s,i)=>{
+  const d=document.createElement('div');d.className='card';
+  d.innerHTML=`<div class="top"><div class="num" style="${s.n===1?'background:var(--amber)':''}">${s.n===1?'⚓':s.n}</div>
+    <div><div class="ttl">${s.name}</div><div class="day">${s.island} · ${s.day}</div></div></div>
+    <div class="leg">${s.leg}</div><div class="desc">${s.desc}</div>
+    <div class="moor">⚓ ${s.moor}</div>${s.bk?`<div class="bk">↳ ${s.bk}</div>`:''}`;
+  d.onclick=()=>{map.flyTo([s.lat,s.lng],13,{duration:1.1});markers[i].openPopup();};
+  cw.appendChild(d);
+});
+// highlight + anchorage cards
+const pw=document.getElementById('pcards');
+pois.forEach(p=>{
+  const d=document.createElement('div');d.className='card';d.style.borderLeftColor=p.c;
+  d.innerHTML=`<div class="ttl" style="font-size:12.5px">${p.name}</div><div class="desc">${p.t}</div>`;
+  d.onclick=()=>map.flyTo([p.lat,p.lng],13,{duration:1.1});
+  pw.appendChild(d);
+});
+anchorages.forEach(a=>{
+  const d=document.createElement('div');d.className='card';d.style.borderLeftColor='var(--anchor)';
+  d.innerHTML=`<div class="ttl" style="font-size:12.5px;color:var(--anchor)">⚓ ${a.name}</div><div class="desc">${a.t}</div>`;
+  d.onclick=()=>map.flyTo([a.lat,a.lng],13,{duration:1.1});
+  pw.appendChild(d);
+});
+
+function toggleInfo(){const e=document.getElementById('info');e.style.display=(e.style.display==='none')?'block':'none';}
+
+map.fitBounds(L.latLngBounds(route).pad(0.18));
+</script>
+</body>
+</html>
