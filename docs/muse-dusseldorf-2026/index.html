@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Muse · The Wow! Signal — PSD Bank Dome Düsseldorf, 24–25 Nov 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --venue:#ec4899; --d:#f59e0b; --v:#22d3ee; --poi:#38bdf8; --trip:#34d399; --home:#f43f5e;
+    --ink:#e8edf4; --muted:#9fb0c3; --glass:rgba(15,23,38,.82);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1b2b;color:var(--ink)}
+  #map{position:absolute;inset:0;z-index:1}
+  .panel{position:absolute;z-index:1000;background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.10);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.45)}
+  #title{top:14px;left:14px;padding:14px 18px;max-width:352px}
+  #title h1{margin:0;font-size:18px;letter-spacing:.2px}
+  #title .sub{color:var(--muted);font-size:12.5px;margin-top:4px;line-height:1.5}
+  #title .tags{margin-top:9px;display:flex;flex-wrap:wrap;gap:6px}
+  .tag{font-size:11px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}
+  #timeline{top:14px;right:14px;width:290px;max-height:calc(100vh-28px);overflow:auto;padding:12px}
+  #timeline h2{margin:2px 4px 10px;font-size:12px;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted)}
+  .day{display:flex;gap:10px;padding:10px;border-radius:12px;cursor:pointer;transition:.15s;border:1px solid transparent}
+  .day:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
+  .day .dot{flex:0 0 auto;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-weight:700;font-size:11px;color:#0d1b2b}
+  .day .meta b{font-size:13px}
+  .day .meta span{display:block;color:var(--muted);font-size:11.5px;margin-top:2px;line-height:1.45}
+  #legend{bottom:62px;left:14px;padding:11px 14px;font-size:12px}
+  #legend .row{display:flex;align-items:center;gap:8px;margin:5px 0}
+  #legend .pin{width:13px;height:13px;border-radius:50%;border:2px solid #fff}
+  #budget{bottom:14px;left:14px;right:14px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:11px 14px}
+  #budget .item{font-size:12px;color:var(--muted)}
+  #budget .item b{color:var(--ink);font-size:13.5px}
+  #budget .total{margin-left:auto;font-size:13px;color:var(--muted)}
+  #budget .total b{color:#fff;font-size:18px;margin-left:6px}
+  .chip{font-size:10.5px;padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.07)}
+  .stay-marker{border-radius:50%;border:2.5px solid #fff;display:grid;place-items:center;font-weight:800;font-size:11px;color:#0d1b2b;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+  .venue-marker{border-radius:50%;border:3px solid #fff;display:grid;place-items:center;font-size:18px;box-shadow:0 0 18px rgba(236,72,153,.7),0 2px 8px rgba(0,0,0,.6)}
+  .poi-marker{border-radius:50%;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.5)}
+  .home-marker{border-radius:7px;border:2px solid #fff;display:grid;place-items:center;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+  .leaflet-popup-content-wrapper{background:#0f1726;color:var(--ink);border-radius:12px;border:1px solid rgba(255,255,255,.12)}
+  .leaflet-popup-tip{background:#0f1726}
+  .leaflet-popup-content{margin:11px 13px;font-size:12.5px;line-height:1.5}
+  .leaflet-popup-content b{font-size:13.5px}
+  .leaflet-popup-content a{color:#5ec2ff;font-weight:600}
+  .pp-row{color:var(--muted);margin-top:3px}
+  .pp-code{display:inline-block;font-weight:800;color:#0d1b2b;padding:1px 7px;border-radius:6px;margin-bottom:4px}
+  @media (max-width:680px){#title{max-width:none;right:14px}#timeline,#legend{display:none}#budget{font-size:11px}}
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div id="title" class="panel">
+  <h1>🎸 Muse — <em>The Wow! Signal</em></h1>
+  <div class="sub"><b>PSD Bank Dome, Düsseldorf</b> · <b>Tue 24</b> or <b>Wed 25 Nov 2026</b> · both 19:30 · David + 1<br>Drive from Ghent ~3h (~310 km) · cheapest option · ⚠️ midweek = 1–2 days off</div>
+  <div class="tags">
+    <span class="tag">🚗 ~310 km</span>
+    <span class="tag">🎤 PSD Bank Dome</span>
+    <span class="tag">🍺 Altstadt night</span>
+    <span class="tag">💶 cheapest of the 3</span>
+  </div>
+</div>
+
+<div id="timeline" class="panel">
+  <h2>Plan — tap to fly</h2>
+  <div id="days"></div>
+</div>
+
+<div id="legend" class="panel">
+  <div class="row"><span class="pin" style="background:var(--home);border-radius:3px"></span> Ghent — home base (drive start)</div>
+  <div class="row"><span class="pin" style="background:var(--venue)"></span> PSD Bank Dome — the gig</div>
+  <div class="row"><span class="pin" style="background:var(--d)"></span> Hotels D1–D4 · Altstadt (city night)</div>
+  <div class="row"><span class="pin" style="background:var(--v)"></span> Hotels V1–V3 · near venue / airport</div>
+  <div class="row"><span class="pin" style="background:var(--poi)"></span> Düsseldorf sights</div>
+</div>
+
+<div id="budget" class="panel">
+  <span class="item">🎟️ Tickets ×2 <b>~€200</b></span>
+  <span class="item">⛽ Fuel return <b>~€90</b></span>
+  <span class="item">🅿️ Parking <b>~€20</b></span>
+  <span class="item">🏨 Hotel 1n <b>~€80–165</b></span>
+  <span class="chip">excl. food · ~€430 (≈ Amsterdam, ½ of London)</span>
+  <span class="total">Est. trip <b>~€430</b></span>
+</div>
+
+<script>
+const map = L.map('map',{zoomControl:true}).setView([51.18,5.3], 8);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+  attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:'abcd', maxZoom:19
+}).addTo(map);
+
+const COL={D:'#f59e0b',V:'#22d3ee'};
+const DIN='2026-11-24', DOUT='2026-11-25';
+
+// ---- The gig ----
+const VENUE=[51.2789,6.8093];
+const vicon=L.divIcon({className:'',html:`<div class="venue-marker" style="width:40px;height:40px;background:#ec4899">🎸</div>`,iconSize:[40,40],iconAnchor:[20,20]});
+L.marker(VENUE,{icon:vicon}).addTo(map).bindPopup(
+  `<b>🎸 Muse · The Wow! Signal Tour</b>`+
+  `<div class="pp-row"><b>PSD Bank Dome</b> · Theodorstraße 281, Düsseldorf-Rath</div>`+
+  `<div class="pp-row">Tue 24 & Wed 25 Nov 2026 · both 19:30 · ~14,000 cap</div>`+
+  `<div class="pp-row">North Düsseldorf, near the airport · big car parks · S6/bus from centre</div>`+
+  `<a href="https://www.psd-bank-dome.de/event/muse-24-11-2026" target="_blank">Venue event & tickets →</a>`);
+
+// ---- Hotels (live Booking.com rates for 24→25 Nov 2026, 2 adults, EUR — advance prices) ----
+const stays=[
+ // D = Altstadt / city centre — make a Düsseldorf night of it; taxi/tram ~15–20 min to the dome
+ {code:'D1',n:'VIVA RIVERSIDE Altstadt (Rhine hotel-boat)',lat:51.23072,lng:6.77075,price:'€149',score:'9.2',rev:'1,527',star:4,tag:'⭐ top-rated · novelty boat on the Rhine · free cancel',base:'D',url:'https://www.booking.com/hotel/de/regis-hotelschiff-4-altstadt-dusseldorf.html'},
+ {code:'D2',n:'Living Hotel De Medici',lat:51.22754,lng:6.77391,price:'€169',score:'8.7',rev:'1,950',star:4,tag:'🏛️ characterful 4★ in the Altstadt',base:'D',url:'https://www.booking.com/hotel/de/derag-livinghotel-de-medici.html'},
+ {code:'D3',n:'Square Rooms 20',lat:51.22562,lng:6.77395,price:'€122',score:'8.6',rev:'461',star:4,tag:'💶 modern value · heart of the old town',base:'D',url:'https://www.booking.com/hotel/de/square-rooms-20.html'},
+ {code:'D4',n:'The Wellem (5★)',lat:51.22750,lng:6.77389,price:'€215',score:'8.7',rev:'1,477',star:5,tag:'✨ luxury splurge · Altstadt',base:'D',url:'https://www.booking.com/hotel/de/hyatt-house-dusseldorf.html'},
+ // V = near the venue / airport — practical for the drive + the gig, motorway-easy, parking
+ {code:'V1',n:'Maritim Hotel Düsseldorf',lat:51.27581,lng:6.76921,price:'€162',score:'8.8',rev:'10,387',star:4,tag:'🛫 big reliable 4★ at the airport · ~8 min to dome',base:'V',url:'https://www.booking.com/hotel/de/maritim-dusseldorf.html'},
+ {code:'V2',n:'Leonardo Hotel Airport Ratingen',lat:51.29206,lng:6.80657,price:'€78',score:'7.9',rev:'4,481',star:4,tag:'💶 best value near venue · ~6 min drive',base:'V',url:'https://www.booking.com/hotel/de/leonardo-hotel-dusseldorf-airport-ratingen.html'},
+ {code:'V3',n:'Van der Valk Hotel Düsseldorf',lat:51.27810,lng:6.80688,price:'€390',score:'8.8',rev:'2,333',star:4,tag:'🎤 right beside the dome (walk!) · but pricey this night',base:'V',url:'https://www.booking.com/hotel/de/van-der-valk-airporthotel-dusseldorf.html'},
+];
+stays.forEach(s=>{
+  const icon=L.divIcon({className:'',html:`<div class="stay-marker" style="width:30px;height:30px;background:${COL[s.base]}">${s.code}</div>`,iconSize:[30,30],iconAnchor:[15,15]});
+  L.marker([s.lat,s.lng],{icon}).addTo(map).bindPopup(
+    `<span class="pp-code" style="background:${COL[s.base]}">${s.code}</span><br><b>${s.n}</b>`+
+    `<div class="pp-row">${s.price}/night · ${'★'.repeat(s.star)} · ${s.score} (${s.rev} reviews)</div>`+
+    `<div class="pp-row">${s.tag}</div>`+
+    `<div class="pp-row">${DIN} → ${DOUT} · 1 night, 2 adults</div>`+
+    `<a href="${s.url}?checkin=${DIN}&checkout=${DOUT}&group_adults=2&no_rooms=1" target="_blank">Open on Booking.com →</a>`);
+});
+
+// ---- Home base (Ghent) ----
+const hicon=L.divIcon({className:'',html:'<div class="home-marker" style="width:30px;height:30px;background:#f43f5e">🏠</div>',iconSize:[30,30],iconAnchor:[15,15]});
+L.marker([51.0536,3.7253],{icon:hicon}).addTo(map).bindPopup('<b>🏠 Ghent — home base</b><div class="pp-row">Drive ~3h · ~310 km · E17 → Antwerp → E34 (Eindhoven/Venlo) → A52/A44. No road tolls. Stay over — don\'t drive home at midnight midweek.</div>');
+
+// ---- Sights ----
+const pois=[
+ {n:'Altstadt · "längste Theke der Welt"',lat:51.2270,lng:6.7745,d:'The "longest bar in the world" — 260+ pubs. Altbier + dinner before the show.',t:'town'},
+ {n:'Rheinuferpromenade',lat:51.2268,lng:6.7700,d:'Riverside promenade — lovely stroll along the Rhine.',t:'nat'},
+ {n:'Königsallee (Kö)',lat:51.2240,lng:6.7800,d:'Grand shopping boulevard along an old moat.',t:'town'},
+ {n:'MedienHafen + Gehry buildings',lat:51.2180,lng:6.7560,d:'Striking modern architecture in the old harbour.',t:'town'},
+ {n:'Rheinturm',lat:51.2178,lng:6.7625,d:'Observation tower — city + Rhine views.',t:'town'},
+];
+pois.forEach(p=>{
+  const col=p.t==='nat'?'var(--trip)':'var(--poi)';
+  const icon=L.divIcon({className:'',html:`<div class="poi-marker" style="width:13px;height:13px;background:${col}"></div>`,iconSize:[13,13],iconAnchor:[7,7]});
+  L.marker([p.lat,p.lng],{icon}).addTo(map).bindPopup(`<b>${p.n}</b><div class="pp-row">${p.d}</div>`);
+});
+
+// ---- Route: Ghent → Düsseldorf ----
+L.polyline([[51.0536,3.7253],[51.2194,4.4025],[51.4400,5.4700],[51.3700,6.1700],[51.2789,6.8093]],
+  {color:'#34d399',weight:3.5,opacity:.85,dashArray:'8,9'}).addTo(map);
+
+// ---- Timeline ----
+const days=[
+ {t:'Pre',col:'#f43f5e',h:'Buy tickets FIRST',s:'On sale since 18 Jun. Lock 2 via psd-bank-dome.de / Ticketmaster.de / Live Nation.de. ⚠️ some allotments are "EVENTIM.Pass only" (mobile) — pick the right type.',z:[51.279,6.81,12]},
+ {t:'Tue',col:'#ec4899',h:'24 Nov · Ghent → Düsseldorf + gig',s:'Half-day off, drive ~3h (leave ~13:00). Check in, Altstadt Altbier + dinner, Muse at the PSD Bank Dome 19:30. Stay over.',z:[51.279,6.81,12]},
+ {t:'Wed',col:'#f59e0b',h:'25 Nov · Düsseldorf → home',s:'Altstadt / Kö / MedienHafen wander, then drive home ~3h. (Or attend the 25th instead and flip the days.)',z:[51.225,6.775,13]},
+];
+const dwrap=document.getElementById('days');
+days.forEach(d=>{
+  const el=document.createElement('div');el.className='day';
+  el.innerHTML=`<div class="dot" style="background:${d.col}">${d.t}</div>`+
+    `<div class="meta"><b>${d.h}</b><span>${d.s}</span></div>`;
+  el.onclick=()=>map.flyTo([d.z[0],d.z[1]],d.z[2],{duration:1.1});
+  dwrap.appendChild(el);
+});
+
+map.fitBounds([[50.95,3.55],[51.55,7.05]],{padding:[40,40]});
+</script>
+</body>
+</html>

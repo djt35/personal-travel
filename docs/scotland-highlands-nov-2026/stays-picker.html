@@ -1,0 +1,1024 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scotland Stays Picker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f2ed;--card:#fff;--ink:#16202b;--muted:#647180;--line:#e2ded5;--accent:#1f6f6a;--good:#1f7a4d;--goodbg:#e4f3ea;--warn:#9a6a00;--warnbg:#fbf1d6;--bad:#a23b2a;--badbg:#f8e3df;--pick:#b8862b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1720;--card:#16212c;--ink:#e8edf2;--muted:#93a1b0;--line:#26333f;--accent:#5fb8b0;--good:#7ccf9f;--goodbg:#173326;--warn:#e7b94f;--warnbg:#3a2f12;--bad:#ef8f7f;--badbg:#3d1f1b;--pick:#e9c26f}}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,sans-serif}
+header{padding:28px 16px 8px;max-width:1100px;margin:0 auto} h1{margin:0 0 4px;font-size:26px} .lede{color:var(--muted);margin:0}
+nav{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+nav .in{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+nav a{color:var(--ink);text-decoration:none;padding:6px 10px;border:1px solid var(--line);border-radius:99px;font-size:13px;background:var(--card)}
+nav label{font-size:13px;color:var(--muted);display:flex;gap:5px;align-items:center;margin-left:4px}
+main{max-width:1100px;margin:0 auto;padding:0 16px 140px}
+.shead{margin:34px 0 14px} .when{color:var(--accent);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.04em} h2{margin:2px 0;font-size:22px} .sub{color:var(--muted);font-size:14px}
+.prop{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:0 0 18px}
+.hero{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:110px 110px;gap:3px} .hero img{width:100%;height:100%;object-fit:cover;cursor:zoom-in;display:block} .hero img:first-child{grid-row:1/3} .hero img:nth-child(4){grid-column:2/4}
+.pbody{padding:14px 16px 16px} .ptop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start} h3{margin:0;font-size:18px}
+.meta{font-size:13px;margin-top:2px} .stars{color:var(--pick);letter-spacing:1px} .score{background:var(--accent);color:#fff;border-radius:6px;padding:1px 6px;font-weight:600;font-size:12px} .muted{color:var(--muted)}
+.bk{white-space:nowrap;font-size:13px;color:var(--accent);text-decoration:none;border:1px solid var(--line);padding:6px 10px;border-radius:8px}
+.pick{font-size:11px;background:var(--pick);color:#fff;border-radius:99px;padding:2px 8px;vertical-align:middle;font-weight:600}
+.chip.pfree{background:var(--goodbg);color:var(--good);border-color:transparent;font-weight:600} .chip.ppaid{background:var(--warnbg);color:var(--warn);border-color:transparent;font-weight:600}
+.chip.hot{background:#b8452b;color:#fff;border-color:transparent;font-weight:600}
+.chip.newfind{background:#2b5fb8;color:#fff;border-color:transparent;font-weight:600}
+.dpick{font-size:11px;background:#c8364a;color:#fff;border-radius:99px;padding:2px 8px;vertical-align:middle;font-weight:600}
+.warnbox{margin-top:10px;background:var(--warnbg);color:var(--ink);border-left:4px solid var(--warn);border-radius:8px;padding:10px 12px;font-size:13px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 6px} .chip{font-size:12px;border:1px solid var(--line);border-radius:99px;padding:2px 9px}
+.chip.pool,.chip.gym,.chip.spa{border-color:var(--accent);color:var(--accent);font-weight:600} .chip.pub{background:var(--warnbg);color:var(--warn);border-color:transparent;font-weight:600}
+.fit.ok{background:var(--goodbg);color:var(--good);border-color:transparent} .fit.warn{background:var(--warnbg);color:var(--warn);border-color:transparent} .fit.bad{background:var(--badbg);color:var(--bad);border-color:transparent}
+.note{font-size:13px;color:var(--good);margin:4px 0} .desc{color:var(--muted);font-size:13px;margin:6px 0 10px}
+.rooms{display:grid;gap:10px} .room{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px;border-top:1px solid var(--line);padding-top:10px}
+.rphotos{display:grid;grid-template-columns:repeat(3,1fr);gap:3px} .rphotos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;cursor:zoom-in;display:block} .nophoto{color:var(--muted);font-size:12px;padding:20px 0}
+.rhead{display:flex;justify-content:space-between;gap:10px} .rname{font-weight:600} .rbeds{font-size:13px;color:var(--muted)} .rprice{text-align:right;white-space:nowrap} .rprice b{font-size:17px} .rprice small{display:block;color:var(--muted);font-size:11px}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0} .tag{font-size:11px;border-radius:5px;padding:2px 6px;background:color-mix(in srgb,var(--line) 60%,transparent)} .tag.good{background:var(--goodbg);color:var(--good)} .tag.muted{color:var(--muted)}
+.fav{display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-size:13px;font-weight:600}
+.fav input{display:none} .fav:has(input:checked){background:#c8364a;color:#fff;border-color:#c8364a} .fav:has(input:checked) span::before{content:'♥ '} .fav:has(input:checked) span{font-size:0} .fav:has(input:checked) span::before{font-size:13px} .fav:has(input:checked) span::after{content:'Favourite';font-size:13px}
+.prop.hide{display:none}
+#bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);box-shadow:0 -6px 20px rgba(0,0,0,.08);z-index:6}
+#bar .in{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap} #picks{flex:1;font-size:13px;min-width:200px} #picks b{color:#c8364a}
+#bar button{font:inherit;font-size:13px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--accent);color:#fff;cursor:pointer}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:9;cursor:zoom-out} #lb img{max-width:94vw;max-height:90vh;border-radius:8px}
+@media (max-width:700px){.room{grid-template-columns:1fr} .hero{grid-template-rows:90px 90px} .ptop{flex-direction:column}}
+</style></head><body>
+<header><h1>Scotland stays v5: Sun 1 → Fri 6 / Sat 7 Nov</h1>
+<p class="lede">Live Booking.com and Airbnb prices, checked 31 Oct 2026, for 2 adults + Noah (5) unless a card says “2 adults”. Your picks (Mar Hall, Fonab) are pre-ticked. Glencoe is ranked by quality: hot tub plus a bed for Noah. Tap a photo to enlarge; tick <b>♡ Favourite</b> on what you want and I’ll stage those.</p></header>
+<nav><div class="in"><a href="#glasgow">Sun 1 · Glasgow</a><a href="#marhall">Mon 2 · Mar Hall</a><a href="#glencoe">Tue–Wed · Glencoe ♨</a><a href="#pitlochry">Thu 5 · Pitlochry</a><a href="#edinburgh">Fri 6 · Edinburgh?</a>
+<label><input type="checkbox" id="fPool"> Pool only</label><label><input type="checkbox" id="fNoah"> Noah-friendly only</label><label><input type="checkbox" id="fFav"> Favourites only</label></div></nav>
+<main>
+  <section id="glasgow">
+    <div class="shead"><div class="when">Night 1 · Sun 1 Nov</div><h2>Glasgow city centre (with the car)</h2><div class="sub">1 night · hire car from GLA ~13:30 · dinner in town with friends 18:30 · 6 options · picks first, then by stars &amp; rating; places with no bed for Noah last</div><div class="warnbox"><b>You’ll have the car Sunday night.</b> Each card shows where to park and what it costs. Easiest: <b>Oswald Apartment</b> (free underground car park) and <b>Glasgow Marriott</b> (own car park, £10–12/night, plus a pool). All are a 5–15 min walk to city-centre restaurants.</div></div>
+    
+    <article class="prop" data-name="Kimpton Blythswood Square Hotel &amp; Spa by IHG" data-fit="ok" data-pool="1" data-min="521.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/271177015.jpg?k=17dab1c2baa878ebd28385917249af70ab2752a3beae34e83946c598e72bc242&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/271177015.jpg?k=17dab1c2baa878ebd28385917249af70ab2752a3beae34e83946c598e72bc242&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/43751761.jpg?k=0271aa0287ca9e92f7e22d79fdf8ad74162a7593feef4b0783ad933db353a7e3&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/43751761.jpg?k=0271aa0287ca9e92f7e22d79fdf8ad74162a7593feef4b0783ad933db353a7e3&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/220830995.jpg?k=e3f632fbe139e8b64edfce98d40dedd1f12843737f15f090b5729356c135e56f&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/220830995.jpg?k=e3f632fbe139e8b64edfce98d40dedd1f12843737f15f090b5729356c135e56f&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/198262941.jpg?k=7fc9f0f4b341c2cd105f6120ba40eb2f96bbb97b1d83e83bd5b418ecda16f6ae&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/198262941.jpg?k=7fc9f0f4b341c2cd105f6120ba40eb2f96bbb97b1d83e83bd5b418ecda16f6ae&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Kimpton Blythswood Square Hotel &amp; Spa by IHG <span class="pick">Claude’s pick</span></h3>
+            <div class="meta"><span class="stars">★★★★★</span> <span class="score">8.8</span> <span class="muted">1,414 reviews · 11 Blythswood Square, Glasgow City Centre, Glasgow, G2 4AD</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/blythswood-square.en-gb.html?checkin=2026-11-01&amp;checkout=2026-11-02&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip pool">Pool</span><span class="chip gym">Gym</span><span class="chip spa">Spa</span><span class="chip rest">Restaurant</span><span class="chip bar">Bar</span><span class="chip ppaid">P · Valet £45/night, or Q-Park Sauchiehall St £20/24h (pre-book)</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 15:00 to 23:30</span></div>
+        <div class="note">Blythswood Square, spa, valet parking; extra bed £55/night for a child. Walk to Bath St / Hope St restaurants.</div>
+        <p class="desc">A landmark hotel in Scotland’s biggest, most vibrant city, Glasgow’s Kimpton Blythswood Square Hotel and Spa combines the elegance of a stately 19th-century Georgian townhouse with the luxe modern amenities of a five-star property. Celebrated for its superior service, well-loved …</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/220830995.jpg?k=66c0781f7c9f46f52b096b6c81e2cf8ec90999c7feefdb686e476e68fb6e55d9&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/220830995.jpg?k=66c0781f7c9f46f52b096b6c81e2cf8ec90999c7feefdb686e476e68fb6e55d9&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/148242313.jpg?k=53d1a20154f9f8330c32f74b4844b21e36a57b32cbfa728c1f3f036ae1350ca4&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/148242313.jpg?k=53d1a20154f9f8330c32f74b4844b21e36a57b32cbfa728c1f3f036ae1350ca4&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/148242304.jpg?k=b11f8f735afd79c089f60aeb4a98ac9bad2cafcb2ba56eee0a5b07fbccb0d8bd&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/148242304.jpg?k=b11f8f735afd79c089f60aeb4a98ac9bad2cafcb2ba56eee0a5b07fbccb0d8bd&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">King Suite with Garden View </div>
+              <div class="rbeds">1 extra-large double bed · 40 m²</div></div>
+              <div class="rprice"><b>€ 521</b><small>€521/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag">B&B € 574</span><span class="tag muted">Non-refundable</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="Kimpton Blythswood Square Hotel &amp; Spa by IHG|King Suite with Garden View" data-base="glasgow" data-price="€ 521" data-url="https://www.booking.com/hotel/gb/blythswood-square.en-gb.html" data-dates="2026-11-01|2026-11-02|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/220830993.jpg?k=d0e8555d717ea689ac5bee32f521d464656e488b0ef8085be0e7e2b3eb1768aa&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/220830993.jpg?k=d0e8555d717ea689ac5bee32f521d464656e488b0ef8085be0e7e2b3eb1768aa&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/220816915.jpg?k=1baadf0c57da3320e3199da4600de651601ba3f3260d7ec2505bd8bf955a532c&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/220816915.jpg?k=1baadf0c57da3320e3199da4600de651601ba3f3260d7ec2505bd8bf955a532c&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/43941979.jpg?k=c609696748b232e8b6f61031ffad3dbd7a36f85ff0294a1fafc47cb6b001b02e&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/43941979.jpg?k=c609696748b232e8b6f61031ffad3dbd7a36f85ff0294a1fafc47cb6b001b02e&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">The Georgian Suite </div>
+              <div class="rbeds">1 extra-large double bed · 50 m²</div></div>
+              <div class="rprice"><b>€ 749</b><small>€749/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag">B&B € 802</span><span class="tag muted">Non-refundable</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="Kimpton Blythswood Square Hotel &amp; Spa by IHG|The Georgian Suite" data-base="glasgow" data-price="€ 749" data-url="https://www.booking.com/hotel/gb/blythswood-square.en-gb.html" data-dates="2026-11-01|2026-11-02|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/913142669.jpg?k=6a81ac9bcb880323057aa2f515ccba3d8226362300d20937f12c057b4b67510b&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/913142669.jpg?k=6a81ac9bcb880323057aa2f515ccba3d8226362300d20937f12c057b4b67510b&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/898351581.jpg?k=3c11e7d4ed50fd44343d6d72c6e0304264be3b10a9e685e4a6a9edde3c71035c&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/898351581.jpg?k=3c11e7d4ed50fd44343d6d72c6e0304264be3b10a9e685e4a6a9edde3c71035c&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">The Blythswood Suite </div>
+              <div class="rbeds">1 extra-large double bed · 65 m²</div></div>
+              <div class="rprice"><b>€ 983</b><small>€983/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag">B&B € 1,036</span><span class="tag muted">Non-refundable</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="Kimpton Blythswood Square Hotel &amp; Spa by IHG|The Blythswood Suite" data-base="glasgow" data-price="€ 983" data-url="https://www.booking.com/hotel/gb/blythswood-square.en-gb.html" data-dates="2026-11-01|2026-11-02|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="Glasgow Marriott Hotel" data-fit="ok" data-pool="1" data-min="179.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/596983546.jpg?k=c32a0db7584fa589d358c08f4ef00d67d08d0989b5c6fb93debb810a28210046&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/596983546.jpg?k=c32a0db7584fa589d358c08f4ef00d67d08d0989b5c6fb93debb810a28210046&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/587808466.jpg?k=8bac178e2ab3cee645e0c7c8eee70d5614651d8140422fa8b05fa7e199dc3369&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/587808466.jpg?k=8bac178e2ab3cee645e0c7c8eee70d5614651d8140422fa8b05fa7e199dc3369&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/587808593.jpg?k=16f6dbee1847ffe35e45e9842575b11469b18ae3eadc6795edf968ae581b23d1&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/587808593.jpg?k=16f6dbee1847ffe35e45e9842575b11469b18ae3eadc6795edf968ae581b23d1&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/587808514.jpg?k=2dddd0317d3a067ca59a4bf35b41482ecba60fb08d0dff163dc6fdbae3f6f878&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/587808514.jpg?k=2dddd0317d3a067ca59a4bf35b41482ecba60fb08d0dff163dc6fdbae3f6f878&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Glasgow Marriott Hotel </h3>
+            <div class="meta"><span class="stars">★★★★</span> <span class="score">8.5</span> <span class="muted">1,972 reviews · 500 Argyle Street, Anderston, Glasgow City Centre, Glasgow, G3 8RR</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/glasgow-marriott.en-gb.html?checkin=2026-11-01&amp;checkout=2026-11-02&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip pool">Pool</span><span class="chip gym">Gym</span><span class="chip spa">Spa</span><span class="chip rest">Restaurant</span><span class="chip bar">Bar</span><span class="chip ppaid">P · Own car park £10–12/night, no booking needed</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 15:00 to 00:00</span></div>
+        <div class="note">Argyle St / Anderston, just off the M8: indoor pool, gym, spa. Family room with two doubles. ~15 min walk to Buchanan St / Merchant City restaurants.</div>
+        <p class="desc">Experience the stunning upgrade of our hotel! The refurbishment of our welcoming, contemporary public spaces is now complete and our upgraded leisure club now features brand-new fitness equipment. We&#x27;re also nearing the final stages of refreshing all 303 guest rooms for an enhanc…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/587808514.jpg?k=63d00dee208c31b17a4b3c0c984e55fe6e79352bba56286eb342102227c4899b&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/587808514.jpg?k=63d00dee208c31b17a4b3c0c984e55fe6e79352bba56286eb342102227c4899b&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/587808532.jpg?k=83c4f7711d90ce64061a68bbea389cf1d7abaf5060c5a41f706577df84a7d75c&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/587808532.jpg?k=83c4f7711d90ce64061a68bbea389cf1d7abaf5060c5a41f706577df84a7d75c&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/587808534.jpg?k=d9cb34402ff4e96e6d7145d29ec4d8c6fd1dcb93d6834338f7928a7eb7dbdd62&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/587808534.jpg?k=d9cb34402ff4e96e6d7145d29ec4d8c6fd1dcb93d6834338f7928a7eb7dbdd62&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Deluxe Family Room with Two Double Beds </div>
+              <div class="rbeds">2 double beds · 26 m²</div></div>
+              <div class="rprice"><b>€ 179</b><small>€179/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag">B&B € 215</span><span class="tag good">Free cancellation before 1 November 2026 (€ 179)</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="Glasgow Marriott Hotel|Deluxe Family Room with Two Double Beds" data-base="glasgow" data-price="€ 179" data-url="https://www.booking.com/hotel/gb/glasgow-marriott.en-gb.html" data-dates="2026-11-01|2026-11-02|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/596983550.jpg?k=30224e162a63f2696d98f5ff91e48a2d2f000b87a616aaafff89824e0edd3ff1&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/596983550.jpg?k=30224e162a63f2696d98f5ff91e48a2d2f000b87a616aaafff89824e0edd3ff1&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/596983562.jpg?k=314014f1129cf14d663f07b5fa772ab24575e0dd48cd8966e48f3d6cdb554fad&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/596983562.jpg?k=314014f1129cf14d663f07b5fa772ab24575e0dd48cd8966e48f3d6cdb554fad&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/545926397.jpg?k=1297780b0e2c44f4596015b2183f8f018a0f12589ca625c2e0565d7af0e026ce&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/545926397.jpg?k=1297780b0e2c44f4596015b2183f8f018a0f12589ca625c2e0565d7af0e026ce&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Executive Family Room - Two Double Beds - Lounge Access </div>
+              <div class="rbeds">2 double beds · 26 m²</div></div>
+              <div class="rprice"><b>€ 275</b><small>€275/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag good">Free cancellation before 1 November 2026 (€ 275)</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="Glasgow Marriott Hotel|Executive Family Room - Two Double Beds - Lounge Access" data-base="glasgow" data-price="€ 275" data-url="https://www.booking.com/hotel/gb/glasgow-marriott.en-gb.html" data-dates="2026-11-01|2026-11-02|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="Oswald Apartment - Glasgow City Centre" data-fit="ok" data-pool="0" data-min="240.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/327520963.jpg?k=0d81349043b4a9a7f76350f95203387bda6e23c8f622f913321970f7898c8068&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/327520963.jpg?k=0d81349043b4a9a7f76350f95203387bda6e23c8f622f913321970f7898c8068&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/648227523.jpg?k=25079188946b47910368c0f5c29eb4b0ae6db5db429e4b7a07671726d441acf8&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/648227523.jpg?k=25079188946b47910368c0f5c29eb4b0ae6db5db429e4b7a07671726d441acf8&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/648227530.jpg?k=f2e3e794157adc65487f463bbfc44a8beaade76eb1e5b6804b1c962def7380e4&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/648227530.jpg?k=f2e3e794157adc65487f463bbfc44a8beaade76eb1e5b6804b1c962def7380e4&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/648227503.jpg?k=05ccf954b594eb78ad6e4aa07048ed09e3dff6f143aa238bb7aa3408591c593d&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/648227503.jpg?k=05ccf954b594eb78ad6e4aa07048ed09e3dff6f143aa238bb7aa3408591c593d&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Oswald Apartment - Glasgow City Centre </h3>
+            <div class="meta"><span class="stars">★★★★</span> <span class="score">8.9</span> <span class="muted">147 reviews · 17 Oswald Street, Glasgow City Centre, Glasgow, G1 4PD</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/entire-rental-unit-glasgow-city-center.en-gb.html?checkin=2026-11-01&amp;checkout=2026-11-02&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip pfree">P · Free private underground car park</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 15:00</span></div>
+        <div class="note">2-bedroom serviced apartment by Central Station: extra-large double + double. Free underground parking. ~10 min walk to the centre.</div>
+        <p class="desc">Spacious Accommodation: Oswald Apartment in Glasgow offers a spacious apartment with two bedrooms and two bathrooms. The living room features a sofa bed and parquet floors, ensuring comfort for all guests. Modern Amenities: Guests enjoy free WiFi, a lift, bicycle parking, and fre…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/648227511.jpg?k=c2ce4109aed9d91cc6a72c89e2c3a9cf862791a526da059c6d5d62eb877c7568&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/648227511.jpg?k=c2ce4109aed9d91cc6a72c89e2c3a9cf862791a526da059c6d5d62eb877c7568&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/648227549.jpg?k=abca6835be07f3aff16e4e7d358f42a55e5eb66d429dbfcab3c8ca2970bcec48&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/648227549.jpg?k=abca6835be07f3aff16e4e7d358f42a55e5eb66d429dbfcab3c8ca2970bcec48&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/648227527.jpg?k=66d2f6711e94eaa70f7b79519ff886c054afe3574bd037ab0fb2d9534622b506&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/648227527.jpg?k=66d2f6711e94eaa70f7b79519ff886c054afe3574bd037ab0fb2d9534622b506&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Two-Bedroom Apartment </div>
+              <div class="rbeds">Bedroom 1: 1 extra-large double bed Bedroom 2: 1 double bed Living room: 1 sofa bed Bathrooms:2 Cot available on request · 66 m²</div></div>
+              <div class="rprice"><b>€ 240</b><small>€240/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Oswald Apartment - Glasgow City Centre|Two-Bedroom Apartment" data-base="glasgow" data-price="€ 240" data-url="https://www.booking.com/hotel/gb/entire-rental-unit-glasgow-city-center.en-gb.html" data-dates="2026-11-01|2026-11-02|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="Hilton Glasgow" data-fit="ok" data-pool="1" data-min="167.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/882961218.jpg?k=bdba92f60a5fdf2f0953eb190a0969341569431518f3ffc5448af4b062b5cd60&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/882961218.jpg?k=bdba92f60a5fdf2f0953eb190a0969341569431518f3ffc5448af4b062b5cd60&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/926807815.jpg?k=73c397e520fab8f44f075f7ffdcbfe4f449bd2bbf1d2803e59838650c99257f1&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/926807815.jpg?k=73c397e520fab8f44f075f7ffdcbfe4f449bd2bbf1d2803e59838650c99257f1&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/926807816.jpg?k=6f58af21edd4b5f553e44e0bce8f21d7917ac1199250fdda1b0ff048e5f6b3c4&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/926807816.jpg?k=6f58af21edd4b5f553e44e0bce8f21d7917ac1199250fdda1b0ff048e5f6b3c4&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/926807818.jpg?k=4c1f65f6ef11c48d48edf8d664956faaa451d1e8e17a3ed6e64474f63618607c&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/926807818.jpg?k=4c1f65f6ef11c48d48edf8d664956faaa451d1e8e17a3ed6e64474f63618607c&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Hilton Glasgow </h3>
+            <div class="meta"><span class="stars">★★★★</span> <span class="score">8.8</span> <span class="muted">3,496 reviews · 1 William Street, Glasgow City Centre, Glasgow, G3 8HT</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/hilton-glasgow.en-gb.html?checkin=2026-11-01&amp;checkout=2026-11-02&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip pool">Pool</span><span class="chip gym">Gym</span><span class="chip spa">Spa</span><span class="chip rest">Restaurant</span><span class="chip bar">Bar</span><span class="chip ppaid">P · Underground car park on site (EV chargers); price not published, ~£12/day seen</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 16:00 to 23:00</span></div>
+        <div class="note">Two queen beds, pool and gym, free cancellation. ~10 min walk to the centre.</div>
+        <p class="desc">In Glasgow city centre, the Hilton Glasgow Hotel is set in the heart of the financial district, within walking distance from the main shopping area of the city and with easy access to transport links and the Scottish Exhibition &amp; Conference Centre (SEC). The hotel is just a short…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/926807963.jpg?k=9d0df63254281c33c4f8a545bd2660d5830c5b677b5cc6e35a1e1641e0618c9a&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/926807963.jpg?k=9d0df63254281c33c4f8a545bd2660d5830c5b677b5cc6e35a1e1641e0618c9a&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/926807964.jpg?k=b2fff281a0f262858dc06512acff56c4d945eb25824d25d1faaef54132740e6e&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/926807964.jpg?k=b2fff281a0f262858dc06512acff56c4d945eb25824d25d1faaef54132740e6e&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/926807966.jpg?k=26081551f900ae1956d7dcf0622238b856c77994434a1890f9b5fc5c98ad21a5&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/926807966.jpg?k=26081551f900ae1956d7dcf0622238b856c77994434a1890f9b5fc5c98ad21a5&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Queen Room with Two Queen Beds </div>
+              <div class="rbeds">2 large double beds · 31 m²</div></div>
+              <div class="rprice"><b>€ 167</b><small>€167/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag good">Free cancellation before 1 November 2026 (€ 167)</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="Hilton Glasgow|Queen Room with Two Queen Beds" data-base="glasgow" data-price="€ 167" data-url="https://www.booking.com/hotel/gb/hilton-glasgow.en-gb.html" data-dates="2026-11-01|2026-11-02|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/926807940.jpg?k=94f69cede465345bcd21e47cbe0ef2123ca8900c16ca551a76039fbd393e820c&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/926807940.jpg?k=94f69cede465345bcd21e47cbe0ef2123ca8900c16ca551a76039fbd393e820c&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/926807941.jpg?k=470e4460e785c99b7e511847547f96968bb4f9c36e6e6326e17df7d2ee7f562f&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/926807941.jpg?k=470e4460e785c99b7e511847547f96968bb4f9c36e6e6326e17df7d2ee7f562f&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/926807942.jpg?k=bda7ead6900eb41d751042460d0128f5126416c59e22aacf3ab0ce202df98042&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/926807942.jpg?k=bda7ead6900eb41d751042460d0128f5126416c59e22aacf3ab0ce202df98042&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Deluxe Queen Room with Two Queen Beds </div>
+              <div class="rbeds">2 large double beds · 31 m²</div></div>
+              <div class="rprice"><b>€ 209</b><small>€209/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag good">Free cancellation before 1 November 2026 (€ 209)</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="Hilton Glasgow|Deluxe Queen Room with Two Queen Beds" data-base="glasgow" data-price="€ 209" data-url="https://www.booking.com/hotel/gb/hilton-glasgow.en-gb.html" data-dates="2026-11-01|2026-11-02|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/926807939.jpg?k=8581a450e39ff6e6b0412ccb59052aa6e2c255eb4ee31de405d8888f6dc7efb4&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/926807939.jpg?k=8581a450e39ff6e6b0412ccb59052aa6e2c255eb4ee31de405d8888f6dc7efb4&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/926807967.jpg?k=0dc662ff501705656a334b5a4fce4ea3238118241647e7dac107be4f93d62bba&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/926807967.jpg?k=0dc662ff501705656a334b5a4fce4ea3238118241647e7dac107be4f93d62bba&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/926807969.jpg?k=907605e95cf6620c5d358a226a80a5643efd4f6069cf3dc9a0828eaa7517f00b&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/926807969.jpg?k=907605e95cf6620c5d358a226a80a5643efd4f6069cf3dc9a0828eaa7517f00b&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Executive Queen Room with Two Queen Beds </div>
+              <div class="rbeds">2 large double beds · 31 m²</div></div>
+              <div class="rprice"><b>€ 371</b><small>€371/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag good">Free cancellation before 1 November 2026 (€ 371)</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="Hilton Glasgow|Executive Queen Room with Two Queen Beds" data-base="glasgow" data-price="€ 371" data-url="https://www.booking.com/hotel/gb/hilton-glasgow.en-gb.html" data-dates="2026-11-01|2026-11-02|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="Radisson Blu Hotel, Glasgow" data-fit="ok" data-pool="0" data-min="149.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/494054817.jpg?k=d75cc1f9b66106f5718e74a7538af85bb4b744aadc97e8d9d882e5347434e43e&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/494054817.jpg?k=d75cc1f9b66106f5718e74a7538af85bb4b744aadc97e8d9d882e5347434e43e&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/498618591.jpg?k=28218cf3bdce74be388236662a82d6c681dab37d1d8c89ec3a4ff2071322c6e8&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/498618591.jpg?k=28218cf3bdce74be388236662a82d6c681dab37d1d8c89ec3a4ff2071322c6e8&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/497464269.jpg?k=10eee5596a3473054114ad46861cd31fea4802b59a626ddc91b0b61c194565c2&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/497464269.jpg?k=10eee5596a3473054114ad46861cd31fea4802b59a626ddc91b0b61c194565c2&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/576620289.jpg?k=d3cc1d31d6262713592a6e0eb9a3f5d458748c038c10560a2185999acf7a0dd0&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/576620289.jpg?k=d3cc1d31d6262713592a6e0eb9a3f5d458748c038c10560a2185999acf7a0dd0&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Radisson Blu Hotel, Glasgow </h3>
+            <div class="meta"><span class="stars">★★★★</span> <span class="score">8.9</span> <span class="muted">6,246 reviews · 301 Argyle St, Glasgow City Centre, Glasgow, G2 8DL</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/radissonsashotelglasgow.en-gb.html?checkin=2026-11-01&amp;checkout=2026-11-02&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip gym">Gym</span><span class="chip spa">Spa</span><span class="chip rest">Restaurant</span><span class="chip bar">Bar</span><span class="chip ppaid">P · No parking: NCP Oswald St £15/24h guest rate, 2 min walk</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 15:00</span></div>
+        <div class="note">Argyle St by Central Station; room with bunk beds for Noah.</div>
+        <p class="desc">This modern hotel is opposite Glasgow Central Station and features award-winning architecture. It boasts a stunning atrium and rooms with wall-to-ceiling windows. The spacious rooms at the Radisson BLU Glasgow are decorated in soft colours and feature a TV, free WiFi and a miniba…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/669677213.jpg?k=e1f4830dfb5d8b6714d6e129c09efbd3d61553ae12fb194cbd96878ddc891932&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/669677213.jpg?k=e1f4830dfb5d8b6714d6e129c09efbd3d61553ae12fb194cbd96878ddc891932&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/669677198.jpg?k=392423aa808b6761f17c6f55a8f3e8a6981c410bfa09ed3d2180f0e2b887a8a9&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/669677198.jpg?k=392423aa808b6761f17c6f55a8f3e8a6981c410bfa09ed3d2180f0e2b887a8a9&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/669677248.jpg?k=b24fbaf58fb15eb2b61daa63cdc14fd954eb3e4895e77df995592b515d08ddb3&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/669677248.jpg?k=b24fbaf58fb15eb2b61daa63cdc14fd954eb3e4895e77df995592b515d08ddb3&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Standard Room with Bunk Beds </div>
+              <div class="rbeds">1 large double bed · 27 m²</div></div>
+              <div class="rprice"><b>€ 149</b><small>€149/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag">B&B € 185</span><span class="tag muted">Non-refundable</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="Radisson Blu Hotel, Glasgow|Standard Room with Bunk Beds" data-base="glasgow" data-price="€ 149" data-url="https://www.booking.com/hotel/gb/radissonsashotelglasgow.en-gb.html" data-dates="2026-11-01|2026-11-02|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/498618573.jpg?k=5e01566081866525aa9e334628d0c1a06d7cd47a0b15da1e4cbe12359b633b79&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/498618573.jpg?k=5e01566081866525aa9e334628d0c1a06d7cd47a0b15da1e4cbe12359b633b79&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/497464234.jpg?k=53626977b3da227c30384ff04cf077d0035e88a5d299df4dd7d632beda09a12e&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/497464234.jpg?k=53626977b3da227c30384ff04cf077d0035e88a5d299df4dd7d632beda09a12e&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/497464273.jpg?k=ce62206baa50004b5f7851730a78304d086791d2f122833c76df81f1f664ef26&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/497464273.jpg?k=ce62206baa50004b5f7851730a78304d086791d2f122833c76df81f1f664ef26&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Junior Suite </div>
+              <div class="rbeds">1 double bed · 35 m²</div></div>
+              <div class="rprice"><b>€ 185</b><small>€185/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag">B&B € 220</span><span class="tag muted">Non-refundable</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="Radisson Blu Hotel, Glasgow|Junior Suite" data-base="glasgow" data-price="€ 185" data-url="https://www.booking.com/hotel/gb/radissonsashotelglasgow.en-gb.html" data-dates="2026-11-01|2026-11-02|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="Dakota Glasgow" data-fit="ok" data-pool="0" data-min="204.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/827252481.jpg?k=39bac6538532d74c169eef732c792af71cff3c973eea2ab5d90969dba55c2aef&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/827252481.jpg?k=39bac6538532d74c169eef732c792af71cff3c973eea2ab5d90969dba55c2aef&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/827252512.jpg?k=3a954d52062e15d2193d587cf36bf38e77f3251945629600f11059beffed0c0c&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/827252512.jpg?k=3a954d52062e15d2193d587cf36bf38e77f3251945629600f11059beffed0c0c&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/827261870.jpg?k=6db5f009e8d8be0acdb540ab193b78bf77416fbd5a766d0b56f28ea2fe14ede9&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/827261870.jpg?k=6db5f009e8d8be0acdb540ab193b78bf77416fbd5a766d0b56f28ea2fe14ede9&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/827261792.jpg?k=ae8e8502301a42031071fecd624391257de0b20fa48008f924440bcac5719494&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/827261792.jpg?k=ae8e8502301a42031071fecd624391257de0b20fa48008f924440bcac5719494&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Dakota Glasgow </h3>
+            <div class="meta"><span class="stars">★★★★★</span> <span class="score">9.1</span> <span class="muted">2,252 reviews · 179 West Regent Street, Glasgow City Centre, Glasgow, G2 4DP</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/dakota-glasgow.en-gb.html?checkin=2026-11-01&amp;checkout=2026-11-02&amp;group_adults=2&amp;group_children=0&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip rest">Restaurant</span><span class="chip bar">Bar</span><span class="chip ppaid">P · Limited spaces £30/day (book ahead) or Cambridge St car park from £12</span><span class="chip">Priced for 2 adults</span><span class="chip fit ok">Noah: Extra bed for age 5: £50 /night</span><span class="chip">Check-in 15:00 to 23:30</span></div>
+        <div class="note">Extra beds only up to age 3, so for 3 people you’d need 2 rooms.</div>
+        <p class="desc">Dakota Glasgow features 83 luxuriously appointed bedrooms including 11 suites. The fully air-conditioned rooms feature a smart HDTV with Sky package, including Sky Sports, and Google Chromecast for seamless streaming. Guests also enjoy complimentary Wi-Fi, contemporary en-suite b…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/827261792.jpg?k=c80eae1bd1838f665693ad760b9c722b398637bb03f22f769fde4a94eba54dd4&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/827261792.jpg?k=c80eae1bd1838f665693ad760b9c722b398637bb03f22f769fde4a94eba54dd4&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/827261869.jpg?k=9c0f87588f729d4c9872788372aebb68b4147dc3df382c468acf2b4844b66c99&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/827261869.jpg?k=9c0f87588f729d4c9872788372aebb68b4147dc3df382c468acf2b4844b66c99&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/827261853.jpg?k=68b4230483d54f831177bd8b3501409ab6441f2d656f8475a3eda46486b4ebd3&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/827261853.jpg?k=68b4230483d54f831177bd8b3501409ab6441f2d656f8475a3eda46486b4ebd3&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Classic Double Room </div>
+              <div class="rbeds">1 double bed · 25 m²</div></div>
+              <div class="rprice"><b>€ 204</b><small>€204/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag">B&B € 260</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Dakota Glasgow|Classic Double Room" data-base="glasgow" data-price="€ 204" data-url="https://www.booking.com/hotel/gb/dakota-glasgow.en-gb.html" data-dates="2026-11-01|2026-11-02|2"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/827261851.jpg?k=180966677b8ed040ee0369e72145d3a2b99ffd8b0e8df7aa43d9b32dc666b3ee&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/827261851.jpg?k=180966677b8ed040ee0369e72145d3a2b99ffd8b0e8df7aa43d9b32dc666b3ee&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/827261843.jpg?k=c20d8b4ffbf668b984b1fb06227cc074a5dfd86cf95f663f77118dfcfa7c009c&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/827261843.jpg?k=c20d8b4ffbf668b984b1fb06227cc074a5dfd86cf95f663f77118dfcfa7c009c&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/827261839.jpg?k=3bf8d865aa960fc1291d31aa29d402461aec48ecda64b4bc5618a995d6fdd44e&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/827261839.jpg?k=3bf8d865aa960fc1291d31aa29d402461aec48ecda64b4bc5618a995d6fdd44e&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Classic King Room </div>
+              <div class="rbeds">1 extra-large double bed · 29 m²</div></div>
+              <div class="rprice"><b>€ 231</b><small>€231/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag">B&B € 287</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Dakota Glasgow|Classic King Room" data-base="glasgow" data-price="€ 231" data-url="https://www.booking.com/hotel/gb/dakota-glasgow.en-gb.html" data-dates="2026-11-01|2026-11-02|2"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+  </section>
+  <section id="marhall">
+    <div class="shead"><div class="when">Night 2 · Mon 2 Nov</div><h2>JA Mar Hall, Bishopton</h2><div class="sub">1 night · your pick, moved from Sunday · 1 options · picks first, then by stars &amp; rating; places with no bed for Noah last</div></div>
+    
+    <article class="prop" data-name="JA Mar Hall Glasgow Scotland" data-fit="ok" data-pool="1" data-min="270.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/687091563.jpg?k=bf4ba8ff912ae2a3e4f29f26aca8e150d12cde527ce94b785c19bb5bd820a15b&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/687091563.jpg?k=bf4ba8ff912ae2a3e4f29f26aca8e150d12cde527ce94b785c19bb5bd820a15b&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/654470650.jpg?k=2dfc3d1bf9a59d9a133caef175ef5582fe297c9d3d752d555497744c9c7fadcd&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/654470650.jpg?k=2dfc3d1bf9a59d9a133caef175ef5582fe297c9d3d752d555497744c9c7fadcd&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/686552728.jpg?k=2526c72f9d1fda4c910cea5e756507166964b2ed609052374da6d6a6b95f73f9&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/686552728.jpg?k=2526c72f9d1fda4c910cea5e756507166964b2ed609052374da6d6a6b95f73f9&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/696531372.jpg?k=4b656a78c1eb58c4072f38f5e10ed3911c5c33a794034c6bdc924b6194cff4ef&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/696531372.jpg?k=4b656a78c1eb58c4072f38f5e10ed3911c5c33a794034c6bdc924b6194cff4ef&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>JA Mar Hall Glasgow Scotland <span class="dpick">David’s pick</span></h3>
+            <div class="meta"><span class="stars">★★★★★</span> <span class="score">8.9</span> <span class="muted">984 reviews · Mar Hall Drive, Earl of Mar Estate, Bishopton, PA7 5NW</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/mar-hall-golf-and-spa-resort.en-gb.html?checkin=2026-11-02&amp;checkout=2026-11-03&amp;group_adults=2&amp;group_children=0&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip pool">Pool</span><span class="chip rest">Restaurant</span><span class="chip bar">Bar</span><span class="chip">Priced for 2 adults</span><span class="chip fit ok">Noah: Extra bed for age 5: £30 /night</span><span class="chip">Check-in 15:00</span></div>
+        <div class="note">Deluxe Suite has a sofa-bed layout; extra bed £30/night for ages 5–16. Monday now has free-cancellation rates.</div>
+        <p class="desc">JA Mar Hall Glasgow Scotland is a five-star haven set within 240 acres of peaceful woodland, just minutes from Glasgow Airport. Steeped in history, the 19th-century mansion offers a refined escape where timeless elegance meets modern luxury. Bedrooms range from Classic and Deluxe…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/654469970.jpg?k=f225756f665da1c2e10654301af15e9462042854d2f4ac65148eeb36d575533b&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/654469970.jpg?k=f225756f665da1c2e10654301af15e9462042854d2f4ac65148eeb36d575533b&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/654470339.jpg?k=ba34ff51dc161e9bc54b1636039bfcf23b8a279333817dc455992b7af35de4bc&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/654470339.jpg?k=ba34ff51dc161e9bc54b1636039bfcf23b8a279333817dc455992b7af35de4bc&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/837066755.jpg?k=32f8dd37ad56f9a4dd308a658575409aa03e8e46efb2ec61595646a312ae57a1&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/837066755.jpg?k=32f8dd37ad56f9a4dd308a658575409aa03e8e46efb2ec61595646a312ae57a1&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Classic Twin/ Double Room </div>
+              <div class="rbeds">1 extra-large double bed 2 single beds · 24 m²</div></div>
+              <div class="rprice"><b>€ 270</b><small>€270/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag good">Breakfast incl.</span><span class="tag good">Free cancellation before 1 November 2026 (€ 270)</span></div>
+            <label class="fav"><input type="checkbox" data-id="JA Mar Hall Glasgow Scotland|Classic Twin/ Double Room" data-base="marhall" data-price="€ 270" data-url="https://www.booking.com/hotel/gb/mar-hall-golf-and-spa-resort.en-gb.html" data-dates="2026-11-02|2026-11-03|2"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/686555439.jpg?k=515a19ca8ffeaa9b44c47b937bdfa3fb8ebeebbba1516e60cf551a7deb0f5832&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/686555439.jpg?k=515a19ca8ffeaa9b44c47b937bdfa3fb8ebeebbba1516e60cf551a7deb0f5832&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/686552703.jpg?k=aa0d39bee0bbe6136033ce1ae50f471a25accabb0d317705bd63ea67ffa17f36&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/686552703.jpg?k=aa0d39bee0bbe6136033ce1ae50f471a25accabb0d317705bd63ea67ffa17f36&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/686557096.jpg?k=83b222485043a48814f7a305c7a7b2ee6f9afed23ea74d6000bd8e380fe26482&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/686557096.jpg?k=83b222485043a48814f7a305c7a7b2ee6f9afed23ea74d6000bd8e380fe26482&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Deluxe Suite <span class="dpick">David’s pick</span></div>
+              <div class="rbeds">1 large double bed 1 sofa bed and 1 large double bed · 35 m²</div></div>
+              <div class="rprice"><b>€ 405</b><small>€405/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag good">Breakfast incl.</span><span class="tag good">Free cancellation before 1 November 2026 (€ 405)</span></div>
+            <label class="fav"><input type="checkbox" data-id="JA Mar Hall Glasgow Scotland|Deluxe Suite" data-base="marhall" data-price="€ 405" data-url="https://www.booking.com/hotel/gb/mar-hall-golf-and-spa-resort.en-gb.html" data-dates="2026-11-02|2026-11-03|2" data-default="1"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/686559125.jpg?k=176ef3a1a513d78c71176b956045559ba50f025fe99ce316a3e20132a60a2800&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/686559125.jpg?k=176ef3a1a513d78c71176b956045559ba50f025fe99ce316a3e20132a60a2800&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/837066762.jpg?k=00ffd794a6edbfaa32a5db47b4cd6d7ee90a579cdfc3681a40bf341474b0a4e1&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/837066762.jpg?k=00ffd794a6edbfaa32a5db47b4cd6d7ee90a579cdfc3681a40bf341474b0a4e1&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/837066769.jpg?k=db5a12886a2ec36c9be47a7fe856d2bd971c14da35b7989fc61d82a4d799ec9a&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/837066769.jpg?k=db5a12886a2ec36c9be47a7fe856d2bd971c14da35b7989fc61d82a4d799ec9a&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Spa Garden Suite </div>
+              <div class="rbeds">1 extra-large double bed · 21 m²</div></div>
+              <div class="rprice"><b>€ 324</b><small>€324/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag good">Breakfast incl.</span><span class="tag good">Free cancellation before 1 November 2026 (€ 324)</span></div>
+            <label class="fav"><input type="checkbox" data-id="JA Mar Hall Glasgow Scotland|Spa Garden Suite" data-base="marhall" data-price="€ 324" data-url="https://www.booking.com/hotel/gb/mar-hall-golf-and-spa-resort.en-gb.html" data-dates="2026-11-02|2026-11-03|2"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/686557022.jpg?k=c170fce010fdb08dcc802554e9260ef9f82fb253cf696f32f130ebbb8cdbd1fb&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/686557022.jpg?k=c170fce010fdb08dcc802554e9260ef9f82fb253cf696f32f130ebbb8cdbd1fb&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/686557096.jpg?k=83b222485043a48814f7a305c7a7b2ee6f9afed23ea74d6000bd8e380fe26482&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/686557096.jpg?k=83b222485043a48814f7a305c7a7b2ee6f9afed23ea74d6000bd8e380fe26482&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/837066764.jpg?k=4ae235d3c73e59e2914488b2936a03be47468d62981fc8024783d7dc7c1b3c18&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/837066764.jpg?k=4ae235d3c73e59e2914488b2936a03be47468d62981fc8024783d7dc7c1b3c18&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Junior Suite </div>
+              <div class="rbeds">1 large double bed · 100 m²</div></div>
+              <div class="rprice"><b>€ 702</b><small>€702/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag good">Breakfast incl.</span><span class="tag good">Free cancellation before 1 November 2026 (€ 702)</span></div>
+            <label class="fav"><input type="checkbox" data-id="JA Mar Hall Glasgow Scotland|Junior Suite" data-base="marhall" data-price="€ 702" data-url="https://www.booking.com/hotel/gb/mar-hall-golf-and-spa-resort.en-gb.html" data-dates="2026-11-02|2026-11-03|2"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+  </section>
+  <section id="glencoe">
+    <div class="shead"><div class="when">Nights 3–4 · Tue 3 → Thu 5 Nov</div><h2>Glencoe area: hot tub + takes a 5-year-old</h2><div class="sub">2 nights · ranked by quality · 12 options · picks first, then by stars &amp; rating; places with no bed for Noah last</div><div class="warnbox"><b>How this was searched (31 Oct):</b> Booking.com with its “Hot tub” filter in Glencoe, Ballachulish, Onich, Kentallen, Duror, Ardgour, Fort William and Kinlochleven, plus a 25 km map search. Airbnb used its hot-tub filter. Every option is priced for <b>2 adults + Noah</b> and accepts a 5-year-old. <b>Left out:</b> Holly Tree and Glencoe House (your call), and the Isles of Glencoe Hotel (pool but no hot tub of its own). <b>Sykes / Cottages.com / VRBO:</b> I couldn’t run a dated search there, but most Highland lets also appear on Booking.com or Airbnb. “Private hot tub” is confirmed on the listing; plain “hot tub” is not confirmed as private.</div></div>
+    
+    <article class="prop" data-name="Bluebell Cottage with Hot Tub" data-fit="ok" data-pool="0" data-min="768.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/649156890.jpg?k=42904a0e4c270aaa93bcc8822f254154e777fa54b4cdceb0aa6b0ed66969c9d3&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/649156890.jpg?k=42904a0e4c270aaa93bcc8822f254154e777fa54b4cdceb0aa6b0ed66969c9d3&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/513281924.jpg?k=5761b232ba769cad59283fd03b7a873022e127711e8f6ff86acb1eb792c171dd&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/513281924.jpg?k=5761b232ba769cad59283fd03b7a873022e127711e8f6ff86acb1eb792c171dd&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/513281917.jpg?k=cea427003be73753f87c52cfc0d26cb9d5f9ecb12e364fdfc24b91c5ac1c9057&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/513281917.jpg?k=cea427003be73753f87c52cfc0d26cb9d5f9ecb12e364fdfc24b91c5ac1c9057&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/513280925.jpg?k=ef90924a87e9425ff630e1eba41c6a1bb9fabb5bacacb51bac23d35d824a69c3&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/513280925.jpg?k=ef90924a87e9425ff630e1eba41c6a1bb9fabb5bacacb51bac23d35d824a69c3&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Bluebell Cottage with Hot Tub <span class="pick">Claude’s pick</span></h3>
+            <div class="meta"><span class="stars">★★★★</span> <span class="score">9.7</span> <span class="muted">37 reviews · Bluebell Cottage Glenachulish, Ballachulish, PH49 4JZ</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/bluebell-cottage-ballachulish.en-gb.html?checkin=2026-11-03&amp;checkout=2026-11-05&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip spa">Spa</span><span class="chip hot">♨ Private hot tub</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 16:00 to 22:00</span></div>
+        <div class="note">Also on Airbnb at €765, rated 4.99 from 221 reviews (“top guest favourite”). Glenachulish, 5 min from Glencoe village. 2 bedrooms.</div>
+        <p class="desc">Located 4 miles from Glencoe and 10 miles from Fort William, Bluebell Cottage is next to the Dragon&#x27;s Tooth Golf Course and features a hot tub. Free private parking is available on site, and walking and hiking trails are nearby. The cottage has 2 bedrooms and 2 luxury bathrooms, …</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/178385311.jpg?k=808288cc1d5dce8420980d5bb78b81c4a6eb34f1160fc576f40fb49ef80d7c6a&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/178385311.jpg?k=808288cc1d5dce8420980d5bb78b81c4a6eb34f1160fc576f40fb49ef80d7c6a&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/513281925.jpg?k=3da9f3448cca421bae9d51f87aee3e0b21425804e3e5b0eb0ab0664a99d07dad&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/513281925.jpg?k=3da9f3448cca421bae9d51f87aee3e0b21425804e3e5b0eb0ab0664a99d07dad&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/219152732.jpg?k=5886aaa52ce5630e3f5f257bd79e3a0b36910f277fd98808492e5f94e215f765&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/219152732.jpg?k=5886aaa52ce5630e3f5f257bd79e3a0b36910f277fd98808492e5f94e215f765&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Two-Bedroom House with Hot Tub </div>
+              <div class="rbeds">Bedroom 1: 1 large double bed Bedroom 2: 1 double bed Bathrooms:2 Cot available on request · 75 m²</div></div>
+              <div class="rprice"><b>€ 768</b><small>€384/night · 2 nights</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Bluebell Cottage with Hot Tub|Two-Bedroom House with Hot Tub" data-base="glencoe" data-price="€ 768" data-url="https://www.booking.com/hotel/gb/bluebell-cottage-ballachulish.en-gb.html" data-dates="2026-11-03|2026-11-05|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="Onich Cottage with View of Glencoe from Hot Tub" data-fit="ok" data-pool="0" data-min="710.0">
+      <div class="hero"><img loading="lazy" src="https://a0.muscache.com/im/pictures/hosting/Hosting-44223089/original/cecfaf56-480e-4278-b9b3-19ac28ce25d8.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/hosting/Hosting-44223089/original/cecfaf56-480e-4278-b9b3-19ac28ce25d8.jpeg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/cb7bc137-7229-481e-a5ed-1887835b085f.jpg?im_w=720" data-full="https://a0.muscache.com/im/pictures/cb7bc137-7229-481e-a5ed-1887835b085f.jpg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/521c22b9-f088-46c2-a06a-98b9ba8b4363.jpg?im_w=720" data-full="https://a0.muscache.com/im/pictures/521c22b9-f088-46c2-a06a-98b9ba8b4363.jpg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/d73a4af7-bc54-4d18-8413-6a3a5d5d59d6.jpg?im_w=720" data-full="https://a0.muscache.com/im/pictures/d73a4af7-bc54-4d18-8413-6a3a5d5d59d6.jpg?im_w=1200" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Onich Cottage with View of Glencoe from Hot Tub <span class="pick">Claude’s pick</span></h3>
+            <div class="meta"><span class="stars"></span> <span class="score">4.96</span> <span class="muted">136 reviews · Onich, Scotland (Airbnb)</span></div></div>
+          <a class="bk" href="https://www.airbnb.co.uk/rooms/44223089?check_in=2026-11-03&amp;check_out=2026-11-05&amp;adults=2&amp;children=1&amp;currency=EUR" target="_blank" rel="noopener">Airbnb ↗</a>
+        </div>
+        <div class="chips"><span class="chip hot">♨ Private hot tub, open 24h all year</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in </span></div>
+        <div class="note">Private hot tub, open 24 h all year, looking straight at Glencoe. Single-storey, recently refurbished. 2 bedrooms.</div>
+        <p class="desc">Recently refurbished to an extremely high standard. Single storey cottage in a private, loch side location, with stunning open views. The perfect holiday cottage from which to explore the fantastic Highlands. There is secure storage for bik…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://a0.muscache.com/im/pictures/e5325526-9983-4c2a-b892-c390b8833a58.jpg?im_w=720" data-full="https://a0.muscache.com/im/pictures/e5325526-9983-4c2a-b892-c390b8833a58.jpg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/4f9b9387-8fe5-48ce-9497-29d6bf6667db.jpg?im_w=720" data-full="https://a0.muscache.com/im/pictures/4f9b9387-8fe5-48ce-9497-29d6bf6667db.jpg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/05e604b9-7539-46d7-81d3-c29d5f8e1c5a.jpg?im_w=720" data-full="https://a0.muscache.com/im/pictures/05e604b9-7539-46d7-81d3-c29d5f8e1c5a.jpg?im_w=1200" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Entire place </div>
+              <div class="rbeds">see listing</div></div>
+              <div class="rprice"><b>€ 710</b><small>€355/night · 2 nights</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Onich Cottage with View of Glencoe from Hot Tub|Entire place" data-base="glencoe" data-price="€ 710" data-url="https://www.airbnb.co.uk/rooms/44223089" data-dates="2026-11-03|2026-11-05|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="Beach Houses with Hot Tubs" data-fit="ok" data-pool="1" data-min="875.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/918992539.jpg?k=0bdf9f8ef2f37754d9675c83a6746e8ec16ab59a82c322c07a112055b82123d7&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/918992539.jpg?k=0bdf9f8ef2f37754d9675c83a6746e8ec16ab59a82c322c07a112055b82123d7&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/918992558.jpg?k=c1c97b99d220f5f34179db45d8ebd290b6d4339db95c4e85986b5791c85f234c&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/918992558.jpg?k=c1c97b99d220f5f34179db45d8ebd290b6d4339db95c4e85986b5791c85f234c&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/918992533.jpg?k=ed225d619f736173759304734eec51b8cab58bcfad20c239631e80d66c78fa78&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/918992533.jpg?k=ed225d619f736173759304734eec51b8cab58bcfad20c239631e80d66c78fa78&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/918992536.jpg?k=49a295a642b0c70d34069228eea90885fe3bd25b27b77cec814b3e5991895d2c&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/918992536.jpg?k=49a295a642b0c70d34069228eea90885fe3bd25b27b77cec814b3e5991895d2c&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Beach Houses with Hot Tubs </h3>
+            <div class="meta"><span class="stars">★★★★</span> <span class="score">9.3</span> <span class="muted">282 reviews · Kentallen Pier, Glencoe, PA38 4BY</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/beach-houses-with-hot-tubs.en-gb.html?checkin=2026-11-03&amp;checkout=2026-11-05&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip pool">Pool</span><span class="chip rest">Restaurant</span><span class="chip bar">Bar</span><span class="chip hot">♨ Private hot tub</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 16:00 to 23:00</span></div>
+        <div class="note">Kentallen Pier, on Loch Linnhe right next to Holly Tree. 165 m² 3-bed villa, 9.3 from 282 reviews.</div>
+        <p class="desc">Featuring a bar, shared lounge and views of lake, Beach Houses with Hot Tubs is located in Glencoe, 49 metres from Loch Linnhe. This beachfront property offers access to a patio, free private parking and free WiFi. Guests can use the hot tub and the indoor pool, or enjoy mountain…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/918995651.jpg?k=83781dd14db316aaaab125bfc744f028145e273b504e27d58206a7c8050f1a04&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/918995651.jpg?k=83781dd14db316aaaab125bfc744f028145e273b504e27d58206a7c8050f1a04&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/918992558.jpg?k=a57992a7e0dafe1e29eb9458975dc976eb09aa9d9c93efc1ab94081cdbcd2913&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/918992558.jpg?k=a57992a7e0dafe1e29eb9458975dc976eb09aa9d9c93efc1ab94081cdbcd2913&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/918995662.jpg?k=0590162eba25a26712475bf7809d3b4234f6bf77ec0fef96f65fdbf4e39aeb2f&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/918995662.jpg?k=0590162eba25a26712475bf7809d3b4234f6bf77ec0fef96f65fdbf4e39aeb2f&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Three-Bedroom Villa </div>
+              <div class="rbeds">Bedroom 1: 3 single beds Bedroom 2: 2 single beds Bedroom 3: 1 large double bed Bathrooms:2 · 165 m²</div></div>
+              <div class="rprice"><b>€ 875</b><small>€438/night · 2 nights</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Beach Houses with Hot Tubs|Three-Bedroom Villa" data-base="glencoe" data-price="€ 875" data-url="https://www.booking.com/hotel/gb/beach-houses-with-hot-tubs.en-gb.html" data-dates="2026-11-03|2026-11-05|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/918996362.jpg?k=e9fd1b2d2eab1254315cde8557679995f54f46be6d286b1e8063f209a1ac196f&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/918996362.jpg?k=e9fd1b2d2eab1254315cde8557679995f54f46be6d286b1e8063f209a1ac196f&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/918992536.jpg?k=23654c1c5c0113207f528119305313d0080abb5b2904ba55f6e3dff21713a222&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/918992536.jpg?k=23654c1c5c0113207f528119305313d0080abb5b2904ba55f6e3dff21713a222&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/403438808.jpg?k=6217d78cac444f3cb8592c1a1429dd270614dc6901b7d8be9abc41ebe3e2926a&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/403438808.jpg?k=6217d78cac444f3cb8592c1a1429dd270614dc6901b7d8be9abc41ebe3e2926a&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Villa with Sea View </div>
+              <div class="rbeds">Bedroom 1: 1 large double bed Bedroom 2: 1 large double bed Bedroom 3: 2 single beds Bedroom 4: 2 single beds Bathrooms:5 · 165 m²</div></div>
+              <div class="rprice"><b>€ 1,115</b><small>€558/night · 2 nights</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Beach Houses with Hot Tubs|Villa with Sea View" data-base="glencoe" data-price="€ 1,115" data-url="https://www.booking.com/hotel/gb/beach-houses-with-hot-tubs.en-gb.html" data-dates="2026-11-03|2026-11-05|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/918992820.jpg?k=88279f5c78fc257fbeaa95a88cd8dfbe725a6796e6def2ed3d86dbb07e7a44c0&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/918992820.jpg?k=88279f5c78fc257fbeaa95a88cd8dfbe725a6796e6def2ed3d86dbb07e7a44c0&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/918992985.jpg?k=a773be655f61ce14cc524f2dbf5f070a6e822694c4a81c350157286490dac0f6&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/918992985.jpg?k=a773be655f61ce14cc524f2dbf5f070a6e822694c4a81c350157286490dac0f6&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/918992974.jpg?k=2df2fd36f4a856b011bcc9133a8689286e58ffaa3a7db6fa5febd7b52fbc5076&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/918992974.jpg?k=2df2fd36f4a856b011bcc9133a8689286e58ffaa3a7db6fa5febd7b52fbc5076&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Villa </div>
+              <div class="rbeds">Bedroom 1: 3 single beds Bedroom 2: 1 extra-large double bed Bedroom 3: 1 extra-large double bed Bedroom 4: 2 single beds Bathrooms:6 · 185 m²</div></div>
+              <div class="rprice"><b>€ 1,138</b><small>€569/night · 2 nights</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Beach Houses with Hot Tubs|Villa" data-base="glencoe" data-price="€ 1,138" data-url="https://www.booking.com/hotel/gb/beach-houses-with-hot-tubs.en-gb.html" data-dates="2026-11-03|2026-11-05|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="Onich House with View of Glencoe from Hot Tub" data-fit="ok" data-pool="0" data-min="981.0">
+      <div class="hero"><img loading="lazy" src="https://a0.muscache.com/im/pictures/d79195b7-8b51-47ea-a036-76957d7c4c72.jpg?im_w=720" data-full="https://a0.muscache.com/im/pictures/d79195b7-8b51-47ea-a036-76957d7c4c72.jpg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/hosting/Hosting-10609025/original/4dfeb3b8-db4d-4833-8460-3538d9901a36.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/hosting/Hosting-10609025/original/4dfeb3b8-db4d-4833-8460-3538d9901a36.jpeg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/hosting/Hosting-10609025/original/d626eb7d-802c-4465-9e0b-93bce0411234.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/hosting/Hosting-10609025/original/d626eb7d-802c-4465-9e0b-93bce0411234.jpeg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/hosting/Hosting-10609025/original/2ec89d9f-9e9c-427d-91b3-0246ab925e31.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/hosting/Hosting-10609025/original/2ec89d9f-9e9c-427d-91b3-0246ab925e31.jpeg?im_w=1200" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Onich House with View of Glencoe from Hot Tub </h3>
+            <div class="meta"><span class="stars"></span> <span class="score">4.91</span> <span class="muted">115 reviews · Onich, Fort William (Airbnb)</span></div></div>
+          <a class="bk" href="https://www.airbnb.co.uk/rooms/10609025?check_in=2026-11-03&amp;check_out=2026-11-05&amp;adults=2&amp;children=1&amp;currency=EUR" target="_blank" rel="noopener">Airbnb ↗</a>
+        </div>
+        <div class="chips"><span class="chip hot">♨ Private hot tub, open 24h all year</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in </span></div>
+        <div class="note">Private lochside cottage (“Gollanfield”), 3 bedrooms, same Glencoe-view hot tub.</div>
+        <p class="desc">Gollanfield is a delightful single storey cottage in a private, loch side location, with stunning open views reaching across the water as far as the Isle of Mull. The perfect holiday cottage from which to explore the fantastic Highlands.…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://a0.muscache.com/im/pictures/a55999b6-4cb8-4672-9c04-0f89c522ce64.jpg?im_w=720" data-full="https://a0.muscache.com/im/pictures/a55999b6-4cb8-4672-9c04-0f89c522ce64.jpg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/655362f0-02dd-46cf-8e06-60a49078ef39.jpg?im_w=720" data-full="https://a0.muscache.com/im/pictures/655362f0-02dd-46cf-8e06-60a49078ef39.jpg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/5dcf0f4f-1bd7-4b99-b79a-784d44ca6f22.jpg?im_w=720" data-full="https://a0.muscache.com/im/pictures/5dcf0f4f-1bd7-4b99-b79a-784d44ca6f22.jpg?im_w=1200" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Entire place </div>
+              <div class="rbeds">see listing</div></div>
+              <div class="rprice"><b>€ 981</b><small>€490/night · 2 nights</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Onich House with View of Glencoe from Hot Tub|Entire place" data-base="glencoe" data-price="€ 981" data-url="https://www.airbnb.co.uk/rooms/10609025" data-dates="2026-11-03|2026-11-05|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="The Heronry Hideaway" data-fit="ok" data-pool="0" data-min="1224.0">
+      <div class="hero"><img loading="lazy" src="https://a0.muscache.com/im/pictures/miso/Hosting-1333994046903912400/original/aa757eb8-7718-491a-be35-7d8574c3e506.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/miso/Hosting-1333994046903912400/original/aa757eb8-7718-491a-be35-7d8574c3e506.jpeg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/hosting/Hosting-1333994046903912400/original/5498b70f-86cd-4027-94ae-a1e646a8dfce.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/hosting/Hosting-1333994046903912400/original/5498b70f-86cd-4027-94ae-a1e646a8dfce.jpeg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/miso/Hosting-1333994046903912400/original/a08c13ee-c883-4e0b-8aa7-39024bbf9ede.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/miso/Hosting-1333994046903912400/original/a08c13ee-c883-4e0b-8aa7-39024bbf9ede.jpeg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/miso/Hosting-1333994046903912400/original/ed42818c-f7b3-4747-9156-1790cad817d4.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/miso/Hosting-1333994046903912400/original/ed42818c-f7b3-4747-9156-1790cad817d4.jpeg?im_w=1200" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>The Heronry Hideaway </h3>
+            <div class="meta"><span class="stars"></span> <span class="score">5.0</span> <span class="muted">49 reviews · Highland, Scotland (Airbnb)</span></div></div>
+          <a class="bk" href="https://www.airbnb.co.uk/rooms/1333994046903912400?check_in=2026-11-03&amp;check_out=2026-11-05&amp;adults=2&amp;children=1&amp;currency=EUR" target="_blank" rel="noopener">Airbnb ↗</a>
+        </div>
+        <div class="chips"><span class="chip hot">♨ Hot tub</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in </span></div>
+        <div class="note">Woodland retreat on the hillside near Glencoe; Airbnb 5.0 from 49 reviews.</div>
+        <p class="desc">The Heronry near Glencoe is a stunning woodland retreat nestled on the hillside above Loch Leven.  Set in acres of private natural woodland it boasts panoramic loch views towards the Pap of Glencoe. Our luxury self-catering accommodation co…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://a0.muscache.com/im/pictures/hosting/Hosting-1333994046903912400/original/37395586-afc9-4f0b-b67b-0a6df36ad905.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/hosting/Hosting-1333994046903912400/original/37395586-afc9-4f0b-b67b-0a6df36ad905.jpeg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/miso/Hosting-1333994046903912400/original/06a94c7c-7a0a-482f-899c-3d084dd06308.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/miso/Hosting-1333994046903912400/original/06a94c7c-7a0a-482f-899c-3d084dd06308.jpeg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/miso/Hosting-1333994046903912400/original/fa81ec4c-1041-40c2-9948-eaffbb77c006.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/miso/Hosting-1333994046903912400/original/fa81ec4c-1041-40c2-9948-eaffbb77c006.jpeg?im_w=1200" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Entire place </div>
+              <div class="rbeds">Living room · Bedroom 1 · Queen bed · Bedroom 2</div></div>
+              <div class="rprice"><b>€ 1,224</b><small>€612/night · 2 nights</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="The Heronry Hideaway|Entire place" data-base="glencoe" data-price="€ 1,224" data-url="https://www.airbnb.co.uk/rooms/1333994046903912400" data-dates="2026-11-03|2026-11-05|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="Isle of Eriska Hotel Spa &amp; Island" data-fit="ok" data-pool="1" data-min="1183.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/30695649.jpg?k=893fbf961a28c19eac592b5311788922b8c14bebfa2cc9c5aafe7301c4911241&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/30695649.jpg?k=893fbf961a28c19eac592b5311788922b8c14bebfa2cc9c5aafe7301c4911241&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/250874657.jpg?k=b86dfa1ce89453f2394190740a961f49351c158c39f52405f3d95d3e921afb00&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/250874657.jpg?k=b86dfa1ce89453f2394190740a961f49351c158c39f52405f3d95d3e921afb00&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/254457776.jpg?k=2c0529e4252ed2aecd5b8db92dc352183f2ea4587ec58067b078b3af7eade2cf&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/254457776.jpg?k=2c0529e4252ed2aecd5b8db92dc352183f2ea4587ec58067b078b3af7eade2cf&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/254457757.jpg?k=153f470d0aea23e758f9334a0fa29d6537040ef848bc1d3e97cc45782af278ea&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/254457757.jpg?k=153f470d0aea23e758f9334a0fa29d6537040ef848bc1d3e97cc45782af278ea&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Isle of Eriska Hotel Spa &amp; Island </h3>
+            <div class="meta"><span class="stars">★★★★★</span> <span class="score">9.1</span> <span class="muted">177 reviews · Isle of Eriska, Benderloch, PA37 1SD</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/isle-of-eriska-spa-amp-golf.en-gb.html?checkin=2026-11-03&amp;checkout=2026-11-05&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip pool">Pool</span><span class="chip gym">Gym</span><span class="chip spa">Spa</span><span class="chip rest">Restaurant</span><span class="chip bar">Bar</span><span class="chip hot">♨ Spa hot tub + pool (shared)</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 15:00</span></div>
+        <div class="note">Private-island 5★ hotel with spa and pool, ~45 min south of Glencoe. Family Suite €1,489 (extra-large double + 2 singles).</div>
+        <p class="desc">Offering a restaurant, 24-hours room service and a spa, Isle of Eriska Hotel Spa &amp; Island is set in 300 acres of lush landscapes in Oban. Free WiFi is available throughout and free private parking is possible onsite. All the luxurious rooms at Isle of Eriska Hotel Spa &amp; Island fe…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/551656301.jpg?k=00aaf5ee785974775e8730ed9c787a8936bece5569dec240feb9f69527e486e0&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/551656301.jpg?k=00aaf5ee785974775e8730ed9c787a8936bece5569dec240feb9f69527e486e0&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/551656304.jpg?k=ffd2ae86d2fb27f555b694decc0842e227ee31467fa5c83735159e9e87e9e7f1&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/551656304.jpg?k=ffd2ae86d2fb27f555b694decc0842e227ee31467fa5c83735159e9e87e9e7f1&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/250874657.jpg?k=8c88d8897f39c431c59a8855d85e94abce9374d926b6c51dffcd7814114e45f3&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/250874657.jpg?k=8c88d8897f39c431c59a8855d85e94abce9374d926b6c51dffcd7814114e45f3&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Junior Suite </div>
+              <div class="rbeds">1 large double bed Cot available on request · 36 m²</div></div>
+              <div class="rprice"><b>€ 1,183</b><small>€592/night · 2 nights</small></div></div>
+            <div class="tags"><span class="tag good">Breakfast incl.</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Isle of Eriska Hotel Spa &amp; Island|Junior Suite" data-base="glencoe" data-price="€ 1,183" data-url="https://www.booking.com/hotel/gb/isle-of-eriska-spa-amp-golf.en-gb.html" data-dates="2026-11-03|2026-11-05|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/857412151.jpg?k=64ea3514ca172f67893d657a56d2ed29bcf4b553ec74c4f9c4c4ac1770e47b87&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/857412151.jpg?k=64ea3514ca172f67893d657a56d2ed29bcf4b553ec74c4f9c4c4ac1770e47b87&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/857412175.jpg?k=50269c790a03d9d0ba18b400c07eba9b95f94f5875aef4624a721fc87926fbe5&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/857412175.jpg?k=50269c790a03d9d0ba18b400c07eba9b95f94f5875aef4624a721fc87926fbe5&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/857412201.jpg?k=842b3faab7aee9af1f620437111aa9189c9f9d7147595ac017537ddad56307b4&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/857412201.jpg?k=842b3faab7aee9af1f620437111aa9189c9f9d7147595ac017537ddad56307b4&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Family Suite </div>
+              <div class="rbeds">2 single beds and 1 extra-large double bed Cot available on request · 35 m²</div></div>
+              <div class="rprice"><b>€ 1,489</b><small>€744/night · 2 nights</small></div></div>
+            <div class="tags"><span class="tag good">Breakfast incl.</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Isle of Eriska Hotel Spa &amp; Island|Family Suite" data-base="glencoe" data-price="€ 1,489" data-url="https://www.booking.com/hotel/gb/isle-of-eriska-spa-amp-golf.en-gb.html" data-dates="2026-11-03|2026-11-05|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/254461237.jpg?k=035c68106f08f5a6f935189fe579129fc6c81b56a6c9f7cd868c9b579df98f9f&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/254461237.jpg?k=035c68106f08f5a6f935189fe579129fc6c81b56a6c9f7cd868c9b579df98f9f&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/254460825.jpg?k=17aa66065b97bcf3368dd08538edb70ecd08e6baebd1f4b8336815c2ef306f2f&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/254460825.jpg?k=17aa66065b97bcf3368dd08538edb70ecd08e6baebd1f4b8336815c2ef306f2f&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/254460748.jpg?k=f52441709eb44c6b11f375023553e5942d342828c319454a0e974f2452a9de12&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/254460748.jpg?k=f52441709eb44c6b11f375023553e5942d342828c319454a0e974f2452a9de12&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Three-Bedroom Cottage </div>
+              <div class="rbeds">Bedroom 1: 1 extra-large double bed Bedroom 2: 2 single beds Bedroom 3: 2 single beds Cot available on request · 90 m²</div></div>
+              <div class="rprice"><b>€ 1,551</b><small>€776/night · 2 nights</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag">B&B € 1,959</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Isle of Eriska Hotel Spa &amp; Island|Three-Bedroom Cottage" data-base="glencoe" data-price="€ 1,551" data-url="https://www.booking.com/hotel/gb/isle-of-eriska-spa-amp-golf.en-gb.html" data-dates="2026-11-03|2026-11-05|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/254457364.jpg?k=c03c4e74409610c549a2c86668c8d7eea88e907ab1251462ee21ea1d497f6c2f&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/254457364.jpg?k=c03c4e74409610c549a2c86668c8d7eea88e907ab1251462ee21ea1d497f6c2f&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/254457716.jpg?k=f5b947d5d0335214ef9c2dbdbcafecb25f0a3bd398eec8326d32518d24c39c8a&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/254457716.jpg?k=f5b947d5d0335214ef9c2dbdbcafecb25f0a3bd398eec8326d32518d24c39c8a&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/254457691.jpg?k=d2f56311f1ace7e8992f3934baafd7623f275f0f68b1bd06583ba720b9b5863f&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/254457691.jpg?k=d2f56311f1ace7e8992f3934baafd7623f275f0f68b1bd06583ba720b9b5863f&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Two-Bedroom Cottage </div>
+              <div class="rbeds">Bedroom 1: 1 extra-large double bed Bedroom 2: 2 single beds Cot available on request · 75 m²</div></div>
+              <div class="rprice"><b>€ 1,734</b><small>€867/night · 2 nights</small></div></div>
+            <div class="tags"><span class="tag good">Breakfast incl.</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Isle of Eriska Hotel Spa &amp; Island|Two-Bedroom Cottage" data-base="glencoe" data-price="€ 1,734" data-url="https://www.booking.com/hotel/gb/isle-of-eriska-spa-amp-golf.en-gb.html" data-dates="2026-11-03|2026-11-05|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="Tigh Tosh with Hot Tub" data-fit="ok" data-pool="0" data-min="679.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/909160381.jpg?k=dd1e701ccbe91dc124c03f95a297e9c5ca5c0dead6fca2503fc3728f5ea82528&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/909160381.jpg?k=dd1e701ccbe91dc124c03f95a297e9c5ca5c0dead6fca2503fc3728f5ea82528&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/909160460.jpg?k=4f167725d11468034173c614088e68b30bc2361a13fb98c53081a31ff0ac69f0&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/909160460.jpg?k=4f167725d11468034173c614088e68b30bc2361a13fb98c53081a31ff0ac69f0&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/909160421.jpg?k=7f5e862f9a3fec46d2b7f3a3e26de839ec0772ae5d526f29aa6303db4b3c8524&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/909160421.jpg?k=7f5e862f9a3fec46d2b7f3a3e26de839ec0772ae5d526f29aa6303db4b3c8524&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/909160254.jpg?k=b250ad413160e5f5acb2ec1e91f964f3839b7cfa4b1136bc4f7c92dc8e530cc6&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/909160254.jpg?k=b250ad413160e5f5acb2ec1e91f964f3839b7cfa4b1136bc4f7c92dc8e530cc6&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Tigh Tosh with Hot Tub </h3>
+            <div class="meta"><span class="stars">★★★★</span> <span class="score">9.5</span> <span class="muted">6 reviews · tigh tosh corpach fort william, Fort William, PH33 7JL</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/tigh-tosh.en-gb.html?checkin=2026-11-03&amp;checkout=2026-11-05&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip hot">♨ Hot tub</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 16:00 to 23:00</span></div>
+        <div class="note">Corpach, by Fort William (~35 min from Glencoe). Only 6 reviews.</div>
+        <p class="desc">Accommodation Features: Tigh Tosh with Hot Tub in Fort William offers a villa with two bedrooms and a living room. The property includes a garden, terrace, and free WiFi. Amenities and Facilities: Guests can enjoy a hot tub, outdoor seating area, and family rooms. Free on-site pr…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/909160124.jpg?k=9133df2742e5176f0c84c59cfe908fd20ad18c0816da6ad86d024e0cef9a818e&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/909160124.jpg?k=9133df2742e5176f0c84c59cfe908fd20ad18c0816da6ad86d024e0cef9a818e&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/909160617.jpg?k=6c63da7f72de306c304058aa46445e9a3c4e983bdb94ac2579f5208364fac78d&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/909160617.jpg?k=6c63da7f72de306c304058aa46445e9a3c4e983bdb94ac2579f5208364fac78d&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/909160483.jpg?k=c5e00804a26c67a01d2fac71af4c460e4988f34fd0d6a0b04759ae8464fd2551&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/909160483.jpg?k=c5e00804a26c67a01d2fac71af4c460e4988f34fd0d6a0b04759ae8464fd2551&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Two-Bedroom Villa </div>
+              <div class="rbeds">Bedroom 1: 1 large double bed Bedroom 2: 2 single beds · 130 m²</div></div>
+              <div class="rprice"><b>€ 679</b><small>€340/night · 2 nights</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Tigh Tosh with Hot Tub|Two-Bedroom Villa" data-base="glencoe" data-price="€ 679" data-url="https://www.booking.com/hotel/gb/tigh-tosh.en-gb.html" data-dates="2026-11-03|2026-11-05|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="Forest Corner Luxury Apartment with Hot Tub" data-fit="ok" data-pool="1" data-min="778.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/762692507.jpg?k=aa678eee2f37eb453478ecd9e5463df80fa10b02933bb2b86947afc4b0bbefb7&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/762692507.jpg?k=aa678eee2f37eb453478ecd9e5463df80fa10b02933bb2b86947afc4b0bbefb7&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/762691987.jpg?k=e3671e840cf3acc5fa81ae8b6e736f7fcb6762d56d146411bc45a1b91cb5276b&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/762691987.jpg?k=e3671e840cf3acc5fa81ae8b6e736f7fcb6762d56d146411bc45a1b91cb5276b&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/536725738.jpg?k=331747ab80a369519b02e8fa62cb1abe0695e0c860ca4e693dcf1f1762957558&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/536725738.jpg?k=331747ab80a369519b02e8fa62cb1abe0695e0c860ca4e693dcf1f1762957558&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/585926227.jpg?k=31b3fbf418bcbafe9c1f51ead7232a299faa8ef6972e6a81dce7216aec80a10a&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/585926227.jpg?k=31b3fbf418bcbafe9c1f51ead7232a299faa8ef6972e6a81dce7216aec80a10a&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Forest Corner Luxury Apartment with Hot Tub </h3>
+            <div class="meta"><span class="stars">★★★</span> <span class="score">9.0</span> <span class="muted">47 reviews · Old Ferry Brae, North Ballachulish, PH49 4JX</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/the-apartment-forest-corner.en-gb.html?checkin=2026-11-03&amp;checkout=2026-11-05&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip pool">Pool</span><span class="chip spa">Spa</span><span class="chip rest">Restaurant</span><span class="chip hot">♨ Hot tub</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 16:00 to 00:00</span></div>
+        
+        <p class="desc">Comfortable Accommodation: Forest Corner Luxury Apartment with Hot Tub in North Ballachulish offers a spacious one-bedroom apartment with a private entrance. The property features a fully equipped kitchen, terrace with sea views, and a cosy seating area. Relaxing Facilities: Gues…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/505519849.jpg?k=f9272439d1b19f0aa0179895bfb2b2e8554b474641b149bf3f39f9ce420bf4a0&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/505519849.jpg?k=f9272439d1b19f0aa0179895bfb2b2e8554b474641b149bf3f39f9ce420bf4a0&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/536725662.jpg?k=6d515b89028f04d71ad44e4c367fe2846727f37d1d3826e327e1564bf2a8d9f0&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/536725662.jpg?k=6d515b89028f04d71ad44e4c367fe2846727f37d1d3826e327e1564bf2a8d9f0&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/637978252.jpg?k=6d56caaee382d42f9dd91052a9238e49d3cf8f2614b5aa5bc3a7a59204c4ace5&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/637978252.jpg?k=6d56caaee382d42f9dd91052a9238e49d3cf8f2614b5aa5bc3a7a59204c4ace5&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">One-Bedroom Apartment </div>
+              <div class="rbeds">2 single beds and 1 large double bed · 60 m²</div></div>
+              <div class="rprice"><b>€ 778</b><small>€389/night · 2 nights</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Forest Corner Luxury Apartment with Hot Tub|One-Bedroom Apartment" data-base="glencoe" data-price="€ 778" data-url="https://www.booking.com/hotel/gb/the-apartment-forest-corner.en-gb.html" data-dates="2026-11-03|2026-11-05|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="Glencoe View Lodge" data-fit="ok" data-pool="0" data-min="598.0">
+      <div class="hero"><img loading="lazy" src="https://a0.muscache.com/im/pictures/hosting/Hosting-1615447964063736275/original/a10bf8c6-4b57-4558-b208-15d2e9eb8130.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/hosting/Hosting-1615447964063736275/original/a10bf8c6-4b57-4558-b208-15d2e9eb8130.jpeg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/hosting/Hosting-1615447964063736275/original/c1cd8456-ccf1-49d9-9b5a-738e682ba897.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/hosting/Hosting-1615447964063736275/original/c1cd8456-ccf1-49d9-9b5a-738e682ba897.jpeg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/hosting/Hosting-1615447964063736275/original/84a2fa74-092b-4cae-b11c-b7b42eea981f.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/hosting/Hosting-1615447964063736275/original/84a2fa74-092b-4cae-b11c-b7b42eea981f.jpeg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/hosting/Hosting-1615447964063736275/original/72f3e638-5d07-4f33-997a-d6e0424422ec.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/hosting/Hosting-1615447964063736275/original/72f3e638-5d07-4f33-997a-d6e0424422ec.jpeg?im_w=1200" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Glencoe View Lodge </h3>
+            <div class="meta"><span class="stars"></span> <span class="score">4.93</span> <span class="muted">40 reviews · Highland, Scotland (Airbnb)</span></div></div>
+          <a class="bk" href="https://www.airbnb.co.uk/rooms/1615447964063736275?check_in=2026-11-03&amp;check_out=2026-11-05&amp;adults=2&amp;children=1&amp;currency=EUR" target="_blank" rel="noopener">Airbnb ↗</a>
+        </div>
+        <div class="chips"><span class="chip hot">♨ Hot tub (Airbnb filter; check if private)</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in </span></div>
+        
+        <p class="desc">Glencoe View Lodge is a peaceful Highland retreat with stunning mountain views, modern cozy interiors, and a fully equipped kitchen. Enjoy private outdoor space for morning coffee or stargazing. Perfect for couples, families, solo traveller…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://a0.muscache.com/im/pictures/hosting/Hosting-1615447964063736275/original/48b0d5b3-67f2-45a5-ad34-ef15e7a90686.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/hosting/Hosting-1615447964063736275/original/48b0d5b3-67f2-45a5-ad34-ef15e7a90686.jpeg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/hosting/Hosting-1615447964063736275/original/67c86f42-4dd8-40c3-aac8-0bef0798a897.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/hosting/Hosting-1615447964063736275/original/67c86f42-4dd8-40c3-aac8-0bef0798a897.jpeg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/hosting/Hosting-1615447964063736275/original/e1d00d3e-58ae-40a7-9dc4-0d3715d30625.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/hosting/Hosting-1615447964063736275/original/e1d00d3e-58ae-40a7-9dc4-0d3715d30625.jpeg?im_w=1200" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Entire place </div>
+              <div class="rbeds">Living room · Bedroom 1 · 2 single beds · Bedroom 2</div></div>
+              <div class="rprice"><b>€ 598</b><small>€299/night · 2 nights</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Glencoe View Lodge|Entire place" data-base="glencoe" data-price="€ 598" data-url="https://www.airbnb.co.uk/rooms/1615447964063736275" data-dates="2026-11-03|2026-11-05|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="Aonachan Cottage" data-fit="ok" data-pool="0" data-min="522.0">
+      <div class="hero"><img loading="lazy" src="https://a0.muscache.com/im/pictures/miso/Hosting-537621780254786355/original/1cfe781f-2883-4396-a6c0-fb72d32ba42e.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/miso/Hosting-537621780254786355/original/1cfe781f-2883-4396-a6c0-fb72d32ba42e.jpeg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/miso/Hosting-537621780254786355/original/ab223e77-ecae-4d65-b25e-7f9fb0ada0ed.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/miso/Hosting-537621780254786355/original/ab223e77-ecae-4d65-b25e-7f9fb0ada0ed.jpeg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/miso/Hosting-537621780254786355/original/0e79b493-96ba-46e6-8947-7a4d4761aba9.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/miso/Hosting-537621780254786355/original/0e79b493-96ba-46e6-8947-7a4d4761aba9.jpeg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/miso/Hosting-537621780254786355/original/94a430c2-f6ad-4911-9bdb-bedb678657f3.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/miso/Hosting-537621780254786355/original/94a430c2-f6ad-4911-9bdb-bedb678657f3.jpeg?im_w=1200" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Aonachan Cottage </h3>
+            <div class="meta"><span class="stars"></span> <span class="score">4.88</span> <span class="muted">165 reviews · Highland, Scotland (Airbnb)</span></div></div>
+          <a class="bk" href="https://www.airbnb.co.uk/rooms/537621780254786355?check_in=2026-11-03&amp;check_out=2026-11-05&amp;adults=2&amp;children=1&amp;currency=EUR" target="_blank" rel="noopener">Airbnb ↗</a>
+        </div>
+        <div class="chips"><span class="chip hot">♨ Private hot tub</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in </span></div>
+        <div class="note">Spean Bridge, ~45 min from Glencoe.</div>
+        <p class="desc">Aonachan Cottage is located in the tranquil village of Spean Bridge. This cosy, welcoming cottage is prefect for everyone, including pets! With a jacuzzi and a log burner you won’t want to leave, but if you do, fantastic adventures await.…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://a0.muscache.com/im/pictures/miso/Hosting-537621780254786355/original/88640f97-2bea-4924-9abe-553c682f38db.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/miso/Hosting-537621780254786355/original/88640f97-2bea-4924-9abe-553c682f38db.jpeg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/miso/Hosting-537621780254786355/original/d3c2a332-6163-4c30-ab5e-7c5a25e61c8c.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/miso/Hosting-537621780254786355/original/d3c2a332-6163-4c30-ab5e-7c5a25e61c8c.jpeg?im_w=1200" alt=""><img loading="lazy" src="https://a0.muscache.com/im/pictures/miso/Hosting-537621780254786355/original/bf7dd68e-7623-4d5c-8c9e-77807f86b886.jpeg?im_w=720" data-full="https://a0.muscache.com/im/pictures/miso/Hosting-537621780254786355/original/bf7dd68e-7623-4d5c-8c9e-77807f86b886.jpeg?im_w=1200" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Entire place </div>
+              <div class="rbeds">see listing</div></div>
+              <div class="rprice"><b>€ 522</b><small>€261/night · 2 nights</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Aonachan Cottage|Entire place" data-base="glencoe" data-price="€ 522" data-url="https://www.airbnb.co.uk/rooms/537621780254786355" data-dates="2026-11-03|2026-11-05|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="Laich Cottage" data-fit="ok" data-pool="0" data-min="396.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/160171955.jpg?k=885fca3a349b1e5790b081f22c9bff98310f337deaec0c027a0d0063cc0cb4fa&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/160171955.jpg?k=885fca3a349b1e5790b081f22c9bff98310f337deaec0c027a0d0063cc0cb4fa&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/531359539.jpg?k=f8973ff4d5cb2c278dfa51cfc553d5845ec62530f4b116bca33752744f5be6a3&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/531359539.jpg?k=f8973ff4d5cb2c278dfa51cfc553d5845ec62530f4b116bca33752744f5be6a3&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/161797573.jpg?k=fc3edbe07a86ae87792997be4a4477196dc5a8bb0b4fc214592c37a497e7be81&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/161797573.jpg?k=fc3edbe07a86ae87792997be4a4477196dc5a8bb0b4fc214592c37a497e7be81&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/162118756.jpg?k=c45c0c94f0f10b2d9ff24866cb836edfc49504af08a71e264aa8529c5e1793ab&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/162118756.jpg?k=c45c0c94f0f10b2d9ff24866cb836edfc49504af08a71e264aa8529c5e1793ab&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Laich Cottage </h3>
+            <div class="meta"><span class="stars">★★★★</span> <span class="score">9.1</span> <span class="muted">105 reviews · appin Argyll, Appin, PA38 4BD</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/laich-cottage.en-gb.html?checkin=2026-11-03&amp;checkout=2026-11-05&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip hot">♨ Hot tub (Booking.com filter)</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 16:00 to 22:00</span></div>
+        <div class="note">Appin, ~25 min south of Glencoe.</div>
+        <p class="desc">Spacious Accommodation: Laich Cottage in Appin offers a spacious apartment with two bedrooms and a living room. The property features a fully equipped kitchenette, private bathroom, and a comfortable seating area. Relaxing Facilities: Guests can unwind in the hot tub or enjoy the…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/162117518.jpg?k=14e26aee973a61c4f0e245294c57f107c22e386c4afbdb758ed59b9bf8f5126a&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/162117518.jpg?k=14e26aee973a61c4f0e245294c57f107c22e386c4afbdb758ed59b9bf8f5126a&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/162118818.jpg?k=f0b20ef37b742eae4316604ac605354821f593b9e26f5d6ee4f8a8c9fdf493ca&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/162118818.jpg?k=f0b20ef37b742eae4316604ac605354821f593b9e26f5d6ee4f8a8c9fdf493ca&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/162117600.jpg?k=2519417ddc40c46d7772644c9852bf53af3abbc462bd4a6c70a8f525b9f710aa&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/162117600.jpg?k=2519417ddc40c46d7772644c9852bf53af3abbc462bd4a6c70a8f525b9f710aa&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Apartment with Garden View </div>
+              <div class="rbeds">Bedroom 1: 2 single beds Bedroom 2: 1 double bed · 70 m²</div></div>
+              <div class="rprice"><b>€ 396</b><small>€198/night · 2 nights</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Laich Cottage|Apartment with Garden View" data-base="glencoe" data-price="€ 396" data-url="https://www.booking.com/hotel/gb/laich-cottage.en-gb.html" data-dates="2026-11-03|2026-11-05|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="St Andrews House" data-fit="ok" data-pool="0" data-min="1020.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/701896204.jpg?k=351493723588ae710341fa7f91663acb8040b3f40ee828f0f4a4ea5868be0a29&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/701896204.jpg?k=351493723588ae710341fa7f91663acb8040b3f40ee828f0f4a4ea5868be0a29&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/698757566.jpg?k=e047a70ad8c49a822e3fa1934daf2ff7c4b9039d72dffe82a6554ea3a1fbb11c&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/698757566.jpg?k=e047a70ad8c49a822e3fa1934daf2ff7c4b9039d72dffe82a6554ea3a1fbb11c&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/698757033.jpg?k=312ff1fcf26cf83ec18eb9e58ba029077d473ee60050afed012f5e0fbd482e67&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/698757033.jpg?k=312ff1fcf26cf83ec18eb9e58ba029077d473ee60050afed012f5e0fbd482e67&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/698757515.jpg?k=0e70130047ec1bfd4c9cca48e71d6898e9de46bc6b798605d65e4481cda41d94&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/698757515.jpg?k=0e70130047ec1bfd4c9cca48e71d6898e9de46bc6b798605d65e4481cda41d94&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>St Andrews House </h3>
+            <div class="meta"><span class="stars">★★★★</span> <span class="score">8.8</span> <span class="muted">18 reviews · St Andrews House, Fort William, PH33 6BD</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/st-andrews-house-fort-william.en-gb.html?checkin=2026-11-03&amp;checkout=2026-11-05&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip hot">♨ Hot tub (Booking.com filter)</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 15:00 to 22:00</span></div>
+        
+        <p class="desc">Comfortable Accommodation: St Andrews House in Fort William offers a holiday home with a sauna, garden, terrace, and free WiFi. Private check-in and check-out services ensure a seamless arrival and departure. Leisure Facilities: Guests can enjoy a hot tub, indoor and outdoor play…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/698757170.jpg?k=4a7491d2f81a2331a9a15fae84568159bf4e6c25951d035d490d96f33db0c269&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/698757170.jpg?k=4a7491d2f81a2331a9a15fae84568159bf4e6c25951d035d490d96f33db0c269&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/698757234.jpg?k=ca460d9f8c6dbff88e2279cd5d9a2c6e764388c36b8a795b6ebeb98aef005c24&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/698757234.jpg?k=ca460d9f8c6dbff88e2279cd5d9a2c6e764388c36b8a795b6ebeb98aef005c24&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/698757071.jpg?k=87d79a377f0529d1a58fb0b1dce56043458bcb4bcecee2ac05e93b74c1003afd&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/698757071.jpg?k=87d79a377f0529d1a58fb0b1dce56043458bcb4bcecee2ac05e93b74c1003afd&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Three-Bedroom Holiday Home </div>
+              <div class="rbeds">Bedroom 1: 1 large double bed Bedroom 2: 1 sofa bed and 1 large double bed Bedroom 3: 1 large double bed Living room: 1 sofa bed Bathrooms:3 Cot available on request · 1000 m²</div></div>
+              <div class="rprice"><b>€ 1,020</b><small>€510/night · 2 nights</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="St Andrews House|Three-Bedroom Holiday Home" data-base="glencoe" data-price="€ 1,020" data-url="https://www.booking.com/hotel/gb/st-andrews-house-fort-william.en-gb.html" data-dates="2026-11-03|2026-11-05|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+  </section>
+  <section id="pitlochry">
+    <div class="shead"><div class="when">Night 5 · Thu 5 Nov</div><h2>Pitlochry mid-stop</h2><div class="sub">1 night · Enchanted Forest that evening · 2 options · picks first, then by stars &amp; rating; places with no bed for Noah last</div></div>
+    
+    <article class="prop" data-name="Fonab Castle Hotel" data-fit="ok" data-pool="1" data-min="375.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/19764117.jpg?k=3ede521d954d1fd53c44069de085d79040fe734a6214a84a34b2c20ae1fca263&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/19764117.jpg?k=3ede521d954d1fd53c44069de085d79040fe734a6214a84a34b2c20ae1fca263&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/90106114.jpg?k=fadd02db46e086d4a008bff11f0287ede934da1c1bdbb7b257d6545aeb2fdd43&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/90106114.jpg?k=fadd02db46e086d4a008bff11f0287ede934da1c1bdbb7b257d6545aeb2fdd43&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/221479859.jpg?k=4e0618d40c938b0e83bc2079519968f7e430ab3ddac84df70cd0c8f4369ef37a&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/221479859.jpg?k=4e0618d40c938b0e83bc2079519968f7e430ab3ddac84df70cd0c8f4369ef37a&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/47932276.jpg?k=88ab6b493ee4af601c75c46e1a9be3a6911c5725e8c7731a59003b7cf35413b8&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/47932276.jpg?k=88ab6b493ee4af601c75c46e1a9be3a6911c5725e8c7731a59003b7cf35413b8&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Fonab Castle Hotel <span class="dpick">David’s pick</span></h3>
+            <div class="meta"><span class="stars">★★★★★</span> <span class="score">8.5</span> <span class="muted">1,025 reviews · Foss Road, Pitlochry, PH16 5ND</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/fonab-castle.en-gb.html?checkin=2026-11-05&amp;checkout=2026-11-06&amp;group_adults=2&amp;group_children=0&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip pool">Pool</span><span class="chip spa">Spa</span><span class="chip rest">Restaurant</span><span class="chip bar">Bar</span><span class="chip">Priced for 2 adults</span><span class="chip fit ok">Noah: Cot allowed up to age 5 (free)</span><span class="chip">Check-in 15:00 to 23:00</span></div>
+        <div class="note">Woodland Suite, 1 night. Free cot up to age 5.</div>
+        <p class="desc">Nestled in the picturesque Scottish Highlands, Fonab Castle, refurbished and opened in 2013, boasts luxurious rooms, scenic views, mature gardens, free WiFi, free parking, and 2 restaurants. Each individually designed room has been decorated sympathetically to blend a contemporar…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/90105872.jpg?k=234956a9c57fece808c2e8c28205e5dd8dc18c374fb6c84543f25f86ae88a8c3&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/90105872.jpg?k=234956a9c57fece808c2e8c28205e5dd8dc18c374fb6c84543f25f86ae88a8c3&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/304777306.jpg?k=872d47d169a003d7f3fa41ed5f7e304393a236fcbcab45fd78d671bb4c8cbf19&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/304777306.jpg?k=872d47d169a003d7f3fa41ed5f7e304393a236fcbcab45fd78d671bb4c8cbf19&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/304777291.jpg?k=43b8ad29292de52c255bc3a3efc40d66c220801b10de801e7c10b5830dbc7b30&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/304777291.jpg?k=43b8ad29292de52c255bc3a3efc40d66c220801b10de801e7c10b5830dbc7b30&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Woodland Lodge Double Room </div>
+              <div class="rbeds">1 double bed · 20 m²</div></div>
+              <div class="rprice"><b>€ 375</b><small>€375/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag good">Breakfast incl.</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Fonab Castle Hotel|Woodland Lodge Double Room" data-base="pitlochry" data-price="€ 375" data-url="https://www.booking.com/hotel/gb/fonab-castle.en-gb.html" data-dates="2026-11-05|2026-11-06|2"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/252174859.jpg?k=9c372be5e774cf5bc02b0389525718cb2704b73fe363810cdbbda0f3361c8297&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/252174859.jpg?k=9c372be5e774cf5bc02b0389525718cb2704b73fe363810cdbbda0f3361c8297&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/19763561.jpg?k=29550a6b1f414b6f06a75fc6ae892ec62d7b89879a8594cc1b6a2e06881da443&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/19763561.jpg?k=29550a6b1f414b6f06a75fc6ae892ec62d7b89879a8594cc1b6a2e06881da443&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/719003290.jpg?k=fcb3246481abeaef9d3ef414ab3a72db8cd7fd760c4c4b798a68807ff2b57c53&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/719003290.jpg?k=fcb3246481abeaef9d3ef414ab3a72db8cd7fd760c4c4b798a68807ff2b57c53&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Castle Room Superior </div>
+              <div class="rbeds">1 extra-large double bed · 30 m²</div></div>
+              <div class="rprice"><b>€ 477</b><small>€477/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag good">Breakfast incl.</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Fonab Castle Hotel|Castle Room Superior" data-base="pitlochry" data-price="€ 477" data-url="https://www.booking.com/hotel/gb/fonab-castle.en-gb.html" data-dates="2026-11-05|2026-11-06|2"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/719001641.jpg?k=34bca981cdffb540a60186fe12e6c64b4fff78e55683c01c9a48cadadc6ec0c8&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/719001641.jpg?k=34bca981cdffb540a60186fe12e6c64b4fff78e55683c01c9a48cadadc6ec0c8&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/719001644.jpg?k=755f65d71e1369f69f91259929ae0f1aa34a8812f428c76f4b87b34fed09ee4d&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/719001644.jpg?k=755f65d71e1369f69f91259929ae0f1aa34a8812f428c76f4b87b34fed09ee4d&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/719001643.jpg?k=0783f332f943b4505b5ce3a5279f2de580faad9eb20a0a50efef6b3d0a32cf3f&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/719001643.jpg?k=0783f332f943b4505b5ce3a5279f2de580faad9eb20a0a50efef6b3d0a32cf3f&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Woodland Room </div>
+              <div class="rbeds">1 extra-large double bed · 25 m²</div></div>
+              <div class="rprice"><b>€ 423</b><small>€423/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag good">Breakfast incl.</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Fonab Castle Hotel|Woodland Room" data-base="pitlochry" data-price="€ 423" data-url="https://www.booking.com/hotel/gb/fonab-castle.en-gb.html" data-dates="2026-11-05|2026-11-06|2"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/719001712.jpg?k=e4245c827f083671f6889389826d383c50d4bfd91de13f1b5257ceafa790e5d4&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/719001712.jpg?k=e4245c827f083671f6889389826d383c50d4bfd91de13f1b5257ceafa790e5d4&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/719001713.jpg?k=90e20abb850f10e5b22c3b588062809e669caa2f2466f4f57730abb22e909d30&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/719001713.jpg?k=90e20abb850f10e5b22c3b588062809e669caa2f2466f4f57730abb22e909d30&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/719001714.jpg?k=c011953e553c2d9e5cb370bab03e7015c272b2548211b1728fcea56f37d097c2&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/719001714.jpg?k=c011953e553c2d9e5cb370bab03e7015c272b2548211b1728fcea56f37d097c2&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Woodland Suite <span class="dpick">David’s pick</span></div>
+              <div class="rbeds">1 extra-large double bed · 30 m²</div></div>
+              <div class="rprice"><b>€ 450</b><small>€450/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag good">Breakfast incl.</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="Fonab Castle Hotel|Woodland Suite" data-base="pitlochry" data-price="€ 450" data-url="https://www.booking.com/hotel/gb/fonab-castle.en-gb.html" data-dates="2026-11-05|2026-11-06|2" data-default="1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="The Old Manse of Blair, Boutique Hotel &amp; Michelin Restaurant" data-fit="ok" data-pool="0" data-min="699.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/412084780.jpg?k=2fb26e279673824e667f89ed1f06245930d74b6cfe40b94f0671cdd6c55754d1&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/412084780.jpg?k=2fb26e279673824e667f89ed1f06245930d74b6cfe40b94f0671cdd6c55754d1&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/328333537.jpg?k=bf374d8bb14c4f810336666d796dd36ad6fef754da7f9f8cba99b086dff84576&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/328333537.jpg?k=bf374d8bb14c4f810336666d796dd36ad6fef754da7f9f8cba99b086dff84576&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/553067956.jpg?k=a23953e4ed2cc558dfe4833f95a2a77c1d4aff11a59c4b70c0e8dc82f7da6d65&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/553067956.jpg?k=a23953e4ed2cc558dfe4833f95a2a77c1d4aff11a59c4b70c0e8dc82f7da6d65&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/858352898.jpg?k=02c9c86f92ec591aae3b7a12668b6140853d3dd7dc1403408be7f2df0148e1bc&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/858352898.jpg?k=02c9c86f92ec591aae3b7a12668b6140853d3dd7dc1403408be7f2df0148e1bc&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>The Old Manse of Blair, Boutique Hotel &amp; Michelin Restaurant </h3>
+            <div class="meta"><span class="stars">★★★★★</span> <span class="score">8.9</span> <span class="muted">242 reviews · The Old Manse, Blair Atholl, PH18 5TN</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/the-old-manse-of-blair.en-gb.html?checkin=2026-11-05&amp;checkout=2026-11-06&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip rest">Restaurant</span><span class="chip bar">Bar</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 16:00 to 20:00</span></div>
+        
+        <p class="desc">Historic Charm: The Old Manse of Blair, Boutique Hotel &amp; Michelin Restaurant in Blair Atholl is housed in a historic building. Guests enjoy garden and mountain views, complemented by a private entrance. Exceptional Dining: The family-friendly restaurant offers Scottish, seafood, …</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/522582624.jpg?k=9d1f8b10c9e031206ea3b751dcd81d474b524e12a57a17e8602b4cd3b48c7893&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/522582624.jpg?k=9d1f8b10c9e031206ea3b751dcd81d474b524e12a57a17e8602b4cd3b48c7893&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/619324523.jpg?k=b9ae6d2627461017e535a2e6db7b182a1418e0b2954001fe49f99803875d11c5&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/619324523.jpg?k=b9ae6d2627461017e535a2e6db7b182a1418e0b2954001fe49f99803875d11c5&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/619324425.jpg?k=54cbe81e7f101561adaf082e46c855841b8874cb1ae1afa7f70b9ad09d9323be&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/619324425.jpg?k=54cbe81e7f101561adaf082e46c855841b8874cb1ae1afa7f70b9ad09d9323be&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">The Georgian Suite Open Fire Mansion House </div>
+              <div class="rbeds">1 extra-large double bed · 25 m²</div></div>
+              <div class="rprice"><b>€ 1,095</b><small>€1,095/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="The Old Manse of Blair, Boutique Hotel &amp; Michelin Restaurant|The Georgian Suite Open Fire Mansion House" data-base="pitlochry" data-price="€ 1,095" data-url="https://www.booking.com/hotel/gb/the-old-manse-of-blair.en-gb.html" data-dates="2026-11-05|2026-11-06|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/553067175.jpg?k=8d1ddc3c577db450f7f859e26830ee03a5fcf3fa26caeeddbe38c0e2a9dba600&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/553067175.jpg?k=8d1ddc3c577db450f7f859e26830ee03a5fcf3fa26caeeddbe38c0e2a9dba600&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/553067166.jpg?k=4e843b67a48515f6e641966d64c60cfd5de13b3ab86816dc53dd68696023ee9c&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/553067166.jpg?k=4e843b67a48515f6e641966d64c60cfd5de13b3ab86816dc53dd68696023ee9c&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/553067169.jpg?k=0aa9da7df9298d56933ae852b969dc82f4280c7c952f22afd58a6141d7835571&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/553067169.jpg?k=0aa9da7df9298d56933ae852b969dc82f4280c7c952f22afd58a6141d7835571&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">The Bothy Suite </div>
+              <div class="rbeds">1 extra-large double bed and 1 sofa bed · 25 m²</div></div>
+              <div class="rprice"><b>€ 699</b><small>€699/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag muted">Non-refundable</span></div>
+            <label class="fav"><input type="checkbox" data-id="The Old Manse of Blair, Boutique Hotel &amp; Michelin Restaurant|The Bothy Suite" data-base="pitlochry" data-price="€ 699" data-url="https://www.booking.com/hotel/gb/the-old-manse-of-blair.en-gb.html" data-dates="2026-11-05|2026-11-06|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+  </section>
+  <section id="edinburgh">
+    <div class="shead"><div class="when">Night 6 · Fri 6 Nov</div><h2>Edinburgh (with the car)</h2><div class="sub">1 night · car returned at Edinburgh Airport Sat 11:00 · flight 13:25 · 8 options · picks first, then by stars &amp; rating; places with no bed for Noah last</div><div class="warnbox"><b>You keep the car Friday night, so parking matters.</b> The three hotels on the airport side have <b>free on-site parking</b> and are 5–15 min from the car return on Saturday morning. The city-centre hotels need paid valet or a public car park nearby (cost shown on each card). All have free cancellation.</div></div>
+    
+    <article class="prop" data-name="Norton House Hotel &amp; Spa, Edinburgh" data-fit="ok" data-pool="1" data-min="293.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/892129815.jpg?k=3087b0b0bb85489fc743bbd858d3d004afac39b1e90f4c44643cb1eab99fabbf&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/892129815.jpg?k=3087b0b0bb85489fc743bbd858d3d004afac39b1e90f4c44643cb1eab99fabbf&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/365503367.jpg?k=7c56eb1c24e6bad29903cc9ae16691e9da75c4f9469692a9c85c94a03ec7d71e&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/365503367.jpg?k=7c56eb1c24e6bad29903cc9ae16691e9da75c4f9469692a9c85c94a03ec7d71e&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/365503321.jpg?k=8629d42c8cd5580757019243ae0552aa93ebdd846bf49e053abf7dfe45d2e6ec&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/365503321.jpg?k=8629d42c8cd5580757019243ae0552aa93ebdd846bf49e053abf7dfe45d2e6ec&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/892103167.jpg?k=89b4243ffdcb47e481d41ff7e790ab42d239d412818b2405d68957fc468ad052&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/892103167.jpg?k=89b4243ffdcb47e481d41ff7e790ab42d239d412818b2405d68957fc468ad052&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Norton House Hotel &amp; Spa, Edinburgh <span class="pick">Claude’s pick</span></h3>
+            <div class="meta"><span class="stars">★★★★</span> <span class="score">8.9</span> <span class="muted">940 reviews · Ingliston, Ingliston, EH28 8LX</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/nortonhouse.en-gb.html?checkin=2026-11-06&amp;checkout=2026-11-07&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip pool">Pool</span><span class="chip gym">Gym</span><span class="chip spa">Spa</span><span class="chip rest">Restaurant</span><span class="chip bar">Bar</span><span class="chip pfree">P · Free on-site parking</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 15:00</span></div>
+        <div class="note">Victorian country-house hotel in parkland at Ingliston, 2 km from Edinburgh Airport: indoor pool, gym, spa. Executive room has a double + 2 singles. Easiest for Saturday’s 11:00 car return.</div>
+        <p class="desc">Set in a Victorian mansion in 55 acres of grounds, Norton House features a luxury spa, award-winning restaurant and boutique rooms with free internet. Edinburgh is a 20-minute drive, and Edinburgh Airport is 3 miles away. The 4-star bedrooms at Norton House Hotel &amp; Spa, Edinburgh…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/892109032.jpg?k=0add8b2d4195bfc0bfbcbceb6422a8bdb09357e4a6638e92a56e2f8081134ced&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/892109032.jpg?k=0add8b2d4195bfc0bfbcbceb6422a8bdb09357e4a6638e92a56e2f8081134ced&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/693679704.jpg?k=33fa5fed23c125b5279f52688799ba27865e3993ff512d3674ccd287733fab47&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/693679704.jpg?k=33fa5fed23c125b5279f52688799ba27865e3993ff512d3674ccd287733fab47&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/693680674.jpg?k=c81ad4d6c1136e6e3e33a0dbb07d4cc227bc48a4c0e20a644fb3558f41a426ea&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/693680674.jpg?k=c81ad4d6c1136e6e3e33a0dbb07d4cc227bc48a4c0e20a644fb3558f41a426ea&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Executive Double Room </div>
+              <div class="rbeds">1 double bed 2 single beds · 29 m²</div></div>
+              <div class="rprice"><b>€ 293</b><small>€293/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag good">Breakfast incl.</span><span class="tag good">Free cancellation before 5 November 2026 (€ 293)</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="Norton House Hotel &amp; Spa, Edinburgh|Executive Double Room" data-base="edinburgh" data-price="€ 293" data-url="https://www.booking.com/hotel/gb/nortonhouse.en-gb.html" data-dates="2026-11-06|2026-11-07|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/365503367.jpg?k=735fb114d108d98788f64ff74e82c824885230e89876297a1e857b3ba7162068&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/365503367.jpg?k=735fb114d108d98788f64ff74e82c824885230e89876297a1e857b3ba7162068&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/365503312.jpg?k=61c4267f80ea2feae02344ee59625edfcb65c86479cc466fec55b18df369ca15&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/365503312.jpg?k=61c4267f80ea2feae02344ee59625edfcb65c86479cc466fec55b18df369ca15&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/693698505.jpg?k=5277c3a3b060d022b0faf642e845083f60de4bf9bca156af9591f3e0e3eee70f&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/693698505.jpg?k=5277c3a3b060d022b0faf642e845083f60de4bf9bca156af9591f3e0e3eee70f&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Duplex Junior Suite </div>
+              <div class="rbeds">1 extra-large double bed and 1 sofa bed · 46 m²</div></div>
+              <div class="rprice"><b>€ 477</b><small>€477/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag good">Breakfast incl.</span><span class="tag good">Free cancellation before 5 November 2026 (€ 477)</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="Norton House Hotel &amp; Spa, Edinburgh|Duplex Junior Suite" data-base="edinburgh" data-price="€ 477" data-url="https://www.booking.com/hotel/gb/nortonhouse.en-gb.html" data-dates="2026-11-06|2026-11-07|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="Dalmahoy Hotel &amp; Country Club" data-fit="ok" data-pool="1" data-min="188.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/56772648.jpg?k=5208d18fb637dbca4431cf11d8426b6e1566a98ce8af605ed7d07c2781709d07&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/56772648.jpg?k=5208d18fb637dbca4431cf11d8426b6e1566a98ce8af605ed7d07c2781709d07&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/182727803.jpg?k=587d03a9a68203ab5b2c6362389817390a47d9b23ff38d64ab065f17e0d8209c&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/182727803.jpg?k=587d03a9a68203ab5b2c6362389817390a47d9b23ff38d64ab065f17e0d8209c&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/62737298.jpg?k=dbb0b5df7dadff303c2384efaa3712684079c5bebb8e8ddddd4fc71836913ef0&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/62737298.jpg?k=dbb0b5df7dadff303c2384efaa3712684079c5bebb8e8ddddd4fc71836913ef0&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/62737300.jpg?k=dd7370a5cc971fa375f5ed72aff2e413d025aea663253e3b1428f49be7e4348e&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/62737300.jpg?k=dd7370a5cc971fa375f5ed72aff2e413d025aea663253e3b1428f49be7e4348e&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Dalmahoy Hotel &amp; Country Club </h3>
+            <div class="meta"><span class="stars">★★★★</span> <span class="score">8.5</span> <span class="muted">9,288 reviews · Edinburgh West, Edinburgh, EH27 8EB</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/marriott-dalmahoy-country-club.en-gb.html?checkin=2026-11-06&amp;checkout=2026-11-07&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip pool">Pool</span><span class="chip gym">Gym</span><span class="chip rest">Restaurant</span><span class="chip bar">Bar</span><span class="chip pfree">P · Free on-site parking</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 15:30</span></div>
+        
+        <p class="desc">Set amongst 1000 acres of beautiful parkland with two 18-hole golf courses, this historic country hotel, built in 1725, offers luxurious spa and leisure facilities, and informal and fine dining restaurant options. All of the spacious rooms at the Dalmahoy Hotel &amp; Country Club off…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/182727803.jpg?k=11c2d5eee781bfbfbaadd6f33c14fb1170fa3abf2ec79b0e96e84ee065587326&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/182727803.jpg?k=11c2d5eee781bfbfbaadd6f33c14fb1170fa3abf2ec79b0e96e84ee065587326&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/182727789.jpg?k=8ff8d48370cf0b2aa5ffc7880df5fb3dd8803e38a95a00f089e87cff3e9b3c47&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/182727789.jpg?k=8ff8d48370cf0b2aa5ffc7880df5fb3dd8803e38a95a00f089e87cff3e9b3c47&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/182727844.jpg?k=fda730d8e565043c94bfeb9d060a31da1aee46a14be5c99cd3f74777ccc54d6c&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/182727844.jpg?k=fda730d8e565043c94bfeb9d060a31da1aee46a14be5c99cd3f74777ccc54d6c&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Superior Double Room with 2 Double Beds </div>
+              <div class="rbeds">2 double beds · 16 m²</div></div>
+              <div class="rprice"><b>€ 188</b><small>€188/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag">B&B € 223</span><span class="tag good">Free cancellation before 5 November 2026 (€ 231)</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="Dalmahoy Hotel &amp; Country Club|Superior Double Room with 2 Double Beds" data-base="edinburgh" data-price="€ 188" data-url="https://www.booking.com/hotel/gb/marriott-dalmahoy-country-club.en-gb.html" data-dates="2026-11-06|2026-11-07|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="Courtyard by Marriott Edinburgh West" data-fit="ok" data-pool="0" data-min="257.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/627270551.jpg?k=16ea9e1f571a0f80eb6dd959e135b287c85a64b31d28220ad2455f7e27189849&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/627270551.jpg?k=16ea9e1f571a0f80eb6dd959e135b287c85a64b31d28220ad2455f7e27189849&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/479518111.jpg?k=3076d3636ead71541cab15c55c641161022f16858cf9f3c93d455cbc4642daef&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/479518111.jpg?k=3076d3636ead71541cab15c55c641161022f16858cf9f3c93d455cbc4642daef&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/627270543.jpg?k=fbbb9e744581621019108479b25caf5ad644ccb6961d3aedc38e44bc994485b1&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/627270543.jpg?k=fbbb9e744581621019108479b25caf5ad644ccb6961d3aedc38e44bc994485b1&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/627270546.jpg?k=09e9e256a84e719fab448ba94e9f17d10f69bd60b530e6c32c9038c299f6b33f&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/627270546.jpg?k=09e9e256a84e719fab448ba94e9f17d10f69bd60b530e6c32c9038c299f6b33f&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Courtyard by Marriott Edinburgh West </h3>
+            <div class="meta"><span class="stars">★★★★</span> <span class="score">8.4</span> <span class="muted">2,485 reviews · 2 Research Avenue South, Edinburgh, EH14 4BA</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/courtyard-edinburgh-west.en-gb.html?checkin=2026-11-06&amp;checkout=2026-11-07&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip rest">Restaurant</span><span class="chip pfree">P · Free on-site parking</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 15:00</span></div>
+        <div class="note">Modern hotel by Heriot-Watt / Edinburgh Park, two double beds, ~15 min to the airport; tram to town from Edinburgh Park.</div>
+        <p class="desc">Courtyard Edinburgh West is located in Edinburgh, 500 metres from Heriot-Watt University and 7.2 km from BT Murrayfield Stadium. Guests can enjoy all-day dining at the on-site restaurant, The Avenue. Every room has a flat-screen TV and tea/coffee making facilities. The room also …</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/479518111.jpg?k=e64290bfd7632e1ab569725f97b27738bc5fd4a6eb920c1d6acc4fd18a0ffd6e&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/479518111.jpg?k=e64290bfd7632e1ab569725f97b27738bc5fd4a6eb920c1d6acc4fd18a0ffd6e&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/627270548.jpg?k=ac3fc7c24e74ba5683eff38ba685a57179ea92208a568a2bedf728e4fbc23b2d&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/627270548.jpg?k=ac3fc7c24e74ba5683eff38ba685a57179ea92208a568a2bedf728e4fbc23b2d&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/627270553.jpg?k=a5e9beb220cdc7896a778d757989b77b5033def7f960fc768f78375820218122&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/627270553.jpg?k=a5e9beb220cdc7896a778d757989b77b5033def7f960fc768f78375820218122&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Superior Double Room with Two Double Beds </div>
+              <div class="rbeds">2 double beds · 24 m²</div></div>
+              <div class="rprice"><b>€ 257</b><small>€257/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag">B&B € 282</span><span class="tag good">Free cancellation before 6 November 2026 (€ 278)</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="Courtyard by Marriott Edinburgh West|Superior Double Room with Two Double Beds" data-base="edinburgh" data-price="€ 257" data-url="https://www.booking.com/hotel/gb/courtyard-edinburgh-west.en-gb.html" data-dates="2026-11-06|2026-11-07|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="Kimpton Charlotte Square by IHG" data-fit="ok" data-pool="1" data-min="751.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/700009617.jpg?k=ac47e9e893f9bd3dae1924bd4c35063ecb186980b493dae7f4f43fc8804ea10a&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/700009617.jpg?k=ac47e9e893f9bd3dae1924bd4c35063ecb186980b493dae7f4f43fc8804ea10a&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/226676985.jpg?k=4f8bb2a52d81c8f0719303923223a6de87e200f7252343dc750188b58189bfe5&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/226676985.jpg?k=4f8bb2a52d81c8f0719303923223a6de87e200f7252343dc750188b58189bfe5&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/137632330.jpg?k=b9ee7e452bc995c2258d251e5044164d29fb8af34c37d40e4dd2ca4566c794bd&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/137632330.jpg?k=b9ee7e452bc995c2258d251e5044164d29fb8af34c37d40e4dd2ca4566c794bd&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/214021723.jpg?k=2c559c593660e6e33b9d0fe2b7706b86a333678fe645f2e63ebc05296e99b23a&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/214021723.jpg?k=2c559c593660e6e33b9d0fe2b7706b86a333678fe645f2e63ebc05296e99b23a&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Kimpton Charlotte Square by IHG </h3>
+            <div class="meta"><span class="stars">★★★★★</span> <span class="score">8.7</span> <span class="muted">1,531 reviews · 38 Charlotte Square, Edinburgh, EH2 4HQ</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/the-principal-edinburgh-charlotte-square.en-gb.html?checkin=2026-11-06&amp;checkout=2026-11-07&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip pool">Pool</span><span class="chip gym">Gym</span><span class="chip spa">Spa</span><span class="chip rest">Restaurant</span><span class="chip bar">Bar</span><span class="chip ppaid">P · Valet £35–45/night, book ahead</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 15:00 to 23:30</span></div>
+        <div class="note">Georgian square in the New Town, pool + spa, 3 min to the West End tram stop. Two double beds (Noah gets his own).</div>
+        <p class="desc">Kimpton Charlotte Square Hotel is situated in Edinburgh, just metres from Princes Street and George Street. The rooms offer a flat-screen Smart TV, 300 thread count bed linen, a complimentary treat box and a fridge with complimentary fresh milk and mineral water. The en suite bat…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/700009757.jpg?k=9b2532a6fd427effaf79faccdbc4ebc46d2a4ec437c69fbfe34faec72060c7cc&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/700009757.jpg?k=9b2532a6fd427effaf79faccdbc4ebc46d2a4ec437c69fbfe34faec72060c7cc&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/802809521.jpg?k=1e1020f58092376d7f1280201f2e2c73fd83adccb314c3933e0845ad67bdefda&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/802809521.jpg?k=1e1020f58092376d7f1280201f2e2c73fd83adccb314c3933e0845ad67bdefda&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/802809525.jpg?k=b2fcabb2efbeba5b2f227663299ee1b83fed017c61a9b4982b7de2bbe44776c5&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/802809525.jpg?k=b2fcabb2efbeba5b2f227663299ee1b83fed017c61a9b4982b7de2bbe44776c5&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Premium Double Room with Two Double Beds </div>
+              <div class="rbeds">2 double beds and 1 sofa bed · 50 m²</div></div>
+              <div class="rprice"><b>€ 751</b><small>€751/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag">B&B € 811</span><span class="tag good">Free cancellation before 5 November 2026 (€ 815)</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="Kimpton Charlotte Square by IHG|Premium Double Room with Two Double Beds" data-base="edinburgh" data-price="€ 751" data-url="https://www.booking.com/hotel/gb/the-principal-edinburgh-charlotte-square.en-gb.html" data-dates="2026-11-06|2026-11-07|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/214022452.jpg?k=6486dcdff727f5437cac6d018c3e16e4dc0351427f2dd846f18d2ae9bd2ed2c3&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/214022452.jpg?k=6486dcdff727f5437cac6d018c3e16e4dc0351427f2dd846f18d2ae9bd2ed2c3&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/214022441.jpg?k=fe870ce61fc3273b3289f51aa8d388a65459b049e012bf6e557d8780893df8b5&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/214022441.jpg?k=fe870ce61fc3273b3289f51aa8d388a65459b049e012bf6e557d8780893df8b5&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/214022608.jpg?k=198b34ad24cf7453883deb7759030909b6a6e6d7463a0bb1896845b49abce410&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/214022608.jpg?k=198b34ad24cf7453883deb7759030909b6a6e6d7463a0bb1896845b49abce410&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Studio Suite </div>
+              <div class="rbeds">1 extra-large double bed · 36 m²</div></div>
+              <div class="rprice"><b>€ 1,012</b><small>€1,012/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag good">Free cancellation before 5 November 2026 (€ 1,012)</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="Kimpton Charlotte Square by IHG|Studio Suite" data-base="edinburgh" data-price="€ 1,012" data-url="https://www.booking.com/hotel/gb/the-principal-edinburgh-charlotte-square.en-gb.html" data-dates="2026-11-06|2026-11-07|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/214021507.jpg?k=145fd54bb10bb6cb4ad6c5cd01b661d832186dce91b7ce55c6d0ebc1531586f2&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/214021507.jpg?k=145fd54bb10bb6cb4ad6c5cd01b661d832186dce91b7ce55c6d0ebc1531586f2&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/226676846.jpg?k=84bc09481fc5bd1e96e9b303fea652cbe302977b473f7825cecf2d0a5b4faf36&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/226676846.jpg?k=84bc09481fc5bd1e96e9b303fea652cbe302977b473f7825cecf2d0a5b4faf36&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/641458056.jpg?k=8548f33b78b3bed8530231875b7e03475b1de4a0ebd5b059682e412886122198&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/641458056.jpg?k=8548f33b78b3bed8530231875b7e03475b1de4a0ebd5b059682e412886122198&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">One-Bedroom Suite with Square View </div>
+              <div class="rbeds">1 extra-large double bed and 1 sofa bed · 65 m²</div></div>
+              <div class="rprice"><b>€ 1,051</b><small>€1,051/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag">B&B € 1,111</span><span class="tag good">Free cancellation before 5 November 2026 (€ 1,115)</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="Kimpton Charlotte Square by IHG|One-Bedroom Suite with Square View" data-base="edinburgh" data-price="€ 1,051" data-url="https://www.booking.com/hotel/gb/the-principal-edinburgh-charlotte-square.en-gb.html" data-dates="2026-11-06|2026-11-07|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="The Knight Residence by Mansley" data-fit="ok" data-pool="0" data-min="460.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/21601462.jpg?k=f923126d06f464b0451edd6bb0493a1e1b90cf9f0cd722ba91b8e8c41678eab2&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/21601462.jpg?k=f923126d06f464b0451edd6bb0493a1e1b90cf9f0cd722ba91b8e8c41678eab2&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/258047929.jpg?k=d283f2b0e8830f3115acddc055e18dc702693b4082ebf86ca7e3caa9a28d29c0&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/258047929.jpg?k=d283f2b0e8830f3115acddc055e18dc702693b4082ebf86ca7e3caa9a28d29c0&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/258053550.jpg?k=105d54e8ff0393bfc89aba1c8bc01f051a352de394866338d415361e597d3366&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/258053550.jpg?k=105d54e8ff0393bfc89aba1c8bc01f051a352de394866338d415361e597d3366&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/258056291.jpg?k=966669c8ff59747e0e6a2cadb87193ed0934a060324f094ac53eea41c0bb7d65&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/258056291.jpg?k=966669c8ff59747e0e6a2cadb87193ed0934a060324f094ac53eea41c0bb7d65&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>The Knight Residence by Mansley </h3>
+            <div class="meta"><span class="stars">★★★★</span> <span class="score">8.9</span> <span class="muted">1,906 reviews · 12 Lauriston Street, Edinburgh, EH3 9DJ</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/theknightresidence.en-gb.html?checkin=2026-11-06&amp;checkout=2026-11-07&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip ppaid">P · On-site car park ~£16/day (via High Riggs)</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 16:00 to 23:30</span></div>
+        <div class="note">Two-bedroom apartment: double + a twin room for Noah. Lauriston, by the Grassmarket; ~12 min walk to the West End tram.</div>
+        <p class="desc">Just 5 minutes&#x27; walk from the Grassmarket’s bars and restaurants, The Knight Residence apartments are located 0.5 miles from Edinburgh Castle. There is a TV in each apartment’s cosy living room. A dishwasher, washing machine and microwave are provided in each modern fully-fitted …</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/258059441.jpg?k=c2b29862c7443d133f1d26a8606a773fc4081d74dca9bab240f6f44afa786f70&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/258059441.jpg?k=c2b29862c7443d133f1d26a8606a773fc4081d74dca9bab240f6f44afa786f70&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/258062044.jpg?k=c454f8209684bde76ccc2e3a58bb6b7dc2fff2236739989625c0acb5fab114cc&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/258062044.jpg?k=c454f8209684bde76ccc2e3a58bb6b7dc2fff2236739989625c0acb5fab114cc&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/258059368.jpg?k=ac7d18c67798b92f13988e2745f9e124a852c1dcf780e18bb59090d0397f0d74&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/258059368.jpg?k=ac7d18c67798b92f13988e2745f9e124a852c1dcf780e18bb59090d0397f0d74&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">City Two Bedroom Apartment </div>
+              <div class="rbeds">Bedroom 1: 1 double bed Bedroom 2: 2 single beds · 63 m²</div></div>
+              <div class="rprice"><b>€ 460</b><small>€460/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag good">Free cancellation before 3 November 2026 (€ 511)</span></div>
+            <label class="fav"><input type="checkbox" data-id="The Knight Residence by Mansley|City Two Bedroom Apartment" data-base="edinburgh" data-price="€ 460" data-url="https://www.booking.com/hotel/gb/theknightresidence.en-gb.html" data-dates="2026-11-06|2026-11-07|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/318028620.jpg?k=b5321bfd7bf5c76b3fb4e6ae10ba3e0deaff509348756fd472c6efadc88c091d&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/318028620.jpg?k=b5321bfd7bf5c76b3fb4e6ae10ba3e0deaff509348756fd472c6efadc88c091d&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/390391767.jpg?k=4444fb1bccd01f9d12fd4e60e02c4cee3a0c77fb62d9f3e4448e0c11b1ccd7cc&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/390391767.jpg?k=4444fb1bccd01f9d12fd4e60e02c4cee3a0c77fb62d9f3e4448e0c11b1ccd7cc&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/318029100.jpg?k=42b451d74643745b7126692f18db453daf9187b3d21521ff3da6d177d8fdaa85&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/318029100.jpg?k=42b451d74643745b7126692f18db453daf9187b3d21521ff3da6d177d8fdaa85&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Comfort Two Bedroom Apartment </div>
+              <div class="rbeds">Bedroom 1: 1 double bed Bedroom 2: 2 single beds Living room: 1 sofa bed Bathrooms:2 · 64 m²</div></div>
+              <div class="rprice"><b>€ 520</b><small>€520/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag good">Free cancellation before 3 November 2026 (€ 577)</span></div>
+            <label class="fav"><input type="checkbox" data-id="The Knight Residence by Mansley|Comfort Two Bedroom Apartment" data-base="edinburgh" data-price="€ 520" data-url="https://www.booking.com/hotel/gb/theknightresidence.en-gb.html" data-dates="2026-11-06|2026-11-07|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="Virgin Hotels Edinburgh" data-fit="ok" data-pool="0" data-min="1332.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/427736084.jpg?k=0d25531a07c072f49211219bce3f2f9ca676c19b5b6245397bb376b8a45529cc&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/427736084.jpg?k=0d25531a07c072f49211219bce3f2f9ca676c19b5b6245397bb376b8a45529cc&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/841629151.jpg?k=32efb979794f554314ec79eeec6234de327b1bd1968582daf6ea1aafcc6a9b91&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/841629151.jpg?k=32efb979794f554314ec79eeec6234de327b1bd1968582daf6ea1aafcc6a9b91&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/435553229.jpg?k=3dc862f487b81884b630660b200c5faefbe388372d4e2ff582da0b0435455637&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/435553229.jpg?k=3dc862f487b81884b630660b200c5faefbe388372d4e2ff582da0b0435455637&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/841675707.jpg?k=a4f401a7af20e7ec3014640cc1d0e908160fde74f8a3c736726aaefcd02c020c&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/841675707.jpg?k=a4f401a7af20e7ec3014640cc1d0e908160fde74f8a3c736726aaefcd02c020c&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Virgin Hotels Edinburgh </h3>
+            <div class="meta"><span class="stars">★★★★★</span> <span class="score">9.1</span> <span class="muted">5,039 reviews · 1 India Buildings Victoria Street, Old Town, Edinburgh, EH1 2EX</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/virgin-hotels-edinburgh.en-gb.html?checkin=2026-11-06&amp;checkout=2026-11-07&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip gym">Gym</span><span class="chip rest">Restaurant</span><span class="chip bar">Bar</span><span class="chip ppaid">P · Valet £40/night, or NCP Castle Terrace (discount)</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 15:00 to 00:00</span></div>
+        <div class="note">Family King Suite: 2 bedrooms, with a bunk bed for Noah. Victoria Street, Old Town.</div>
+        <p class="desc">Elegant Accommodation: Virgin Hotels Edinburgh offers a 5-star experience in Edinburgh city centre. Guests enjoy private bathrooms, modern amenities, and free WiFi throughout the property. Dining and Leisure: The hotel features a restaurant serving Scottish cuisine in a modern am…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/369124088.jpg?k=fdc096da9ba17658c9fd87c78f19b2c87c8cd98598babb47fc4148e44bb55519&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/369124088.jpg?k=fdc096da9ba17658c9fd87c78f19b2c87c8cd98598babb47fc4148e44bb55519&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/369141350.jpg?k=c1f04b1575b90525c58f8ba5099d6c45df87cdfd7533b20889d5838c5b66a001&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/369141350.jpg?k=c1f04b1575b90525c58f8ba5099d6c45df87cdfd7533b20889d5838c5b66a001&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/369864330.jpg?k=b612ddfb5ee3319c1ff1fd0b0748c669ac21e30f81756bd69d3e1dd796c63be7&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/369864330.jpg?k=b612ddfb5ee3319c1ff1fd0b0748c669ac21e30f81756bd69d3e1dd796c63be7&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Family King Suite </div>
+              <div class="rbeds">Bedroom 1: 1 extra-large double bed Bedroom 2: 1 bunk bed and 1 sofa bed · 36 m²</div></div>
+              <div class="rprice"><b>€ 1,332</b><small>€1,332/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag">B&B € 1,500</span><span class="tag good">Free cancellation before 1 November 2026 (€ 1,332)</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="Virgin Hotels Edinburgh|Family King Suite" data-base="edinburgh" data-price="€ 1,332" data-url="https://www.booking.com/hotel/gb/virgin-hotels-edinburgh.en-gb.html" data-dates="2026-11-06|2026-11-07|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="Old Town Chambers, Autograph Collection" data-fit="ok" data-pool="0" data-min="1002.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/794342841.jpg?k=e6b29e60d67daa36b15361200153629772c8ec526279d941c8ad1b7a42e59fec&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/794342841.jpg?k=e6b29e60d67daa36b15361200153629772c8ec526279d941c8ad1b7a42e59fec&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/859864843.jpg?k=c2fd6939379cbdbddc9d2c19823135af0880007b61c213d19950ad1d6cd7a253&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/859864843.jpg?k=c2fd6939379cbdbddc9d2c19823135af0880007b61c213d19950ad1d6cd7a253&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/791480828.jpg?k=f87532fa306deaecb0b8b5a767c1a1f327b9763ee9f9aaf7e352691e78f12ba3&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/791480828.jpg?k=f87532fa306deaecb0b8b5a767c1a1f327b9763ee9f9aaf7e352691e78f12ba3&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/791480794.jpg?k=0af77d1802dbd9fc865768cceabb6a35aa0aa3bd7d1898f55d57c020f748497b&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/791480794.jpg?k=0af77d1802dbd9fc865768cceabb6a35aa0aa3bd7d1898f55d57c020f748497b&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>Old Town Chambers, Autograph Collection </h3>
+            <div class="meta"><span class="stars">★★★★★</span> <span class="score">9.0</span> <span class="muted">1,342 reviews · Royal Mile 329 High Street Edinburgh EH1 1PN, Old Town, Edinburgh, EH1 1PN</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/the-chambers-edinburgh.en-gb.html?checkin=2026-11-06&amp;checkout=2026-11-07&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip gym">Gym</span><span class="chip ppaid">P · No parking: Waverley car park 8–10 min walk, 20% off, 1.90 m height limit</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 15:00</span></div>
+        <div class="note">Two-bedroom suite (2 extra-large doubles) on the Royal Mile, 77 m².</div>
+        <p class="desc">Boasting a central location in Edinburgh, a 2-minute walk from Waverley railway station and a 5-minute walk from Edinburgh Castle, The Old Town Chambers apartment development offers modern, luxury apartments with free Wi-Fi. Apartments at The Old Town Chambers range in size and e…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/859864843.jpg?k=26c038bf2bfbcb22fa672de493c363a70ee4727465300a7df2f12765c11deb3f&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/859864843.jpg?k=26c038bf2bfbcb22fa672de493c363a70ee4727465300a7df2f12765c11deb3f&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/859864683.jpg?k=0aa2922087c1d7090776f1517ad6f46e2af8ce0da33b9d6ce559252d8efb2f70&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/859864683.jpg?k=0aa2922087c1d7090776f1517ad6f46e2af8ce0da33b9d6ce559252d8efb2f70&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/712733410.jpg?k=f9c7944a781262b15c3167121d5fad59eae2f24b3e453e471def9c2804dcb4c4&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/712733410.jpg?k=f9c7944a781262b15c3167121d5fad59eae2f24b3e453e471def9c2804dcb4c4&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Two-Bedroom Suite </div>
+              <div class="rbeds">Bedroom 1: 1 extra-large double bed Bedroom 2: 1 extra-large double bed Bathrooms:2 Cot available on request · 77 m²</div></div>
+              <div class="rprice"><b>€ 1,002</b><small>€1,002/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag">B&B € 1,052</span><span class="tag good">Free cancellation before 6 November 2026 (€ 1,002)</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="Old Town Chambers, Autograph Collection|Two-Bedroom Suite" data-base="edinburgh" data-price="€ 1,002" data-url="https://www.booking.com/hotel/gb/the-chambers-edinburgh.en-gb.html" data-dates="2026-11-06|2026-11-07|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+    <article class="prop" data-name="voco Edinburgh - Haymarket by IHG" data-fit="ok" data-pool="0" data-min="389.0">
+      <div class="hero"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/288737375.jpg?k=c515f177bab45baf67996c22f9b306aa2de4ca4493164e6b7585fc43d75c9b87&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/288737375.jpg?k=c515f177bab45baf67996c22f9b306aa2de4ca4493164e6b7585fc43d75c9b87&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/268986996.jpg?k=9a16ce938496cece2022f35c4ab09e97771f30fb9276f6cf5fb0a6ff9d88e4ee&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/268986996.jpg?k=9a16ce938496cece2022f35c4ab09e97771f30fb9276f6cf5fb0a6ff9d88e4ee&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/287480490.jpg?k=36898a093010f360564336908fda47ea91ffc74cf8f05726c402b3639d6436f3&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/287480490.jpg?k=36898a093010f360564336908fda47ea91ffc74cf8f05726c402b3639d6436f3&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/287480503.jpg?k=aea2648add0ee4b9a718e9d1dca3d2f4fb06c9259a7f6ce8e45e0b6e983879d0&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/287480503.jpg?k=aea2648add0ee4b9a718e9d1dca3d2f4fb06c9259a7f6ce8e45e0b6e983879d0&amp;o=" alt=""></div>
+      <div class="pbody">
+        <div class="ptop">
+          <div><h3>voco Edinburgh - Haymarket by IHG </h3>
+            <div class="meta"><span class="stars">★★★★</span> <span class="score">9.0</span> <span class="muted">2,646 reviews · 46 Torphichen Street, Edinburgh, EH3 8JB</span></div></div>
+          <a class="bk" href="https://www.booking.com/hotel/gb/voco-edinburgh-haymarket.en-gb.html?checkin=2026-11-06&amp;checkout=2026-11-07&amp;group_adults=2&amp;group_children=1&amp;age=5&amp;no_rooms=1&amp;selected_currency=EUR" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="chips"><span class="chip gym">Gym</span><span class="chip rest">Restaurant</span><span class="chip ppaid">P · No parking: Q-Park Capital Square 2 min walk (paid)</span><span class="chip">Priced for 2 adults + Noah</span><span class="chip fit ok">Noah: Room priced for all 3 (bed for him included)</span><span class="chip">Check-in 15:00</span></div>
+        <div class="note">Right by Haymarket station / tram stop. Premium Twin (2 singles + sofa bed) €473 gives Noah a real bed; the Queen room is double + sofa bed.</div>
+        <p class="desc">Comfortable Accommodations: Rooms feature air-conditioning, private bathrooms, tea and coffee makers, and free WiFi. Additional amenities include bathrobes, spa href=&quot;https://www.ihg.com/hotels/gb/en/edinburgh/voco-edinburgh-haymarket/hotel-overview&quot;&gt;https://www.ihg.com/hotels/gb…</p>
+        <div class="rooms">
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/287480491.jpg?k=79014119d63435e28d1d702066f082f87c96a35d1ed4a8039cd557542e7b1162&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/287480491.jpg?k=79014119d63435e28d1d702066f082f87c96a35d1ed4a8039cd557542e7b1162&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/287480492.jpg?k=18919dcadb20b5bcd4e9b71ee7d97aee9ef0f33ed719074ee1459beb4c9b3ebb&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/287480492.jpg?k=18919dcadb20b5bcd4e9b71ee7d97aee9ef0f33ed719074ee1459beb4c9b3ebb&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/287480465.jpg?k=0ba0fb9d46474538e1196dc4206f12c978157afce62f7223a83bbf47b6e562fc&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/287480465.jpg?k=0ba0fb9d46474538e1196dc4206f12c978157afce62f7223a83bbf47b6e562fc&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Queen Room with Sofa Bed </div>
+              <div class="rbeds">1 sofa bed and 1 large double bed · 22 m²</div></div>
+              <div class="rprice"><b>€ 389</b><small>€389/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag">Room only</span><span class="tag">B&B € 461</span><span class="tag good">Free cancellation before 18:00 on 5 November 2026 (€ 461)</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="voco Edinburgh - Haymarket by IHG|Queen Room with Sofa Bed" data-base="edinburgh" data-price="€ 389" data-url="https://www.booking.com/hotel/gb/voco-edinburgh-haymarket.en-gb.html" data-dates="2026-11-06|2026-11-07|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div>
+        <div class="room">
+          <div class="rphotos"><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/287480541.jpg?k=9197311c8d5465142a1d45cc6fb229488ea382433fb57a3622ee12bd9928e444&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/287480541.jpg?k=9197311c8d5465142a1d45cc6fb229488ea382433fb57a3622ee12bd9928e444&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/268987534.jpg?k=5803d7ad0eb3044c792a5b60fbea9bb6dc23d831618602976e9048bb5f6ecb7a&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/268987534.jpg?k=5803d7ad0eb3044c792a5b60fbea9bb6dc23d831618602976e9048bb5f6ecb7a&amp;o=" alt=""><img loading="lazy" src="https://cf.bstatic.com/xdata/images/hotel/max500/268987545.jpg?k=61ab421d52b061163f09bbe63038d2817d68b9b1fa20d3ae145fdaac480c5412&amp;o=" data-full="https://cf.bstatic.com/xdata/images/hotel/max1024x768/268987545.jpg?k=61ab421d52b061163f09bbe63038d2817d68b9b1fa20d3ae145fdaac480c5412&amp;o=" alt=""></div>
+          <div class="rinfo">
+            <div class="rhead"><div><div class="rname">Premium Twin Room with Sofa </div>
+              <div class="rbeds">2 single beds and 1 sofa bed · 27 m²</div></div>
+              <div class="rprice"><b>€ 473</b><small>€473/night · 1 night</small></div></div>
+            <div class="tags"><span class="tag good">Breakfast incl.</span><span class="tag good">Free cancellation before 18:00 on 5 November 2026 (€ 473)</span><span class="tag good">Pay at hotel</span></div>
+            <label class="fav"><input type="checkbox" data-id="voco Edinburgh - Haymarket by IHG|Premium Twin Room with Sofa" data-base="edinburgh" data-price="€ 473" data-url="https://www.booking.com/hotel/gb/voco-edinburgh-haymarket.en-gb.html" data-dates="2026-11-06|2026-11-07|2+1"><span>♡ Favourite</span></label>
+          </div>
+        </div></div>
+      </div>
+    </article>
+  </section></main>
+<div id="bar"><div class="in"><div id="picks">No favourites yet.</div><button id="copy">Copy my picks</button></div></div>
+<div id="lb"><img alt=""></div>
+<script>
+const KEY='scot-stays-favs-v5';
+const load=()=>{try{const v=localStorage.getItem(KEY);if(v!==null)return JSON.parse(v)}catch(e){}return [...document.querySelectorAll('.fav input[data-default]')].map(b=>b.dataset.id)};
+const save=v=>{try{localStorage.setItem(KEY,JSON.stringify(v))}catch(e){}};
+const boxes=[...document.querySelectorAll('.fav input')];
+const names={glasgow:'Sun 1 Glasgow',marhall:'Mon 2 Mar Hall',glencoe:'Tue 3–Thu 5 Glencoe',pitlochry:'Thu 5 Pitlochry',edinburgh:'Fri 6 Edinburgh (if Sat flight)'};
+function render(){const f=boxes.filter(b=>b.checked);
+  const by={};f.forEach(b=>(by[b.dataset.base]=by[b.dataset.base]||[]).push(b.dataset.id.replace('|',' – ')+' ('+b.dataset.price+')'));
+  document.getElementById('picks').innerHTML=f.length?Object.keys(names).filter(k=>by[k]).map(k=>'<b>'+names[k]+':</b> '+by[k].join('; ')).join('<br>'):'No favourites yet.';
+  window.FAVOURITES=f.map(b=>({id:b.dataset.id,base:b.dataset.base,price:b.dataset.price,url:b.dataset.url,dates:b.dataset.dates}));applyFilters();}
+const saved=load();boxes.forEach(b=>{b.checked=saved.includes(b.dataset.id);b.addEventListener('change',()=>{save(boxes.filter(x=>x.checked).map(x=>x.dataset.id));render();});});
+function applyFilters(){const pool=fPool.checked,noah=fNoah.checked,fav=fFav.checked;
+  document.querySelectorAll('.prop').forEach(p=>{let h=false;if(pool&&p.dataset.pool!=='1')h=true;if(noah&&p.dataset.fit==='bad')h=true;if(fav&&!p.querySelector('.fav input:checked'))h=true;p.classList.toggle('hide',h);});}
+[fPool,fNoah,fFav].forEach(x=>x.addEventListener('change',applyFilters));
+document.getElementById('copy').onclick=()=>{const t=document.getElementById('picks').innerText;navigator.clipboard?.writeText(t).then(()=>{copy.textContent='Copied ✓';setTimeout(()=>copy.textContent='Copy my picks',1500)});};
+const lb=document.getElementById('lb');document.addEventListener('click',e=>{const im=e.target.closest('.hero img,.rphotos img');if(im){lb.querySelector('img').src=im.dataset.full;lb.style.display='flex';}else if(e.target.closest('#lb'))lb.style.display='none';});
+render();
+</script></body></html>
