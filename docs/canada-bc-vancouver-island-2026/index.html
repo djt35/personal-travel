@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>West Coast Canada — BC + Vancouver Island · 10–18 July 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --van:#3b82f6; --vic:#10b981; --tof:#f59e0b; --rich:#8b5cf6;
+    --ink:#0b0f16; --panel:rgba(15,22,33,.85); --line:rgba(255,255,255,.10);
+    --txt:#e8edf5; --mut:#9aa7b8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--ink);color:var(--txt)}
+  #map{position:fixed;inset:0;z-index:1}
+  .leaflet-popup-content-wrapper{background:#0f1620;color:var(--txt);border-radius:12px;border:1px solid var(--line)}
+  .leaflet-popup-tip{background:#0f1620}
+  .leaflet-popup-content{margin:11px 13px;font-size:12.5px;line-height:1.45}
+  .leaflet-popup-content a{color:#7dd3fc;font-weight:600}
+  .base{display:flex;align-items:center;justify-content:center;border-radius:50%;color:#08101c;font-weight:800;font-size:11px;border:2px solid rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.55)}
+  .poi{width:11px;height:11px;border-radius:50%;border:2px solid rgba(255,255,255,.8);box-shadow:0 1px 4px rgba(0,0,0,.5)}
+
+  .top{position:fixed;top:12px;left:12px;z-index:1000;background:var(--panel);backdrop-filter:blur(14px);
+       border:1px solid var(--line);border-radius:14px;padding:10px 16px;box-shadow:0 8px 30px rgba(0,0,0,.45);max-width:58vw}
+  .top h1{margin:0;font-size:14px}
+  .top p{margin:3px 0 0;font-size:11.5px;color:var(--mut)}
+
+  .side{position:fixed;top:12px;right:12px;bottom:12px;width:400px;max-width:94vw;z-index:1000;overflow-y:auto;
+        background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 8px 40px rgba(0,0,0,.55)}
+  .side::-webkit-scrollbar{width:8px}.side::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:8px}
+
+  .intro{font-size:12px;line-height:1.55;color:var(--mut);margin-bottom:12px}
+  .intro b{color:var(--txt)}
+  .warn{font-size:11px;color:#fcd34d;background:rgba(245,158,11,.10);border:1px solid rgba(245,158,11,.28);border-radius:10px;padding:9px 11px;margin-bottom:12px;line-height:1.5}
+  .warn b{color:#fde68a}
+
+  .day{border-left:3px solid var(--line);padding:8px 0 8px 12px;margin-left:4px;cursor:pointer}
+  .day:hover{background:rgba(255,255,255,.03)}
+  .day .d{font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--mut)}
+  .day .t{font-size:13px;font-weight:600;margin:2px 0}
+  .day .s{font-size:11.5px;color:var(--mut);line-height:1.45}
+
+  .stay{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:12px 0}
+  .stay h3{margin:0 0 4px;font-size:12.5px;display:flex;align-items:center;gap:8px}
+  .stay .dot{width:11px;height:11px;border-radius:50%;flex:none}
+  .stay p{margin:0;font-size:11.5px;color:var(--mut);line-height:1.5}
+  .stay a{color:#7dd3fc;font-weight:600;font-size:11.5px}
+
+  .budget{background:linear-gradient(135deg,rgba(59,130,246,.12),rgba(245,158,11,.10));border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin:12px 0;font-size:11.5px;line-height:1.6}
+  .budget b{color:#93c5fd}
+  .legend{position:fixed;bottom:12px;left:12px;z-index:1000;background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-size:11px}
+  .legend div{display:flex;align-items:center;gap:7px;margin:3px 0}
+  .dot{width:11px;height:11px;border-radius:50%;flex:none}
+  .sub{font-size:10.5px;color:var(--mut);margin-top:10px;line-height:1.5}
+  @media(max-width:680px){.side{position:static;width:auto;margin:80px 8px 8px}.legend,.top{display:none}}
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div class="top">
+  <h1>🍁 West Coast Canada · BC + Vancouver Island</h1>
+  <p>Fri 10 – Sat 18 July 2026 · 8 nts · family of 3 · Vancouver → Victoria → Tofino loop</p>
+</div>
+
+<div class="side">
+  <div class="intro">
+    A <b>Vancouver + Vancouver Island sampler</b> that builds to the wild Pacific coast. Two nights easing off jet-lag in Vancouver, a ferry to the Island for gardens + whales, then the big payoff — <b>3 nights in Tofino</b>: surf beaches, old-growth rainforest, bears & whales. Different universe from a Med pool villa: think <b>beach + rainforest + wildlife</b> (pools are rare on the Island — hot tubs are the norm).
+  </div>
+
+  <div class="warn">
+    ⚠️ <b>Book now or lose it:</b> at ~4 days out in peak July, <b>Tofino lodges</b> and <b>BC Ferries vehicle reservations</b> (Tsawwassen↔Swartz Bay) sell out — reserve the car on the ferry the moment dates are set. Also honest: this is a <b>~2× budget</b> vs the Med options (long-haul + higher BC costs) and one day is a travel day.
+  </div>
+
+  <div class="budget">
+    <b>Ballpark all-in (family of 3):</b><br>
+    ✈️ Flights ~€3,400 · 🚗 SUV 8d ~€800 · ⛴️ ferries ~€120 · 🏡 stays 8 nts ~€2,300 · ⛽/food/activities ~€1,200<br>
+    → <b>≈ €7,700</b> (vs ~€3,000–4,000 for the Med week)
+  </div>
+
+  <h3 style="font-size:12px;margin:14px 0 4px;color:var(--mut);letter-spacing:.5px">✈️ FLIGHTS (BRU/AMS → YVR)</h3>
+  <div class="intro" style="margin-bottom:6px">
+    No BRU nonstop. Cleanest: <b>Air Canada FRA→YVR direct ~€2,358</b>/2 (one short Brussels hop), or <b>KLM AMS↔YVR direct ~€2,493</b>/2 — you could just drive to Schiphol (~2h). ~10h transatlantic. West-bound jet-lag is the kind one.
+    <a href="https://www.google.com/travel/flights?q=flights%20BRU%20to%20YVR%202026-07-10%20returning%202026-07-18" target="_blank">check live →</a>
+  </div>
+
+  <h3 style="font-size:12px;margin:16px 0 6px;color:var(--mut);letter-spacing:.5px">🗓️ THE ROUTE — 8 nights</h3>
+  <div id="days"></div>
+
+  <h3 style="font-size:12px;margin:16px 0 6px;color:var(--mut);letter-spacing:.5px">🏡 WHERE TO STAY (live searches)</h3>
+  <div id="stays"></div>
+
+  <div class="sub">Click a day or stay to fly the map there. Accommodation links open Airbnb with that base's dates + 2 adults & 1 child. Tofino = beach lodges (Pacific Sands, Cox Bay, Middle Beach) rather than pool villas.</div>
+</div>
+
+<div class="legend" id="legend"></div>
+
+<script>
+const map = L.map('map',{zoomControl:true}).setView([49.2,-124.6],7);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+  attribution:'© OpenStreetMap © CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
+function fly(la,ln,z){map.flyTo([la,ln],z,{duration:1.1})}
+
+const COL={van:'#3b82f6',vic:'#10b981',tof:'#f59e0b',rich:'#8b5cf6'};
+
+// BASES: code,label,color,lat,lng,nights
+const BASES=[
+ ['V','Vancouver',COL.van,49.283,-123.121,'Nights 1–2 (10–12 Jul)'],
+ ['C','Victoria / Cowichan',COL.vic,48.575,-123.470,'Nights 3–4 (12–14 Jul)'],
+ ['T','Tofino',COL.tof,49.153,-125.905,'Nights 5–7 (14–17 Jul)'],
+ ['R','Richmond (by YVR)',COL.rich,49.170,-123.135,'Night 8 (17–18 Jul)'],
+];
+function baseIcon(code,color){const r=15;return L.divIcon({className:'',iconSize:[r*2,r*2],iconAnchor:[r,r],
+  html:`<div class="base" style="width:${r*2}px;height:${r*2}px;background:${color}">${code}</div>`});}
+BASES.forEach(b=>{const[c,n,col,la,ln,nt]=b;
+  L.marker([la,ln],{icon:baseIcon(c,col)}).addTo(map).bindPopup(`<b>${c} · ${n}</b><br>${nt}`);});
+
+// POIs: name,lat,lng,color,note
+const POIS=[
+ ['✈️ YVR Airport',49.195,-123.182,COL.van,'Arrive 10 Jul / depart 18 Jul'],
+ ['Stanley Park & seawall',49.301,-123.145,COL.van,'Bike/stroll, totems, aquarium'],
+ ['Granville Island',49.271,-123.135,COL.van,'Market, kids water park'],
+ ['Capilano Suspension Bridge',49.343,-123.115,COL.van,'Treetops walk — big hit for a 5yo'],
+ ['⛴️ Tsawwassen ferry',49.006,-123.132,COL.vic,'Car ferry → Swartz Bay (1h35)'],
+ ['Butchart Gardens',48.564,-123.470,COL.vic,'World-famous gardens'],
+ ['Victoria Inner Harbour',48.423,-123.367,COL.vic,'Whale-watching (orcas!) + tea'],
+ ['Cowichan Bay',48.738,-123.617,COL.vic,'Seaside village, cider, farms'],
+ ['Cathedral Grove',49.283,-124.663,COL.tof,'800-yr Doung-firs en route (MacMillan Park)'],
+ ['Long Beach (Pacific Rim NP)',49.060,-125.770,COL.tof,'16km surf beach + sandcastles'],
+ ['Wickaninnish Beach',49.017,-125.680,COL.tof,'Driftwood, tide pools, boardwalks'],
+ ['Rainforest Trail',49.090,-125.820,COL.tof,'Easy boardwalks, giant cedars'],
+ ['Ucluelet / Wild Pacific Trail',48.935,-125.545,COL.tof,'Aquarium + rugged coast walk'],
+ ['⛴️ Nanaimo (Departure Bay)',49.194,-123.957,COL.rich,'Ferry back to mainland'],
+ ['Rathtrevor Beach, Parksville',49.318,-124.295,COL.rich,'Optional stop — warm shallow flats'],
+];
+POIS.forEach(p=>{const[n,la,ln,col,note]=p;
+  L.marker([la,ln],{icon:L.divIcon({className:'',iconSize:[11,11],iconAnchor:[6,6],html:`<div class="poi" style="background:${col}"></div>`})})
+   .addTo(map).bindPopup(`<b>${n}</b><br>${note}`);});
+
+// ROUTE lines (drive solid, ferry dashed)
+const drive=[
+ [[49.283,-123.121],[49.006,-123.132]],                 // Vancouver → Tsawwassen
+ [[48.688,-123.408],[48.423,-123.367],[48.575,-123.470],[48.738,-123.617]], // Swartz Bay → Victoria → Cowichan
+ [[48.738,-123.617],[49.194,-123.957],[49.283,-124.663],[49.234,-124.805],[49.153,-125.905]], // → Nanaimo → Cathedral Grove → Port Alberni → Tofino
+ [[49.153,-125.905],[49.194,-123.957]],                 // Tofino → Nanaimo (return)
+];
+drive.forEach(seg=>L.polyline(seg,{color:'#94a3b8',weight:3,opacity:.7}).addTo(map));
+const ferry=[
+ [[49.006,-123.132],[48.688,-123.408]],  // Tsawwassen → Swartz Bay
+ [[49.194,-123.957],[49.170,-123.135]],  // Nanaimo → mainland/Richmond
+];
+ferry.forEach(seg=>L.polyline(seg,{color:'#38bdf8',weight:3,opacity:.8,dashArray:'6,7'}).addTo(map));
+
+// DAYS
+const DAYS=[
+ ['Fri 10 Jul','Land in Vancouver',49.283,-123.121,'Arrive YVR (~afternoon/eve). Check in, gentle stroll, early night — jet-lag reset.'],
+ ['Sat 11 Jul','Vancouver',49.301,-123.145,'Stanley Park seawall + aquarium, Granville Island market, Capilano/Lynn Canyon suspension bridge.'],
+ ['Sun 12 Jul','Ferry to the Island',48.564,-123.470,'Morning ferry Tsawwassen→Swartz Bay (1h35), straight to Butchart Gardens, into Victoria/Cowichan.'],
+ ['Mon 13 Jul','Victoria & whales',48.423,-123.367,'Whale-watching (resident orcas + humpbacks), Inner Harbour, Cowichan Bay village.'],
+ ['Tue 14 Jul','Drive to Tofino',49.283,-124.663,'Cross the island (~4h) via Cathedral Grove old-growth + Port Alberni. Arrive Tofino, sunset on the beach.'],
+ ['Wed 15 Jul','Tofino — beaches',49.060,-125.770,'Long Beach sandcastles + surf lesson, Wickaninnish, storm-driftwood play.'],
+ ['Thu 16 Jul','Tofino — rainforest & wildlife',49.090,-125.820,'Rainforest boardwalks, bear/whale boat tour or hot-springs cove, Ucluelet aquarium.'],
+ ['Fri 17 Jul','Back to the mainland',49.318,-124.295,'Drive Tofino→Nanaimo (stop Rathtrevor Beach), ferry to Vancouver, overnight by YVR.'],
+ ['Sat 18 Jul','Fly home',49.195,-123.182,'Relaxed morning, return flight from YVR (overnight to Belgium).'],
+];
+const daysEl=document.getElementById('days');
+DAYS.forEach(d=>{const[dd,t,la,ln,s]=d;const el=document.createElement('div');el.className='day';
+  el.innerHTML=`<div class="d">${dd}</div><div class="t">${t}</div><div class="s">${s}</div>`;
+  el.onclick=()=>fly(la,ln,10);daysEl.appendChild(el);});
+
+// STAYS
+const STAYS=[
+ ['Vancouver · 2 nts',COL.van,'Downtown/Kitsilano apartment or family hotel. Walkable, near Stanley Park.','https://www.airbnb.com/s/Vancouver--BC--Canada/homes?checkin=2026-07-10&checkout=2026-07-12&adults=2&children=1&room_types%5B%5D=Entire%20home%2Fapt'],
+ ['Victoria / Cowichan · 2 nts',COL.vic,'Rural cabin or farmhouse in the Cowichan Valley (some with pool/hot tub), or Victoria base.','https://www.airbnb.com/s/Cowichan-Bay--BC--Canada/homes?checkin=2026-07-12&checkout=2026-07-14&adults=2&children=1&room_types%5B%5D=Entire%20home%2Fapt'],
+ ['Tofino · 3 nts',COL.tof,'Beach lodge or cabin — Pacific Sands (free kids camp), Cox Bay, Middle Beach Lodge. Hot tub not pool.','https://www.airbnb.com/s/Tofino--BC--Canada/homes?checkin=2026-07-14&checkout=2026-07-17&adults=2&children=1&room_types%5B%5D=Entire%20home%2Fapt'],
+ ['Richmond / by YVR · 1 nt',COL.rich,'Airport hotel or apartment for the easy final morning before the flight.','https://www.airbnb.com/s/Richmond--BC--Canada/homes?checkin=2026-07-17&checkout=2026-07-18&adults=2&children=1&room_types%5B%5D=Entire%20home%2Fapt'],
+];
+const staysEl=document.getElementById('stays');
+STAYS.forEach(s=>{const[t,col,p,url]=s;const el=document.createElement('div');el.className='stay';
+  el.innerHTML=`<h3><span class="dot" style="background:${col}"></span>${t}</h3><p>${p}</p><a href="${url}" target="_blank">Browse live on Airbnb ↗</a>`;
+  staysEl.appendChild(el);});
+
+// legend
+const legendEl=document.getElementById('legend');
+[['Vancouver',COL.van],['Victoria / Cowichan',COL.vic],['Tofino',COL.tof],['Richmond',COL.rich]].forEach(l=>{
+  const d=document.createElement('div');d.innerHTML=`<span class="dot" style="background:${l[1]}"></span>${l[0]}`;legendEl.appendChild(d);});
+const fd=document.createElement('div');fd.innerHTML=`<span class="dot" style="background:#38bdf8"></span>⛴️ ferry`;legendEl.appendChild(fd);
+</script>
+</body>
+</html>

@@ -1,2 +1,5 @@
 # iCloud assets (symlinked)
 assets/
+
+# Personal certificates / licences — keep local, never publish
+credentials/
