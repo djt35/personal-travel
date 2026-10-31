@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='utf-8'?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>London 11–13 September: Gantry and birthday evening</name>
+    <Style id="Hotel">
+      <IconStyle>
+        <Icon>
+          <href>https://maps.google.com/mapfiles/kml/paddle/red-circle.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+    <Style id="Restaurant">
+      <IconStyle>
+        <Icon>
+          <href>https://maps.google.com/mapfiles/kml/paddle/grn-circle.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+    <Style id="Attraction">
+      <IconStyle>
+        <Icon>
+          <href>https://maps.google.com/mapfiles/kml/paddle/blu-circle.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+    <Style id="Shopping">
+      <IconStyle>
+        <Icon>
+          <href>https://maps.google.com/mapfiles/kml/paddle/blu-circle.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+    <Style id="Running">
+      <IconStyle>
+        <Icon>
+          <href>https://maps.google.com/mapfiles/kml/paddle/purple-circle.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+    <Style id="Bar">
+      <IconStyle>
+        <Icon>
+          <href>https://maps.google.com/mapfiles/kml/paddle/ylw-circle.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+    <Placemark>
+      <name>Tumbling Bay Playground</name>
+      <description>Queen Elizabeth Olympic Park, London (park address)
+Optional Saturday play stop; playground centre.
+Coordinate source: https://mapcarta.com/W231766369</description>
+      <styleUrl>#Attraction</styleUrl>
+      <Point>
+        <coordinates>-0.01517,51.54835,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CRATE Brewery Hackney Wick</name>
+      <description>The White Building, Unit 7 Queens Yard, White Post Lane, London E9 5EN
+Optional casual Saturday dinner; not reserved.
+Coordinate source: https://mapcarta.com/N2296112253</description>
+      <styleUrl>#Restaurant</styleUrl>
+      <Point>
+        <coordinates>-0.02208,51.543,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Sadler’s Wells East</name>
+      <description>101 Carpenters Road, London E20 2AR; entrance off Stratford Walk
+Saturday family dance 12:00–15:00; free unticketed festival weekend.
+Coordinate source: https://mapcarta.com/W1042201704</description>
+      <styleUrl>#Attraction</styleUrl>
+      <Point>
+        <coordinates>-0.01186,51.54103,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>V&amp;A East Museum</name>
+      <description>107 Carpenters Road, London E20 2AR
+Optional Saturday morning museum; lower-ground entrance.
+Coordinate source: https://www.vam.ac.uk/east/museum/visit</description>
+      <styleUrl>#Attraction</styleUrl>
+      <Point>
+        <coordinates>-0.0138611,51.54175,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Olympic Park run — Tumbling Bay waypoint</name>
+      <description>Queen Elizabeth Olympic Park, London
+Optional Saturday hotel-start 5km target, not a measured course.
+Coordinate source: https://mapcarta.com/W231766369</description>
+      <styleUrl>#Running</styleUrl>
+      <Point>
+        <coordinates>-0.01517,51.54835,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Westfield Stratford City — centre marker</name>
+      <description>Westfield Stratford City, London E20
+Parking fallback; centre marker NOT a vehicle entrance. Gantry has no onsite parking.
+Coordinate source: https://www.latlong.net/place/westfield-stratford-city-london-uk-32825.html</description>
+      <styleUrl>#Shopping</styleUrl>
+      <Point>
+        <coordinates>-0.005431,51.544052,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>The Gantry London</name>
+      <description>40 Celebration Avenue, London E20 1DB
+User confirms booked. Room, rate and payment unverified; check-in15:00; no onsite parking.
+Coordinate source: https://mapcarta.com/37109944</description>
+      <styleUrl>#Hotel</styleUrl>
+      <Point>
+        <coordinates>-0.00767,51.54637,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Stratford International National Rail</name>
+      <description>International Way, London E20
+Friday highspeed to St Pancras; not Stratford station or DLR. Service on date unverified.
+Coordinate source: https://fr.wikipedia.org/wiki/Gare_de_Stratford_International</description>
+      <styleUrl>#Attraction</styleUrl>
+      <Point>
+        <coordinates>-0.008719,51.544776,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>St Pancras International</name>
+      <description>Euston Road, London N1C 4QP
+Southeastern highspeed arrival; station-building marker, not platform.
+Coordinate source: https://mapcarta.com/London_St_Pancras_International</description>
+      <styleUrl>#Attraction</styleUrl>
+      <Point>
+        <coordinates>-0.1266,51.532,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Porte Noire</name>
+      <description>Gasholder 10, 1 Lewis Cubitt Walk, London N1C 4BX
+Friday17:00 suggested birthday drinks. Live3guest slot seen9Sep; booking type ambiguous. Child admission to confirm. £25/person48h cancellation policy; not booked.
+Coordinate source: Google Maps live venue extraction, 9 September 2026; https://portenoire.co.uk/</description>
+      <styleUrl>#Bar</styleUrl>
+      <Point>
+        <coordinates>-0.127414,51.536388,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Coal Office</name>
+      <description>2 Bagley Walk, London N1C 4PQ
+Friday18:30 recommended birthday dinner. Live3guest table seen9Sep; not booked. Child admission/low table to confirm. £25/person24h cancellation policy.
+Coordinate source: Google Maps live venue extraction, 9 September 2026; https://www.coaloffice.com/</description>
+      <styleUrl>#Restaurant</styleUrl>
+      <Point>
+        <coordinates>-0.1262121,51.5348719,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Bubala Kings Cross</name>
+      <description>1 Cadence Court, Lewis Cubitt Park, London N1C 4ED
+Alternative only: vegetarian Middle Eastern, Friday17:15/17:30 slots seen9Sep for3; requires earlier bar. Not booked.
+Coordinate source: Google Maps live venue extraction, 9 September 2026; https://bubala.co.uk/</description>
+      <styleUrl>#Restaurant</styleUrl>
+      <Point>
+        <coordinates>-0.1247997,51.5388355,0</coordinates>
+      </Point>
+    </Placemark>
+  </Document>
+</kml>
