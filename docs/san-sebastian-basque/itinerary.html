@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cantabria + Basque Road Trip — Itinerary · 17–21 Jun 2026</title>
+<style>
+  :root{
+    --b1:#f59e0b; --b2:#8b5cf6; --nat:#34d399; --sea:#38bdf8; --air:#f43f5e;
+    --ink:#eaf0f7; --muted:#9fb0c3; --bg:#0d1b2b; --bg2:#0f1d30;
+    --card:rgba(255,255,255,.04); --line:rgba(255,255,255,.10);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 700px at 50% -10%, #14263c 0%, var(--bg) 60%) fixed;
+    color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,sans-serif;
+    line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:40px 22px 80px}
+  a{color:#5ec2ff;text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  header{text-align:center;margin-bottom:26px}
+  .kicker{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+  h1{font-size:34px;line-height:1.15;margin:8px 0 6px}
+  .dates{font-size:15px;color:var(--muted)}
+  .who{font-size:14px;color:var(--muted);margin-top:2px}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
+  .badge{font-size:12px;padding:5px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line)}
+  .badge.ok{border-color:rgba(52,211,153,.4);color:#7ef0c0}
+  .badge.todo{border-color:rgba(245,158,11,.45);color:#ffd587}
+  .badge.maybe{border-color:rgba(139,92,246,.45);color:#c9b6ff}
+  .maplink{display:inline-block;margin-top:16px;font-size:14px;padding:9px 18px;border-radius:10px;
+    background:linear-gradient(135deg,#1f6feb,#0ea5e9);color:#fff;font-weight:600}
+  .maplink:hover{text-decoration:none;filter:brightness(1.08)}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:26px 0}
+  .cell{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .cell .lab{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+  .cell .val{font-size:15px;margin-top:5px;font-weight:600}
+  .cell .sub{font-size:12px;color:var(--muted);margin-top:3px}
+
+  h2.section{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);
+    border-bottom:1px solid var(--line);padding-bottom:8px;margin:38px 0 18px}
+
+  .day{position:relative;background:linear-gradient(180deg,var(--bg2),rgba(15,29,48,.5));
+    border:1px solid var(--line);border-left:4px solid var(--accent,#888);border-radius:16px;
+    padding:18px 20px;margin-bottom:16px}
+  .day .dhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .day .dnum{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent,#aaa)}
+  .day .dtitle{font-size:19px;font-weight:700}
+  .day .drive{font-size:12.5px;color:var(--muted);margin:6px 0 12px}
+  .day .drive b{color:var(--ink)}
+  .block{margin:9px 0}
+  .block .t{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:2px}
+  .block ul{margin:3px 0 0;padding-left:18px}
+  .block li{margin:3px 0}
+  .note{font-size:13px;margin-top:11px;padding:9px 12px;border-radius:10px;background:rgba(56,189,248,.08);
+    border:1px solid rgba(56,189,248,.22)}
+  .note.k{background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.22)}
+  .note.warn{background:rgba(245,158,11,.09);border-color:rgba(245,158,11,.3)}
+  .note b{color:#fff}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+  .pill{font-size:11px;padding:2px 8px;border-radius:999px;white-space:nowrap}
+  .pill.ok{background:rgba(52,211,153,.14);color:#7ef0c0}
+  .pill.todo{background:rgba(245,158,11,.14);color:#ffd587}
+  .pill.maybe{background:rgba(139,92,246,.16);color:#c9b6ff}
+
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .panel h3{margin:0 0 8px;font-size:14px}
+  .panel ul{margin:0;padding-left:18px;font-size:13px;color:var(--ink)}
+  .panel li{margin:5px 0}
+  .linklist{list-style:none;padding-left:0!important}
+  .linklist li{margin:7px 0}
+  .linklist a{font-weight:600}
+  .linklist .x{color:var(--muted);font-weight:400;font-size:12px}
+
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:40px}
+
+  @media (max-width:620px){h1{font-size:27px}}
+  @media print{
+    body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .wrap{max-width:none;padding-top:24px}
+    .maplink{display:none}
+    .day,.cell,.panel,table{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Family Road Trip</div>
+  <h1>🌿 Cantabria + Basque Coast</h1>
+  <div class="dates">Wednesday 17 → Sunday 21 June 2026 · 4 nights</div>
+  <div class="who">David, Lobke & Noah (5) · fly into Santander, central rural base, one move west</div>
+  <div class="badges">
+    <span class="badge ok">✈️ Flights booked</span>
+    <span class="badge ok">🚗 Car booked</span>
+    <span class="badge todo">🏡 Areitio — book next</span>
+    <span class="badge maybe">🛏️ Santemar (Santander) — pencilled</span>
+  </div>
+  <a class="maplink" href="index.html" target="_blank">🗺️ Open the interactive map →</a>
+</header>
+
+<!-- Quick facts -->
+<div class="grid">
+  <div class="cell"><div class="lab">Outbound</div><div class="val"><a href="https://www.ryanair.com" target="_blank" rel="noopener">Wed · FR6057</a></div><div class="sub">CRL 13:05 → SDR 15:00</div></div>
+  <div class="cell"><div class="lab">Return</div><div class="val"><a href="https://www.ryanair.com" target="_blank" rel="noopener">Sun · FR6058</a></div><div class="sub">SDR 09:20 → CRL 11:10 (early!)</div></div>
+  <div class="cell"><div class="lab">Base 1 · 3 nts</div><div class="val"><a href="https://www.airbnb.com/rooms/50866167" target="_blank" rel="noopener">Areitio Etxea ↗</a></div><div class="sub">rural house · pool · central hub</div></div>
+  <div class="cell"><div class="lab">Base 2 · 1 nt</div><div class="val"><a href="https://www.booking.com/hotel/es/santemar.html" target="_blank" rel="noopener">Santemar ↗</a></div><div class="sub">Santander · beachfront · ~15 min SDR</div></div>
+  <div class="cell"><div class="lab">Driving</div><div class="val">~480 km</div><div class="sub">short hops + 1 transfer</div></div>
+  <div class="cell"><div class="lab">Est. budget</div><div class="val">~€2,000</div><div class="sub">excl. food & activities</div></div>
+</div>
+
+<h2 class="section">Day by day <span style="text-transform:none;letter-spacing:0;font-weight:400">— place names are tappable (open in Maps)</span></h2>
+
+<!-- DAY 1 -->
+<div class="day" style="--accent:var(--b1)">
+  <div class="dhead"><span class="dnum">Day 1 · Wed 17 Jun</span><span class="dtitle">Land &amp; settle into the hub</span></div>
+  <div class="drive">🚗 <a href="https://maps.google.com/?q=Santander+Airport+SDR" target="_blank" rel="noopener">Santander Airport</a> → <a href="https://maps.google.com/?q=Areitio+Mallabia" target="_blank" rel="noopener">Areitio</a> · <b>~145 km (1h30)</b> on the A-8</div>
+  <div class="block"><div class="t">Afternoon</div><ul>
+    <li><b>15:00</b> land Santander, collect the car (~15:45 rolling).</li>
+    <li>Drive east on the A-8 through green hills; optional leg-stretch in <a href="https://maps.google.com/?q=Bilbao" target="_blank" rel="noopener">Bilbao</a>.</li>
+    <li><b>~16:30</b> arrive <a href="https://www.airbnb.com/rooms/50866167" target="_blank" rel="noopener">Areitio Etxea</a> (check-in from 15:00) — unpack, let Noah loose in the garden/pool.</li>
+  </ul></div>
+  <div class="block"><div class="t">Evening</div><ul>
+    <li>Easy first night: BBQ in the gazebo, or dinner in nearby <a href="https://maps.google.com/?q=Durango+Bizkaia" target="_blank" rel="noopener">Durango</a> / <a href="https://maps.google.com/?q=Elorrio" target="_blank" rel="noopener">Elorrio</a>.</li>
+  </ul></div>
+  <div class="note k">👦 <b>Noah:</b> flight + drive is a big day — keep it gentle. Grab groceries (<a href="https://maps.google.com/?q=Eroski+Durango" target="_blank" rel="noopener">Eroski, Durango</a>) for relaxed pool breakfasts.</div>
+</div>
+
+<!-- DAY 2 -->
+<div class="day" style="--accent:var(--sea)">
+  <div class="dhead"><span class="dnum">Day 2 · Thu 18 Jun</span><span class="dtitle">San Sebastián + the flysch coast</span></div>
+  <div class="drive">🚗 Areitio → <a href="https://maps.google.com/?q=San+Sebastian" target="_blank" rel="noopener">San Sebastián</a> <b>~40 min</b>, short hops after</div>
+  <div class="block"><div class="t">Morning</div><ul>
+    <li>Slow start by the pool, then drive to San Sebastián.</li>
+    <li>Walk <a href="https://maps.google.com/?q=Playa+de+la+Concha+San+Sebastian" target="_blank" rel="noopener">La Concha</a>; ride the <a href="https://www.monteigueldo.eus/en/" target="_blank" rel="noopener">Monte Igueldo funicular</a> to the cliff-top vintage fairground — gentle rides for Noah, knockout bay views.</li>
+  </ul></div>
+  <div class="block"><div class="t">Afternoon</div><ul>
+    <li><a href="https://www.aquariumss.com/en/" target="_blank" rel="noopener">Aquarium of San Sebastián</a> (shark tunnel, touch pools) — also the rainy-day backup.</li>
+    <li>~30 min west to <a href="https://maps.google.com/?q=Zumaia+flysch+Itzurun" target="_blank" rel="noopener">Zumaia</a>: the flysch cliffs &amp; San Telmo hermitage (GoT <i>Dragonstone</i>) at Itzurun beach.</li>
+  </ul></div>
+  <div class="block"><div class="t">Evening</div><ul>
+    <li><b>Pintxos crawl</b> in the <a href="https://maps.google.com/?q=Parte+Vieja+San+Sebastian" target="_blank" rel="noopener">Parte Vieja</a> ~19:30 (early = kid-friendly): Gandarías, La Cuchara de San Telmo, Borda Berri.</li>
+  </ul></div>
+  <div class="note warn">🍷 ~40-min drive home → <b>one of you stays off the txakoli</b>, or make it an early dinner and head back.</div>
+</div>
+
+<!-- DAY 3 -->
+<div class="day" style="--accent:var(--nat)">
+  <div class="dhead"><span class="dnum">Day 3 · Fri 19 Jun</span><span class="dtitle">Gaztelugatxe + Urdaibai biosphere</span></div>
+  <div class="drive">🚗 Areitio → <a href="https://maps.google.com/?q=San+Juan+de+Gaztelugatxe" target="_blank" rel="noopener">Gaztelugatxe</a> <b>~50 min</b>, loop back</div>
+  <div class="block"><div class="t">Morning</div><ul>
+    <li>Pool, then drive NW to <a href="https://maps.google.com/?q=San+Juan+de+Gaztelugatxe" target="_blank" rel="noopener">San Juan de Gaztelugatxe</a> — the 241-step causeway to the island chapel. Go early. <a href="https://www.tickets.bizkaia.eus/" target="_blank" rel="noopener">(book free tickets ↗)</a></li>
+  </ul></div>
+  <div class="block"><div class="t">Afternoon</div><ul>
+    <li>10 min to <a href="https://maps.google.com/?q=Mundaka" target="_blank" rel="noopener">Mundaka</a> — famous left-hand surf wave + estuary lunch.</li>
+    <li>Then <a href="https://maps.google.com/?q=Playa+de+Laida" target="_blank" rel="noopener">Laida/Laga beaches</a> (wide Urdaibai sands) <i>or</i> <a href="https://maps.google.com/?q=Gernika" target="_blank" rel="noopener">Gernika</a> (Tree of Gernika, Peace Museum).</li>
+  </ul></div>
+  <div class="block"><div class="t">Evening</div><ul>
+    <li>Back to Areitio for a <b>pool evening</b> + BBQ.</li>
+  </ul></div>
+  <div class="note warn">🎟️ Gaztelugatxe needs a <b>free timed ticket booked in advance</b> at <a href="https://www.tickets.bizkaia.eus/" target="_blank" rel="noopener">tickets.bizkaia.eus</a>. No tickets? The car-park-side viewpoint is stunning on its own — or swap in <a href="https://maps.google.com/?q=Parque+Natural+de+Pagoeta" target="_blank" rel="noopener">Pagoeta natural park</a> (waterfalls, forest, farm animals).</div>
+</div>
+
+<!-- DAY 4 -->
+<div class="day" style="--accent:var(--b2)">
+  <div class="dhead"><span class="dnum">Day 4 · Sat 20 Jun</span><span class="dtitle">Drive west into Cantabria</span></div>
+  <div class="drive">🚗 Areitio → Cantabria base · <b>~210 km (2h30)</b> — the big transfer day</div>
+  <div class="note warn">⏰ <b>Checkout before 10:00</b> at Areitio — pack Friday night, roll by ~09:45.</div>
+  <div class="block"><div class="t">Pick ONE major stop</div><ul>
+    <li><b>A · Animals:</b> drive through → <a href="https://parquedecabarceno.com/en/" target="_blank" rel="noopener">Cabárceno Wildlife Park</a> (open-range elephants, bears, big cats + cable car; 3–4 hrs — Noah highlight).</li>
+    <li><b>B · Storybook + caves:</b> <a href="https://maps.google.com/?q=Santillana+del+Mar" target="_blank" rel="noopener">Santillana del Mar</a> (one of Spain's prettiest villages) + <a href="https://www.cultura.gob.es/mnaltamira/" target="_blank" rel="noopener">Museo de Altamira</a> cave-art replica.</li>
+    <li><b>C · Culture en route:</b> a proper <a href="https://www.guggenheim-bilbao.eus/en" target="_blank" rel="noopener">Bilbao Guggenheim</a> visit (35 min from Areitio; <i>Puppy</i>, <i>Maman</i>) then a lighter arrival.</li>
+  </ul></div>
+  <div class="block"><div class="t">Evening</div><ul>
+    <li>Check in to <a href="https://www.booking.com/hotel/es/santemar.html" target="_blank" rel="noopener">Santemar</a> on El Sardinero beach (Santander) — beach stroll, relaxed dinner, early-ish night.</li>
+  </ul></div>
+  <div class="note">🏖️ <b>Great weather backup:</b> a Cantabrian beach — <a href="https://maps.google.com/?q=Playa+de+Somo" target="_blank" rel="noopener">Somo/Loredo</a> or <a href="https://maps.google.com/?q=Suances" target="_blank" rel="noopener">Suances</a>.</div>
+</div>
+
+<!-- DAY 5 -->
+<div class="day" style="--accent:var(--air)">
+  <div class="dhead"><span class="dnum">Day 5 · Sun 21 Jun</span><span class="dtitle">Fly home</span></div>
+  <div class="drive">🚗 Santemar → <a href="https://maps.google.com/?q=Santander+Airport+SDR" target="_blank" rel="noopener">SDR</a> · <b>~15 min</b></div>
+  <div class="block"><div class="t">Morning</div><ul>
+    <li>⏰ <b>09:20 flight</b> → car return ~07:45 → leave by ~07:00–07:15.</li>
+    <li>Free family priority security (AENA) — Noah free; <a href="https://serviciosvip.aena.es/vip/en/aeropuertos/santander/acceso-prioritario-fast-lane/t1" target="_blank" rel="noopener">Fast Lane info ↗</a>.</li>
+    <li><b>11:10</b> land Charleroi → drive home.</li>
+  </ul></div>
+</div>
+
+<h2 class="section">Bookings &amp; status</h2>
+<table>
+  <tr><th>Item</th><th>Status</th><th>Note</th></tr>
+  <tr><td><a href="https://www.ryanair.com" target="_blank" rel="noopener">Ryanair CRL↔Santander</a></td><td><span class="pill ok">Booked</span></td><td>FR6057 / FR6058</td></tr>
+  <tr><td>Hire car (Santander airport)</td><td><span class="pill ok">Booked</span></td><td>check a child seat for Noah is included</td></tr>
+  <tr><td><a href="https://www.airbnb.com/rooms/50866167" target="_blank" rel="noopener">Areitio Etxea (base 1)</a></td><td><span class="pill todo">Book next</span></td><td><b>non-refundable</b> — lock it in</td></tr>
+  <tr><td>Gaztelugatxe timed entry (Fri)</td><td><span class="pill todo">Book now</span></td><td>free but mandatory · <a href="https://www.tickets.bizkaia.eus/" target="_blank" rel="noopener">tickets.bizkaia.eus ↗</a></td></tr>
+  <tr><td><a href="https://www.booking.com/hotel/es/santemar.html" target="_blank" rel="noopener">Santemar (base 2)</a></td><td><span class="pill maybe">Pencilled</span></td><td>beachfront Sardinero · 4★ 8.9 (8,124) · ~€230 · free cancel</td></tr>
+  <tr><td>Cabárceno / Altamira (Sat)</td><td><span class="pill maybe">After Sat pick</span></td><td><a href="https://parquedecabarceno.com/en/" target="_blank" rel="noopener">Cabárceno ↗</a> · <a href="https://www.cultura.gob.es/mnaltamira/" target="_blank" rel="noopener">Altamira ↗</a></td></tr>
+</table>
+
+<h2 class="section">Good to know</h2>
+<div class="cols">
+  <div class="panel">
+    <h3>🧳 Packing</h3>
+    <ul>
+      <li>Layers + light rain jacket — Atlantic <i>sirimiri</i> drizzle even in June.</li>
+      <li>Swimwear &amp; towels (beaches + the pool).</li>
+      <li>Comfy shoes — Gaztelugatxe steps &amp; Santillana cobbles.</li>
+      <li>Sun cream, a small daypack.</li>
+    </ul>
+  </div>
+  <div class="panel">
+    <h3>🚗 Driving</h3>
+    <ul>
+      <li>A-8/AP-8 has tolls — a contactless card works at booths.</li>
+      <li>Drive on the right; roads excellent.</li>
+      <li>Lanes up to Areitio are narrow but easy.</li>
+      <li>Everything from base is a 30–50 min drive — plan a driver for pintxos nights.</li>
+    </ul>
+  </div>
+  <div class="panel">
+    <h3>🔗 Book &amp; navigate</h3>
+    <ul class="linklist">
+      <li><a href="index.html" target="_blank">🗺️ Interactive map</a></li>
+      <li><a href="https://www.airbnb.com/rooms/50866167" target="_blank" rel="noopener">🏡 Areitio Etxea</a> <span class="x">base 1</span></li>
+      <li><a href="https://www.booking.com/hotel/es/santemar.html" target="_blank" rel="noopener">🏖️ Santemar</a> <span class="x">base 2 · last night</span></li>
+      <li><a href="https://www.tickets.bizkaia.eus/" target="_blank" rel="noopener">🎟️ Gaztelugatxe tickets</a> <span class="x">free, book ahead</span></li>
+      <li><a href="https://parquedecabarceno.com/en/" target="_blank" rel="noopener">🦁 Cabárceno park</a></li>
+      <li><a href="https://www.cultura.gob.es/mnaltamira/" target="_blank" rel="noopener">🖼️ Altamira museum</a></li>
+      <li><a href="https://www.ryanair.com" target="_blank" rel="noopener">✈️ Ryanair (manage)</a></li>
+    </ul>
+  </div>
+</div>
+
+<h2 class="section">🍽️ Where to eat <span style="text-transform:none;letter-spacing:0;font-weight:400">— great wine + family-friendly · ★ ratings live from Google Maps, tap to open</span></h2>
+<div class="cols">
+
+  <div class="panel">
+    <h3>🏡 Near the base · Durango</h3>
+    <ul class="linklist">
+      <li><a href="https://www.google.com/maps/search/?api=1&query=Restaurante%20Kobika%20Jatetxea&query_place_id=ChIJvRrwf5IyTg0RfdUq2u4oqpU" target="_blank" rel="noopener">Kobika</a> <span class="x">★4.6 (884) · €20–70 · Basque, good wine list</span></li>
+      <li><a href="https://www.google.com/maps/search/?api=1&query=Txanto%20jatetxea&query_place_id=ChIJ1ebDGJcyTg0RNEDWmvSCJSc" target="_blank" rel="noopener">Txanto Jatetxea</a> <span class="x">★4.5 (705) · €10–20 · central, great value</span></li>
+      <li><a href="https://www.google.com/maps/search/?api=1&query=Mesoi%20Barria&query_place_id=ChIJz5T4PpcyTg0R7kdZRDpIcEc" target="_blank" rel="noopener">Mesoi Barria</a> <span class="x">★4.5 (1,369) · €10–20 · old-town favourite</span></li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h3>🍢 San Sebastián</h3>
+    <ul class="linklist">
+      <li><a href="https://www.google.com/maps/search/?api=1&query=Ikaitz%20jatetxea&query_place_id=ChIJza90F0WlUQ0R4Sz5hMF5OLk" target="_blank" rel="noopener">Ikaitz</a> <span class="x">★4.7 (1,673) · €30–80 · classic Basque, strong wine list</span></li>
+      <li><a href="https://www.google.com/maps/search/?api=1&query=Astelena&query_place_id=ChIJ19jyY06lUQ0RlT7izQh1XdU" target="_blank" rel="noopener">Astelena</a> <span class="x">★4.6 (1,596) · €50–90 · standout pintxos — great grazing for Noah</span></li>
+      <li><a href="https://www.google.com/maps/search/?api=1&query=Restaurante%20Zelai%20Txiki&query_place_id=ChIJ290CKGmlUQ0RGfK1SpLMMfs" target="_blank" rel="noopener">Zelai Txiki</a> <span class="x">★4.6 (1,272) · €€ · hilltop, relaxed &amp; family-friendly</span></li>
+      <li><a href="https://www.google.com/maps/search/?api=1&query=Arzak&query_place_id=ChIJk16VNUOlUQ0RN9deX3Lcna8" target="_blank" rel="noopener">Arzak</a> <span class="x">★4.6 (2,065) · €100+ · 3-Michelin, world-class cellar — book ahead</span></li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h3>🐟 Getaria · seafood + txakoli</h3>
+    <ul class="linklist">
+      <li><a href="https://www.google.com/maps/search/?api=1&query=Elkano%20Txiki&query_place_id=ChIJSxHW-KHIUQ0R9Sel21SbbBk" target="_blank" rel="noopener">Elkano Txiki</a> <span class="x">★4.7 (542) · €20–30 · casual &amp; family-friendly, top value</span></li>
+      <li><a href="https://www.google.com/maps/search/?api=1&query=ELKANO&query_place_id=ChIJH9GgGaLIUQ0RhEde7VfKpQI" target="_blank" rel="noopener">Elkano</a> <span class="x">★4.7 (1,742) · €100+ · legendary grilled turbot + txakoli — book</span></li>
+      <li><a href="https://www.google.com/maps/search/?api=1&query=El%20Astillero&query_place_id=ChIJr-y_rZ_IUQ0R2hrRnxJ_Z1Y" target="_blank" rel="noopener">El Astillero</a> <span class="x">★4.5 (1,813) · €40–90 · harbourside grill, great fish &amp; wine</span></li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h3>🏰 Cantabria · Santillana</h3>
+    <ul class="linklist">
+      <li><a href="https://www.google.com/maps/search/?api=1&query=Restaurante%20La%20Nueva%20Santuca&query_place_id=ChIJvUdvHSEVSQ0RhuC2mcJrsSY" target="_blank" rel="noopener">La Nueva Santuca</a> <span class="x">★4.8 (663) · €20–40 · top-rated Cantabrian cooking</span></li>
+      <li><a href="https://www.google.com/maps/search/?api=1&query=Restaurante%20Gran%20Duque&query_place_id=ChIJnR1x4iEVSQ0RVlBx9FmM67Y" target="_blank" rel="noopener">Gran Duque</a> <span class="x">★4.7 (2,144) · €20–30 · classic Cantabrian, good wine</span></li>
+      <li><a href="https://www.google.com/maps/search/?api=1&query=Restaurante%20Palacio%20Mijares&query_place_id=ChIJ-8J3aJwVSQ0R_eaK2uwKoac" target="_blank" rel="noopener">Palacio Mijares</a> <span class="x">★4.6 (991) · €40–50 · manor-house dining + wine list</span></li>
+      <li><a href="https://www.google.com/maps/search/?api=1&query=Pizzer%C3%ADa%20Bitinia&query_place_id=ChIJQRzrbh8VSQ0RnEourIv6FLw" target="_blank" rel="noopener">Pizzería Bitinia</a> <span class="x">★4.6 (3,611) · €10–20 · easy kid dinner near Santillana</span></li>
+    </ul>
+  </div>
+
+</div>
+<p style="font-size:12px;color:var(--muted);margin-top:10px">All ≥4.5★ with 500+ reviews (Google Maps, live). Wine note: the asadores &amp; fine-dining spots carry serious Basque txakoli / Rioja lists; pizza &amp; pintxos picks are the relaxed kid options. Book Elkano &amp; Arzak well ahead.</p>
+
+<h2 class="section">🏆 Crowd favourites <span style="text-transform:none;letter-spacing:0;font-weight:400">— only ★4.7+ with 2,000+ Google reviews · tap to open</span></h2>
+<div class="cols">
+
+  <div class="panel">
+    <h3>🍢 San Sebastián</h3>
+    <ul class="linklist">
+      <li><a href="https://www.google.com/maps/search/?api=1&query=BAR%20SPORT&query_place_id=ChIJlwEV3E2lUQ0RgvA10WoFd74" target="_blank" rel="noopener">Bar Sport</a> <span class="x">★4.7 (8,513) · €10–20 · iconic pintxos — great grazing for Noah</span></li>
+      <li><a href="https://www.google.com/maps/search/?api=1&query=Bar%20Txepetxa&query_place_id=ChIJfQW8xU2lUQ0RRd5xky_9uBY" target="_blank" rel="noopener">Bar Txepetxa</a> <span class="x">★4.7 (3,595) · €10–20 · famous anchovy pintxos</span></li>
+      <li><a href="https://www.google.com/maps/search/?api=1&query=El%20KBZ%C3%93N%20jatetxea&query_place_id=ChIJtV43LSmlUQ0RFpbMXiNXYtc" target="_blank" rel="noopener">El KBZÓN Jatetxea</a> <span class="x">★4.8 (3,376) · €20–30 · sit-down bar &amp; grill, family-friendly</span></li>
+      <li><a href="https://www.google.com/maps/search/?api=1&query=La%20Cervecer%C3%ADa%20del%20Antiguo&query_place_id=ChIJV_PmBae6UQ0ROLg5I1yixiQ" target="_blank" rel="noopener">La Cervecería del Antiguo</a> <span class="x">★4.7 (2,787) · €10–20 · relaxed, easy with kids</span></li>
+      <li><a href="https://www.google.com/maps/search/?api=1&query=KBZ%C3%93N%20TXIKI&query_place_id=ChIJ0R3vOfylUQ0RAul4-dQuLdA" target="_blank" rel="noopener">KBZÓN Txiki</a> <span class="x">★5.0 (2,265) · €10–20 · top-rated casual pintxos</span></li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h3>🏰 Cantabria</h3>
+    <ul class="linklist">
+      <li><a href="https://www.google.com/maps/search/?api=1&query=Restaurante%20Gran%20Duque&query_place_id=ChIJnR1x4iEVSQ0RVlBx9FmM67Y" target="_blank" rel="noopener">Gran Duque</a> <span class="x">★4.7 (2,144) · €20–30 · classic Cantabrian, good wine · Santillana</span></li>
+    </ul>
+    <p style="font-size:12px;color:var(--muted);margin-top:8px">The only Cantabrian spot over the bar. Just under on score: <a href="https://www.google.com/maps/search/?api=1&query=Restaurante%20La%20Ventana&query_place_id=ChIJufQF2AJJSQ0RcqqbjenEml4" target="_blank" rel="noopener">La Ventana</a> (★4.6, 3,926) &amp; <a href="https://www.google.com/maps/search/?api=1&query=Restaurante%20La%20Tucho&query_place_id=ChIJZ7ShNwNJSQ0RHqjHm1NP8Nk" target="_blank" rel="noopener">La Tucho</a> (★4.5, 2,715) in Santander.</p>
+  </div>
+
+</div>
+<p style="font-size:12px;color:var(--muted);margin-top:10px">Hard filter: <b>★4.7+ and 2,000+ reviews</b> (live Google Maps). Your base towns (Durango/Atxondo) &amp; Getaria are too small to reach 2,000 reviews — so the crowd-favourites cluster in San Sebastián.</p>
+
+<footer>
+  Cantabria + Basque family road trip · 17–21 Jun 2026 · <a href="index.html" target="_blank">interactive map</a><br>
+  Budget ~€1,900 (flights + car + stays + fuel/tolls; excl. food &amp; activities)
+</footer>
+
+</div>
+</body>
+</html>
