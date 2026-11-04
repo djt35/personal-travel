@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>London Bank-Holiday Weekend (23-25 May 2026) - Stratford base</name>
+    <description>Chilled family weekend for David, Lobke &amp; Noah (5). Color: red=hotels, green=restaurants, blue=attractions, purple=running.</description>
+
+    <Style id="hotel"><IconStyle><color>ff0000ff</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/red-circle.png</href></Icon></IconStyle></Style>
+    <Style id="restaurant"><IconStyle><color>ff00ff00</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/grn-circle.png</href></Icon></IconStyle></Style>
+    <Style id="attraction"><IconStyle><color>ffff0000</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/blu-circle.png</href></Icon></IconStyle></Style>
+    <Style id="running"><IconStyle><color>ffff00ff</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/purple-circle.png</href></Icon></IconStyle></Style>
+
+    <Folder>
+      <name>Hotels</name>
+      <Placemark><name>Hyatt Regency London Stratford (recommended)</name><styleUrl>#hotel</styleUrl><description>Recommended base. Sofa-bed family room, child free, free cancellation, ~EUR 1209/2 nights. Walk to Westfield, Olympic Park &amp; Stratford station.</description><Point><coordinates>-0.0086,51.5430,0</coordinates></Point></Placemark>
+      <Placemark><name>The Gantry London (Curio by Hilton)</name><styleUrl>#hotel</styleUrl><description>Design upgrade with rooftop bar, by the park. ~EUR 1386/2 nights.</description><Point><coordinates>-0.0117,51.5447,0</coordinates></Point></Placemark>
+      <Placemark><name>InterContinental London - The O2 (pool alt)</name><styleUrl>#hotel</styleUrl><description>Has a POOL + Junior Suite ~EUR 900/2 nights. ~10 min from Stratford by Jubilee/DLR; IFS cable car nearby.</description><Point><coordinates>0.0030,51.5020,0</coordinates></Point></Placemark>
+    </Folder>
+
+    <Folder>
+      <name>Attractions</name>
+      <Placemark><name>QE Olympic Park - Tumbling Bay Playground</name><styleUrl>#attraction</styleUrl><description>Adventure playground for a 5yo (sand, water, treehouses). Right by the hotel; free.</description><Point><coordinates>-0.0140,51.5468,0</coordinates></Point></Placemark>
+      <Placemark><name>London Aquatics Centre</name><styleUrl>#attraction</styleUrl><description>Olympic pool with public family swim sessions.</description><Point><coordinates>-0.0118,51.5343,0</coordinates></Point></Placemark>
+      <Placemark><name>Westfield Stratford City</name><styleUrl>#attraction</styleUrl><description>Shopping + dining; wet-weather backup; car park.</description><Point><coordinates>-0.0050,51.5435,0</coordinates></Point></Placemark>
+      <Placemark><name>ArcelorMittal Orbit</name><styleUrl>#attraction</styleUrl><description>Views + giant slide (slide min height 1.3m — Noah likely too small).</description><Point><coordinates>-0.0125,51.5386,0</coordinates></Point></Placemark>
+      <Placemark><name>Natural History Museum</name><styleUrl>#attraction</styleUrl><description>Dinosaurs; new 'Jurassic Oceans' from 22 May; free.</description><Point><coordinates>-0.1764,51.4967,0</coordinates></Point></Placemark>
+      <Placemark><name>Science Museum</name><styleUrl>#attraction</styleUrl><description>Hands-on Wonderlab; free.</description><Point><coordinates>-0.1745,51.4978,0</coordinates></Point></Placemark>
+      <Placemark><name>Diana Memorial Playground</name><styleUrl>#attraction</styleUrl><description>Pirate-ship adventure playground in Kensington Gardens; free.</description><Point><coordinates>-0.1865,51.5073,0</coordinates></Point></Placemark>
+      <Placemark><name>London Eye</name><styleUrl>#attraction</styleUrl><description>Book ahead online.</description><Point><coordinates>-0.1196,51.5033,0</coordinates></Point></Placemark>
+      <Placemark><name>SEA LIFE London Aquarium</name><styleUrl>#attraction</styleUrl><description>Next to the Eye; book ahead.</description><Point><coordinates>-0.1188,51.5018,0</coordinates></Point></Placemark>
+    </Folder>
+
+    <Folder>
+      <name>Restaurants</name>
+      <Placemark><name>Dishoom Covent Garden</name><styleUrl>#restaurant</styleUrl><description>Kids' menu, lively-relaxed Bombay cafe; book.</description><Point><coordinates>-0.1265,51.5127,0</coordinates></Point></Placemark>
+      <Placemark><name>Inamo Covent Garden</name><styleUrl>#restaurant</styleUrl><description>Interactive table screens + games — a 5yo magnet.</description><Point><coordinates>-0.1290,51.5117,0</coordinates></Point></Placemark>
+      <Placemark><name>Westfield dining (Wahaca / Franco Manca)</name><styleUrl>#restaurant</styleUrl><description>Easy family dinner steps from the hotel.</description><Point><coordinates>-0.0050,51.5435,0</coordinates></Point></Placemark>
+    </Folder>
+
+    <Folder>
+      <name>Running</name>
+      <Placemark><name>QE Olympic Park run loop</name><styleUrl>#running</styleUrl><description>~5km paved loop past the Stadium/Aquatics Centre + River Lea towpath. From the hotel door.</description><Point><coordinates>-0.0150,51.5440,0</coordinates></Point></Placemark>
+    </Folder>
+  </Document>
+</kml>

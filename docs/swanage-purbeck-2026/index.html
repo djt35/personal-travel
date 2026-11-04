@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Swanage & Purbeck — 3 Days with Noah (5)</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --bg:#0b1220; --panel:rgba(17,25,40,0.82); --panel2:rgba(17,25,40,0.6);
+    --line:rgba(255,255,255,0.12); --txt:#e8eef7; --mut:#9fb0c6;
+    --d1:#f59e0b; --d2:#34d399; --d3:#38bdf8; --opt:#8b93a7; --red:#ef4444;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt)}
+  #app{display:flex;height:100vh;overflow:hidden}
+  #map{flex:1;height:100vh}
+  #side{width:420px;max-width:90vw;height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1526,#0b1220);border-right:1px solid var(--line);padding:0 0 40px}
+  .hd{padding:20px 20px 15px;border-bottom:1px solid var(--line);position:sticky;top:0;background:linear-gradient(180deg,#0c1526,rgba(12,21,38,0.92));backdrop-filter:blur(8px);z-index:5}
+  .hd h1{margin:0;font-size:19px;letter-spacing:.2px}
+  .hd .sub{color:var(--mut);font-size:12.5px;margin-top:4px;line-height:1.5}
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--txt);margin:6px 6px 0 0;background:var(--panel2)}
+  .sec{padding:15px 18px 4px}
+  .sec h2{font-size:12px;text-transform:uppercase;letter-spacing:.13em;color:var(--mut);margin:0 0 10px;display:flex;align-items:center;gap:8px}
+  .sec h2 .sw{width:11px;height:11px;border-radius:50%}
+  .day{display:flex;gap:11px;padding:11px 12px;border:1px solid var(--line);border-left-width:4px;border-radius:12px;margin-bottom:9px;cursor:pointer;background:var(--panel2);transition:.15s}
+  .day:hover{border-color:rgba(255,255,255,.28);background:var(--panel)}
+  .daynum{flex:0 0 auto;width:46px;text-align:center}
+  .daynum b{display:block;font-size:16px}
+  .daynum span{font-size:9.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+  .dayb .t{font-weight:650;font-size:13px}
+  .dayb .d{color:var(--mut);font-size:11.5px;margin-top:3px;line-height:1.5}
+  .tideline{font-size:11px;margin-top:6px;font-weight:600;line-height:1.4}
+  .dayb .eat{font-size:11.5px;margin-top:6px;line-height:1.5;color:var(--mut)}
+  .dayb .eat b{color:var(--txt)}
+  .card{background:var(--panel);border:1px solid var(--line);border-left-width:4px;border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer;transition:.15s;position:relative}
+  .card:hover{border-color:rgba(255,255,255,.28);transform:translateY(-1px)}
+  .row1{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+  .nm{font-weight:650;font-size:13.5px;line-height:1.25}
+  .nm .e{margin-right:5px}
+  .score{font-weight:800;font-size:10.5px;white-space:nowrap;letter-spacing:1px;color:var(--mut)}
+  .why{font-size:12px;color:var(--txt);opacity:.92;margin-top:5px;line-height:1.46}
+  .prac{font-size:11.3px;color:var(--mut);margin-top:5px;line-height:1.42}
+  .tags{margin-top:6px;display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+  .tag{font-size:10px;padding:2px 7px;border-radius:6px;border:1px solid var(--line);color:var(--mut)}
+  .tag.opt{color:#c4b5fd;border-color:rgba(196,181,253,.4)}
+  .tag.free{color:#34d399;border-color:rgba(52,211,153,.4)}
+  .tag.tide{color:#38bdf8;border-color:rgba(56,189,248,.4)}
+  .tag.book{color:#fcd34d;border-color:rgba(252,211,77,.4)}
+  .tag.care{color:#fb7185;border-color:rgba(251,113,133,.4)}
+  .lk{color:#7cc4ff;text-decoration:none;font-size:11.3px}
+  .lk:hover{text-decoration:underline}
+  .note{font-size:11.5px;color:var(--mut);line-height:1.55;margin-top:8px}
+  .callout{background:linear-gradient(135deg,rgba(167,139,250,.14),rgba(56,189,248,.10));border:1px solid rgba(167,139,250,.35);border-radius:13px;padding:12px 13px}
+  .callout .t{font-weight:700;font-size:13px;margin-bottom:4px}
+  .callout .d{font-size:11.8px;color:var(--mut);line-height:1.55}
+  .legend{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.95;color:var(--txt)}
+  .legend .li{display:flex;align-items:center;gap:8px}
+  .legend .dot{width:12px;height:12px;border-radius:50%;flex:0 0 auto}
+  .leaflet-popup-content-wrapper{background:#0e1830;color:var(--txt);border-radius:12px;border:1px solid var(--line)}
+  .leaflet-popup-tip{background:#0e1830}
+  .leaflet-popup-content{margin:12px 14px;font-size:13px;line-height:1.5}
+  .pp h3{margin:0 0 4px;font-size:14px}
+  .pp .ppm{color:var(--mut);font-size:12px}
+  .pp .ppm b{color:var(--txt)}
+  .pp a{color:#7cc4ff}
+  .mk{border-radius:50%;border:2px solid rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.55)}
+  .toggle{position:absolute;top:12px;left:12px;z-index:1000;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:8px 11px;font-size:12px;cursor:pointer;display:none}
+  @media (max-width:820px){
+    #app{flex-direction:column}
+    #side{width:100%;max-width:100%;height:auto;max-height:48vh;border-right:0;border-bottom:1px solid var(--line)}
+    #map{height:52vh}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="side">
+    <div class="hd">
+      <h1>🗺️ Swanage &amp; Purbeck — 3 Days with Noah (5)</h1>
+      <div class="sub"><b>Fri 17 – Sun 19 July 2026</b> · based at The Pines Hotel<br/>Map is now <b>colour-coded by day</b> — each day has its own colour + route line.</div>
+      <div>
+        <span class="pill" style="border-color:var(--d1);color:var(--d1)">🟠 Fri · Train &amp; Studland</span>
+        <span class="pill" style="border-color:var(--d2);color:var(--d2)">🟢 Sat · Quarry coves</span>
+        <span class="pill" style="border-color:var(--d3);color:var(--d3)">🔵 Sun · Kimmeridge</span>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>The 3-day story</h2>
+      <div id="days"></div>
+    </div>
+
+    <div class="sec">
+      <div class="callout">
+        <div class="t">🌟 Glow-worm night — self-guided (the walk's sold out)</div>
+        <div class="d">Durlston's guided walk on Fri 17 is fully booked. Mid-July is peak — on the <b>driest, stillest night (Sat 18 or Sun 19)</b> walk the Priest's Way / Durlston coast path from ~10pm (dark ~22:00) and look low in the grassy banks for the green glow. Not in rain or wind — so skip damp Friday night.</div>
+      </div>
+    </div>
+
+    <div class="sec"><h2><span class="sw" style="background:var(--d1)"></span> 🟠 Day 1 · Fri — Train, Corfe &amp; Studland</h2><div id="grp-1"></div></div>
+    <div class="sec"><h2><span class="sw" style="background:var(--d2)"></span> 🟢 Day 2 · Sat — Durlston &amp; the quarry coves</h2><div id="grp-2"></div></div>
+    <div class="sec"><h2><span class="sw" style="background:var(--d3)"></span> 🔵 Day 3 · Sun — Kimmeridge sea-monsters</h2><div id="grp-3"></div></div>
+    <div class="sec"><h2><span class="sw" style="background:var(--opt)"></span> ⚪ Optional &amp; back-pocket</h2><div id="grp-0"></div></div>
+
+    <div class="sec">
+      <h2>Book / check before you go</h2>
+      <div class="note" style="margin-top:0">
+        ① <b>Tides this week</b> — every good low is early morning: Fri 06:15, Sat 07:01, Sun 07:47 (next lows ~18:40–20:10). Rockpool <b>early on Sun</b> at Kimmeridge; Peveril scramble ~08:00 Sat.<br/>
+        ② <b>Tyneham / Lulworth ranges</b> — daily opening starts 25 Jul (after you leave), so <b>likely open Sat 18 / Sun 19 but NOT Fri 17</b> — confirm gov.uk / 01929&nbsp;404714.<br/>
+        ③ <b>Swanage Railway</b> — buy a <b>Freedom-of-the-Line</b> ticket, first train ~10am, hop off at Corfe (and Norden). Normal service (double-steam only from 24 Jul).<br/>
+        ④ <b>Corfe Castle</b> — full price on your dates (20%-off deal starts 25 Jul); go mid-morning.<br/>
+        ⑤ <b>THE PIG</b> restaurant books out — Garden Oven pizzas need no booking.
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>Map key</h2>
+      <div class="legend">
+        <div class="li"><span class="dot" style="background:var(--red)"></span> 🏨 The Pines Hotel (base)</div>
+        <div class="li"><span class="dot" style="background:var(--d1)"></span> 🟠 Day 1 · Fri — Train → Corfe → Studland</div>
+        <div class="li"><span class="dot" style="background:var(--d2)"></span> 🟢 Day 2 · Sat — Durlston &amp; quarry coves</div>
+        <div class="li"><span class="dot" style="background:var(--d3)"></span> 🔵 Day 3 · Sun — Kimmeridge &amp; the west</div>
+        <div class="li"><span class="dot" style="background:var(--opt)"></span> ⚪ Optional &amp; back-pocket</div>
+      </div>
+      <div class="note">Each day's stops share a colour and are joined by a route line. The emoji on each pin tells you the type (🚂🏰🏖️🌊🐉🦴🦌🍽️). Tap a pin or card for the why + practical detail.</div>
+    </div>
+  </aside>
+  <div style="flex:1;position:relative">
+    <button class="toggle" id="tg">☰ Panel</button>
+    <div id="map"></div>
+  </div>
+</div>
+
+<script>
+// ---------- DATA ----------
+const base = {name:'The Pines Hotel', area:'Burlington Road, Swanage', lat:50.62134, lng:-1.95515,
+  note:'Clifftop base — private steps to the sand, sea-view restaurant.', url:'https://pineshotel.co.uk/'};
+
+const dayColor = {1:'#f59e0b', 2:'#34d399', 3:'#38bdf8', 0:'#8b93a7'};
+
+// d = day (1/2/3, 0=optional) · e = emoji · o = optional-within-day
+const places = [
+  // ---------- DAY 1 · Fri — Train, Corfe & Studland ----------
+  {d:1,e:'🚂',name:'Swanage Railway (board here)',lat:50.60997,lng:-1.96025,score:2.5,
+    why:'Steam up the line this morning — smoke, whistle, a Victorian platform. Freedom-of-the-Line ticket, first train ~10am, hop off at Corfe.',
+    prac:'Swanage town · family day ticket ~£40–45 · carriages covered.',tags:['book'],url:'https://www.swanagerailway.co.uk/calendar'},
+  {d:1,e:'🏰',name:'Corfe Castle — the "broken castle"',lat:50.63889,lng:-2.05723,score:3.5,
+    why:'A dramatic ruined fortress above a storybook village — murder holes, a siege story and the Famous Five’s "Kirrin Castle". The big wonder-hit of the day.',
+    prac:'Arrive by steam train · NT (free to members) · go mid-morning before the coach crowds.',tags:[],url:'https://www.nationaltrust.org.uk/visit/dorset/corfe-castle'},
+  {d:1,e:'🏰',name:'Corfe Model Village + Sweet Shop',lat:50.63806,lng:-2.05876,score:3.5,
+    why:'A 1/20 stone replica with working stocks (lock a grown-up in!), a fossil corner and an Enchanted Fairy Garden — next to a 17th-C sherbet-fountain sweet shop.',
+    prac:'The Square, Corfe · ~£16.50 family · Courtyard Café has a fairy garden + giant games.',tags:[],url:'https://www.corfecastlemodelvillage.co.uk/gardens-and-games/'},
+  {d:1,e:'🍺',name:'The Greyhound Inn, Corfe — lunch',lat:50.63880,lng:-2.05650,score:4,
+    why:'The best pub in the village for lunch — a garden terrace with the finest view of the castle ruins, fresh seasonal local food, kids & dogs welcome. (The Fox Inn is the characterful backup.)',
+    prac:'Corfe village · book ahead (esp. weekends) · mains ~£15–18 · Purbeck Ice Cream in the NT garden after.',tags:['book'],url:'https://greyhoundcorfe.co.uk/'},
+  {d:0,e:'⛏️',name:'Purbeck Mineral & Mining Museum, Norden',lat:50.64985,lng:-2.06380,score:5,
+    why:'A real walk-in clay-mine tunnel run by ex-miners, plus a train-themed playground beside Norden station. Free and brilliant — but CLOSED on Fri 17 (opens daily from Sat 18 Jul), so make it a car add-on another day.',
+    prac:'Beside Norden station · free (donation) · daily 18 Jul–31 Aug 11:00–16:00 (shut Fri 17) · mostly undercover.',tags:['free'],url:'https://purbeckminingmuseum.org/visit-us/'},
+  {d:1,e:'🏖️',name:'Studland — Middle & South Beach',lat:50.64567,lng:-1.95065,score:2,
+    why:'Afternoon on the calm end of Studland: shallow warm water for paddling, rockpools at South Beach, a little clifftop café at Middle Beach. Quieter than Knoll.',
+    prac:'~15–20 min from Corfe · NT car parks, toilets · short walk to sand (buggy-OK).',tags:[],url:'https://www.dorsetguide.com/studland-middle-beach/'},
+  {d:1,e:'🏖️',name:'Knoll Beach, Studland',lat:50.64976,lng:-1.95296,score:2,o:true,
+    why:'The big blue-flag family beach — long dune-backed sand, gently shelving, NT café. Go here if you want space and facilities.',
+    prac:'NT car park (busy — go early) · café, toilets, shop · naturist stretch is north of the café, head south.',tags:['opt'],url:'https://www.nationaltrust.org.uk/visit/dorset/studland-bay'},
+  {d:1,e:'✨',name:'The Agglestone Rock (bolt-on)',lat:50.64514,lng:-1.96798,score:5,o:true,
+    why:'Right behind Studland: a 400-tonne stone alone on the heath — "the rock the Devil threw". If it stays dry, turn the beach afternoon into a quest with wild ponies.',
+    prac:'~15 min heath walk from the B3351 layby · free · not for buggies · skip if the rain comes in.',tags:['opt','free','care'],url:'https://sandbanksbeach.co.uk/visit/natural-landmarks/agglestone-rock/'},
+
+  // ---------- DAY 2 · Sat — Durlston & the quarry coves ----------
+  {d:2,e:'🌊',name:'Peveril Point rockpools (early)',lat:50.60690,lng:-1.94588,score:3,o:true,
+    why:'A pre-breakfast bonus 5 min from the hotel — rockpools, crabbing and loose fossils on the foreshore, prime around this morning’s 07:01 low.',
+    prac:'Low tide only (don’t get cut off on the spit) · surface finds only (SSSI) · bring a net & bucket.',tags:['opt','tide'],url:'https://ukfossils.co.uk/peveril-point/'},
+  {d:2,e:'🌍',name:'Durlston Country Park — Great Globe',lat:50.59488,lng:-1.95205,score:4,
+    why:'A 40-tonne carved stone world to run around, a woodland play trail, a working lighthouse and clifftop wildflower meadows alive with July butterflies. On the doorstep.',
+    prac:'~8 min · free entry, ~£4–5 parking · Seventh Wave café · easy Globe loop from the car park.',tags:['free'],url:'https://www.durlston.co.uk/visit'},
+  {d:2,e:'🍽️',name:'Seventh Wave, Durlston Castle',lat:50.59512,lng:-1.95272,score:4.5,
+    why:'The best sea-view café in Purbeck — a clifftop terrace in a Victorian castle, views to Old Harry & the Isle of Wight, dolphins sometimes passing.',
+    prac:'In the country park · cream tea ~£6.50, mains ~£12–18 · book weekend lunch.',tags:['book'],url:'https://www.durlston.co.uk/visit'},
+  {d:2,e:'🌊',name:'Dancing Ledge — quarry tidal pool',lat:50.59218,lng:-2.00432,score:3,
+    why:'A flat shelf of quarried rock with a tidal swimming pool blasted out for local schoolkids a century ago. Iconic and beautiful.',
+    prac:'~10 min to Spyway, then ~45-min walk + a steep scramble down · pool safe only at LOW TIDE, never the open sea (currents) · one adult per child.',tags:['tide','care'],url:'https://www.swanage.co.uk/dancing-ledge/'},
+  {d:2,e:'🌊',name:'Seacombe ledges (quieter)',lat:50.59015,lng:-2.01635,score:4,o:true,
+    why:'Dancing Ledge’s easier, less-Instagrammed neighbour — big flat sunbathing ledges and old quarry galleries where locals swim on summer evenings.',
+    prac:'Easier walk than Dancing Ledge · deep water off the ledges — rockpool & picnic, not open-water swimming for a 5yo · low tide.',tags:['opt','tide','care'],url:'https://www.islewalkpurbeck.com/walks/guest-walk-myisleofpurbeck'},
+  {d:2,e:'🐉',name:'Winspit — the "dragon caves"',lat:50.58444,lng:-2.03399,score:4,
+    why:'A cliff-face of hollowed stone galleries over a wild cove — a Doctor Who "alien planet". Smugglers, caves and rockpools to the left at low tide.',
+    prac:'~1 mile downhill from Worth Matravers (uphill back is a slog) · unfenced cliffs & deep water — hold hands, no cave-diving.',tags:['care'],url:'https://www.swanage.co.uk/winspit/'},
+  {d:2,e:'🍺',name:'Square & Compass, Worth Matravers',lat:50.59791,lng:-2.03714,score:3.5,
+    why:'A cult 1776 clifftop pub — home-pressed cider & ale through two hatches, hot pasties, live music and its own little fossil museum. The pub as a day out.',
+    prac:'~15 min · pasty + drink ~£8–10 · no booking · pair with the Winspit walk.',tags:[],url:'https://www.squareandcompasspub.co.uk/'},
+  {d:2,e:'🥧',name:'Worth Matravers Tea & Supper Room',lat:50.59780,lng:-2.03690,score:4,o:true,
+    why:'Homemade pasties, sausage rolls and cream teas by the village green and duck pond — one of Purbeck’s prettiest hamlets.',
+    prac:'Now takeaway-only — eat on the green · pasty ~£4–5 · confirm hours by phone.',tags:['opt'],url:'https://www.swanage.co.uk/worth-matravers/'},
+
+  // ---------- DAY 3 · Sun — Kimmeridge sea-monsters & rockpools ----------
+  {d:3,e:'🌊',name:'Kimmeridge Bay + Wild Seas Centre',lat:50.60560,lng:-2.12210,score:4.5,
+    why:'The best & safest rockpooling on the coast — broad ledges of crabs, blennies & anemones — plus a FREE marine centre with touch-tanks & microscopes, and a summer snorkel trail.',
+    prac:'~30 min · £5–6 toll (all-day parking) · centre free, daily 10:30–16:00 · GO EARLY after the 07:47 low · reef shoes.',tags:['free','tide'],url:'https://www.dorsetwildlifetrust.org.uk/wild-seas-centre'},
+  {d:3,e:'🦴',name:'The Etches Collection, Kimmeridge',lat:50.61055,lng:-2.12280,score:4,
+    why:'One man’s world-class fossil "sea monsters" — ichthyosaurs, a giant pliosaur — beautifully lit, with a glass floor over the working fossil-prep lab. Dinosaur-mad kids love it.',
+    prac:'In Kimmeridge village · child £4.75 / adult £9.50, return free for a year · daily 10:00–17:00 · indoor (wet-weather-proof).',tags:[],url:'https://www.theetchescollection.org/plan-your-visit'},
+  {d:3,e:'🍽️',name:'Clavell’s Café & Farm Shop',lat:50.61070,lng:-2.12330,score:4.5,
+    why:'Farm-to-fork family kitchen run by farmers since 1958, with seafood landed at Kimmeridge Bay (mussels to lobster) and a lovely courtyard.',
+    prac:'Kimmeridge village · mains ~£12–20 · book (esp. Sundays) · come for the Kimmeridge crab.',tags:['book'],url:'https://www.clavells.co.uk/'},
+  {d:3,e:'✨',name:'Tyneham — the "ghost village"',lat:50.62200,lng:-2.16948,score:5,o:true,
+    why:'A whole village frozen since 1943 — the schoolroom left with the children’s pegs — with wild Worbarrow Bay a mile beyond. Add it if the range is open.',
+    prac:'~15 min on from Kimmeridge · free · MOD range: weekend-only for you, likely open Sun 19 — CONFIRM on gov.uk first · no signal, pack a picnic.',tags:['opt','free','care'],url:'https://tynehamvillage.org/opening-times'},
+  {d:3,e:'🏖️',name:'Chapman’s Pool (secluded cove)',lat:50.59660,lng:-2.05310,score:4,o:true,
+    why:'A near-perfect horseshoe cove ringed by towering cliffs — one of Dorset’s most secluded, often ~20 people at the height of summer. A proper little adventure.',
+    prac:'~30 min steep walk each way from Renscombe car park (no buggy) · fine shingle, no facilities, no signal · calm days only.',tags:['opt','care'],url:'https://wdlh.co.uk/things-to-do/chapmans-pool/'},
+
+  // ---------- OPTIONAL / BACK-POCKET (any day / weather) ----------
+  {d:0,e:'✨',name:'The Blue Pool, Furzebrook',lat:50.65050,lng:-2.09252,score:5,
+    why:'Rainy-day magic: a surreal turquoise clay pool wrapped in a Gnome & Fairy Trail, enchanted doors, a wishing tree and the UK’s longest rope bridge. Art-Deco tearoom for cover.',
+    prac:'~25 min · child £4.95, under-5 free · 9:30–5:30 · the top wet-weather swap.',tags:['book'],url:'https://bluepooltearooms.co.uk/visit/'},
+  {d:0,e:'🎖️',name:'The Tank Museum, Bovington',lat:50.69440,lng:-2.24088,score:2.5,
+    why:'Best wet-weather day: huge machines, the Commander Basil kids’ trail, indoor soft play — and every ticket includes a free annual pass.',
+    prac:'~25 min · child £3.60 / adult £19.60 online · daily 10:00–17:00 · ALL indoor.',tags:['book'],url:'https://tankmuseum.org/visit-us/tickets-and-prices/'},
+  {d:0,e:'🚜',name:'Putlake Adventure Farm',lat:50.60885,lng:-1.99943,score:3,
+    why:'The closest hands-on farm (5 min) — bottle-feed lambs, groom ponies, go-karts, and a covered soft-play barn. Great low-energy morning.',
+    prac:'Langton Matravers · ~£31 family · daily 10:00–16:30 · bring wellies.',tags:['book'],url:'https://www.swanage.co.uk/putlake-adventure-farm/'},
+  {d:0,e:'🦌',name:'RSPB Arne',lat:50.69004,lng:-2.04010,score:4.5,
+    why:'~500 free-roaming sika deer on a Poole Harbour peninsula, a hidden sandy beach and a play area. Deer often right on the path.',
+    prac:'~30 min · car-park charge (free for members) · arrive by ~9:30–10am · fair-weather.',tags:['free'],url:'https://www.rspb.org.uk/days-out/reserves/arne'},
+  {d:0,e:'🦧',name:'Monkey World, Wool',lat:50.69185,lng:-2.19320,score:3,
+    why:'A world-class ape-rescue centre with three big adventure playgrounds — the best "big day out" wildlife option.',
+    prac:'~25 min · ~£47 family online · daily 10:00–17:00.',tags:[],url:'https://monkeyworld.org/visit-the-centre/entrance-prices/'},
+  {d:0,e:'🛥️',name:'Swanage boat trip — Old Harry (1 hr)',lat:50.60760,lng:-1.94800,score:3,
+    why:'A short dramatic cruise from the pier past the chalk stacks, with a chance of seals, dolphins & puffins. One hour is the 5yo sweet spot.',
+    prac:'From Swanage Pier · adult £17 / child £12 · calmer in the morning · book the 1-hour.',tags:['book'],url:'https://www.swanageseafishing.co.uk/prices'},
+  {d:0,e:'🛥️',name:'Wareham — rowing boats on the Frome',lat:50.68405,lng:-2.10930,score:3,
+    why:'Hire a little rowing boat on the gentle River Frome — ducks, swans, calm water — then ice cream on the quay.',
+    prac:'~25 min · from ~£20–25/hr · daily Mar–Sep · pair with the Saxon walls walk.',tags:[],url:'https://www.warehamriverboathire.co.uk/'},
+  {d:0,e:'🕳️',name:'Man O’War Cove & Durdle Door',lat:50.62119,lng:-2.27692,score:2.5,
+    why:'The iconic arch — and the sheltered cove just east is a near-lagoon with the calmest, shallowest swimming on the coast.',
+    prac:'~45 min west · steep path + steps down · arrive before 10am to beat crowds.',tags:['care'],url:'https://www.thebeachguide.co.uk/south-west-england/dorset/durdle-door-east.htm'},
+  {d:0,e:'🦞',name:'Gee White’s — lobster on the quay',lat:50.60795,lng:-1.95429,score:4,
+    why:'A seafront seafood shack — locally caught lobster, crab & oysters, feet-almost-in-the-sea, plus fish & chips for Noah.',
+    prac:'Swanage seafront · platters ~£15–25 · reserve a dressed crab in the morning.',tags:['book'],url:'https://www.swanage.co.uk/gee-whites/'},
+  {d:0,e:'🍫',name:'Chococo — the Chocolate House',lat:50.60898,lng:-1.95813,score:4,
+    why:'Watch chocolate being made, single-origin hot chocolate with marshmallows, a kids’ colouring corner and holiday chocolate-lolly making.',
+    prac:'2 min from centre · café ~£6–12 · book the seasonal lolly sessions.',tags:['book'],url:'https://www.chococo.co.uk/'},
+  {d:0,e:'🍦',name:'Baboo Gelato, Swanage',lat:50.60862,lng:-1.95662,score:4,
+    why:'Multi-award artisan gelato made with Dorset fruit & organic milk — a real step above the seafront norm, plus croffles & milkshakes.',
+    prac:'Institute Road · scoop ~£3.50 · try the salted caramel as a milkshake.',tags:[],url:'https://www.baboogelato.com/'},
+  {d:0,e:'🍕',name:'THE PIG Garden Oven, Studland',lat:50.64395,lng:-1.94964,score:4,
+    why:'Wood-fired pizza in the walled kitchen garden of a beautiful clifftop country-house — lawns to romp on, and NO booking. The low-stress way into The Pig.',
+    prac:'~20 min · pizzas ~£10–14 · seasonal/weather-dependent, check on the day.',tags:['free'],url:'https://www.thepighotel.com/on-the-beach/'},
+  {d:0,e:'🍺',name:'The Scott Arms, Kingston',lat:50.61640,lng:-2.06203,score:3.5,
+    why:'A pub garden framing the postcard view of Corfe Castle across the valley — the best free view in Purbeck, with a summer Jerk Shak.',
+    prac:'~12 min · go for the drink & the sunset on the castle · book a sunset table.',tags:['book'],url:'https://thescottarms.com/'},
+];
+
+// per-day route lines (ordered anchors)
+const routes = {
+  1: [[50.60997,-1.96025],[50.63889,-2.05723],[50.64567,-1.95065]],
+  2: [[base.lat,base.lng],[50.59488,-1.95205],[50.59218,-2.00432],[50.59791,-2.03714],[50.58444,-2.03399]],
+  3: [[base.lat,base.lng],[50.60560,-2.12210],[50.61055,-2.12280]],
+};
+const routeOptional = { 3: [[50.61055,-2.12280],[50.62200,-2.16948]] }; // Kimmeridge → Tyneham (dashed)
+
+// ---------- MAP ----------
+const map=L.map('map',{zoomControl:true,attributionControl:true}).setView([50.625,-2.010],11);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+  attribution:'&copy; OpenStreetMap &copy; CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
+
+// route lines per day
+[1,2,3].forEach(dn=>{
+  L.polyline(routes[dn],{color:dayColor[dn],weight:3.5,opacity:.7}).addTo(map);
+});
+Object.keys(routeOptional).forEach(dn=>{
+  L.polyline(routeOptional[dn],{color:dayColor[dn],weight:2.5,opacity:.5,dashArray:'5,8'}).addTo(map);
+});
+
+function emojiMk(emoji,color,size,faded){
+  return L.divIcon({className:'',html:`<div class="mk" style="width:${size}px;height:${size}px;background:${color};font-size:${Math.round(size*0.52)}px;${faded?'opacity:.85;border-style:dashed;':''}">${emoji}</div>`,iconSize:[size,size],iconAnchor:[size/2,size/2]});
+}
+
+// base marker
+L.marker([base.lat,base.lng],{icon:emojiMk('🏨','#ef4444',30)}).addTo(map)
+  .bindPopup(`<div class="pp"><h3>🏨 ${base.name}</h3><div class="ppm">${base.area}<br/>${base.note}</div><a href="${base.url}" target="_blank" rel="noopener">Hotel site →</a></div>`);
+
+function stars(s){const full='★'.repeat(Math.floor(s)); const half=(s%1)>=0.5?'½':''; return full+half;}
+const dayLabel={1:'Day 1 · Fri',2:'Day 2 · Sat',3:'Day 3 · Sun',0:'Optional'};
+const markerByName={};
+places.forEach(p=>{
+  const col=dayColor[p.d];
+  const m=L.marker([p.lat,p.lng],{icon:emojiMk(p.e,col,p.o?24:28,p.o)}).addTo(map);
+  m.bindPopup(`<div class="pp"><h3>${p.e} ${p.name}</h3><div class="ppm"><b style="color:${col}">${dayLabel[p.d]}${p.o?' · optional':''}</b> · gem ${stars(p.score)}<br/>${p.why}<br/><br/><b>Practical:</b> ${p.prac}</div><a href="${p.url}" target="_blank" rel="noopener">Details →</a></div>`);
+  markerByName[p.name]=m;
+});
+
+// ---------- SIDEBAR ----------
+const days = [
+  {d:1,n:'17',dow:'Fri',t:'Train, Corfe &amp; Studland',
+    d:'Board the 10:00 steam train at Swanage → Corfe Castle 10:20 (Freedom-of-the-Line day ticket). Explore the ruin, the Model Village stocks and the sweet shop with a Village Bakery picnic, then train back (Corfe 13:25→Swanage 13:42, or 14:45→15:02) and drive to Studland for the beaches. If it stays dry, a quest to the Agglestone sits right behind the sand.',
+    tide:'🚂 Swanage dep 10:00 / 11:20 / 12:40 · ☔ 23°C, light rain possible mid-afternoon (Blue Pool wet-swap) · low tide 06:15 & 18:38',
+    eat:'<b>Lunch:</b> The Greyhound Inn, Corfe — garden with the best castle view (book). <b>Dinner:</b> The Narrows or Gee White’s lobster on the quay.',
+    lat:50.63889,lng:-2.05723,z:12},
+  {d:2,n:'18',dow:'Sat',t:'Durlston &amp; the quarry coves',
+    d:'Dry day on the doorstep coast. Durlston first — the Great Globe, the play trail and Anvil Point lighthouse, with Seventh Wave’s clifftop terrace. Then down to Dancing Ledge’s tidal pool (or quieter Seacombe), and Worth Matravers for the Square & Compass and Winspit’s "dragon caves".',
+    tide:'☀️ dry, 22°C · low tide 07:01 & 19:25 (pool & ledges need low tide) · Peveril rockpool scramble ~08:00, 5 min from the hotel',
+    eat:'<b>Lunch:</b> pasties at Worth Matravers + Square & Compass. <b>Dinner:</b> Pier Head seafront or the Bankes Arms garden.',
+    lat:50.59218,lng:-2.00432,z:12},
+  {d:3,n:'19',dow:'Sun',t:'Kimmeridge sea-monsters &amp; rockpools',
+    d:'Go early to beat the tide. Kimmeridge Bay for the best rockpooling on the coast — on the ledges by ~9:30–10:00 after the 07:47 low — then the free Wild Seas Centre touch-tanks and the Etches sea-monster fossils, with farm-to-fork lunch at Clavell’s. Add secluded Chapman’s Pool, or Tyneham ghost village (weekend — confirm).',
+    tide:'☀️ dry, 21°C · morning low 07:47 — rockpool EARLY · Tyneham weekend-only, confirm gov.uk',
+    eat:'<b>Lunch:</b> Clavell’s, Kimmeridge (farm-to-fork crab). <b>Dinner:</b> THE PIG (book) or back in Swanage.',
+    lat:50.60560,lng:-2.12210,z:12},
+];
+
+document.getElementById('days').innerHTML = days.map(d=>`
+  <div class="day" data-lat="${d.lat}" data-lng="${d.lng}" data-z="${d.z}" style="border-left-color:${dayColor[d.d]}">
+    <div class="daynum"><b style="color:${dayColor[d.d]}">${d.n}</b><span>${d.dow}</span></div>
+    <div class="dayb"><div class="t">${d.t}</div><div class="d">${d.d}</div><div class="tideline" style="color:${dayColor[d.d]}">${d.tide}</div><div class="eat">${d.eat}</div></div>
+  </div>`).join('');
+document.querySelectorAll('.day').forEach(el=>el.addEventListener('click',()=>{
+  map.flyTo([+el.dataset.lat,+el.dataset.lng],+el.dataset.z,{duration:.8});
+}));
+
+function placeCard(p){
+  const col=dayColor[p.d];
+  const tagHtml=(p.tags||[]).map(t=>`<span class="tag ${t}">${t==='opt'?'optional':t}</span>`).join('');
+  return `<div class="card" data-name="${p.name.replace(/"/g,'&quot;')}" style="border-left-color:${col}">
+    <div class="row1"><span class="nm"><span class="e">${p.e}</span>${p.name}</span><span class="score">${stars(p.score)}</span></div>
+    <div class="why">${p.why}</div>
+    <div class="prac">${p.prac}</div>
+    <div class="tags">${tagHtml}<a class="lk" href="${p.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">details →</a></div>
+  </div>`;
+}
+[1,2,3,0].forEach(dn=>{
+  document.getElementById('grp-'+dn).innerHTML = places.filter(p=>p.d===dn).map(placeCard).join('');
+});
+document.querySelectorAll('.card[data-name]').forEach(c=>c.addEventListener('click',()=>{
+  const p=places.find(x=>x.name===c.dataset.name);
+  if(!p)return;
+  map.flyTo([p.lat,p.lng],14,{duration:.8});
+  markerByName[p.name].openPopup();
+}));
+
+// mobile toggle
+const tg=document.getElementById('tg'),side=document.getElementById('side');
+function checkMobile(){ if(window.innerWidth<=820){tg.style.display='block';} else {tg.style.display='none';side.style.display='';} }
+tg.addEventListener('click',()=>{ side.style.display = side.style.display==='none'?'':'none'; setTimeout(()=>map.invalidateSize(),50); });
+window.addEventListener('resize',checkMobile); checkMobile();
+</script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cape Town + Plett — 31 Oct–8 Nov 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #e5e5e5; }
+  #map { width: 100vw; height: 100vh; position: fixed; inset: 0; z-index: 1; }
+  .panel { position: fixed; z-index: 1000; background: rgba(15,15,15,0.86); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 16px 18px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+  .title-panel { top: 16px; left: 16px; width: 380px; }
+  .title-panel h1 { font-size: 19px; font-weight: 700; color: #fff; }
+  .title-panel .sub { font-size: 12.5px; color: #a3a3a3; margin-top: 3px; }
+  .flight { font-size: 12px; color: #d4d4d4; margin-top: 8px; line-height: 1.5; }
+  .flight b { color: #fbbf24; }
+  .timeline-panel { top: 168px; left: 16px; width: 380px; max-height: calc(100vh - 290px); overflow-y: auto; }
+  .timeline-panel::-webkit-scrollbar { width: 4px; } .timeline-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+  .day { padding: 10px 12px; margin-bottom: 7px; border-radius: 10px; cursor: pointer; border-left: 3px solid transparent; transition: background .2s; }
+  .day:hover, .day.active { background: rgba(255,255,255,0.07); }
+  .day .d { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+  .day .t { font-size: 14px; font-weight: 600; color: #fff; margin-top: 1px; }
+  .day .x { font-size: 12px; color: #a3a3a3; margin-top: 3px; line-height: 1.45; }
+  .wx { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 999px; margin-top: 5px; background: rgba(255,255,255,0.08); color: #e5e5e5; }
+  .wx.good { background: rgba(16,185,129,0.18); color: #6ee7b7; } .wx.mid { background: rgba(245,158,11,0.18); color: #fcd34d; } .wx.bad { background: rgba(239,68,68,0.18); color: #fca5a5; }
+  .side-panel { top: 16px; right: 16px; width: 360px; max-height: calc(100vh - 32px); overflow-y: auto; }
+  .side-panel h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: #a3a3a3; margin: 4px 0 8px; }
+  .prop { padding: 9px 10px; border-radius: 10px; margin-bottom: 6px; cursor: pointer; display: flex; gap: 10px; align-items: flex-start; }
+  .prop:hover { background: rgba(255,255,255,0.07); }
+  .code { min-width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #0a0a0a; }
+  .prop .n { font-size: 13px; color: #fff; font-weight: 600; } .prop .m { font-size: 11.5px; color: #a3a3a3; margin-top: 2px; }
+  .prop a { color: #93c5fd; text-decoration: none; font-size: 11.5px; }
+  .todo { font-size: 12px; color: #d4d4d4; line-height: 1.5; padding-left: 16px; } .todo li { margin-bottom: 5px; } .todo b { color: #fca5a5; }
+  .budget-panel { bottom: 16px; left: 16px; width: 380px; padding: 12px 16px; }
+  .budget-row { display: flex; justify-content: space-between; font-size: 12.5px; color: #d4d4d4; margin: 2px 0; }
+  .budget-row.total { font-weight: 700; color: #fff; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 5px; margin-top: 5px; }
+  .legend { font-size: 11.5px; color: #a3a3a3; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+  .legend span::before { content: ''; display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; background: var(--c); vertical-align: -1px; }
+  .lbl { background: none; border: none; color: #0a0a0a; font-weight: 800; font-size: 11px; text-align: center; line-height: 32px; }
+  .leaflet-popup-content-wrapper { background: #171717; color: #e5e5e5; border-radius: 12px; } .leaflet-popup-tip { background: #171717; }
+  .leaflet-popup-content a { color: #93c5fd; }
+  @media (max-width: 900px) {
+    .panel { position: relative; width: auto !important; max-height: none !important; inset: auto !important; margin: 10px; }
+    #map { position: relative; height: 55vh; }
+  }
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div class="panel title-panel">
+  <h1>Cape Town + Plett, family of 3</h1>
+  <div class="sub">Sat 31 Oct – Sun 8 Nov 2026 · weather-led: city first, coast in the dry window</div>
+  <div class="flight">
+    ✈ <b>Booked — Air France Z58TGP</b><br>
+    Out AF872 CDG 17:40 Sat 31 Oct → CPT 06:25 Sun 1 Nov<br>
+    Back AF871 CPT 08:30 Sun 8 Nov → CDG 19:20
+  </div>
+  <div class="legend">
+    <span style="--c:#f59e0b">Cape Town (C)</span><span style="--c:#10b981">Plett (P)</span><span style="--c:#8b5cf6">Winelands last night (W)</span><span style="--c:#e5e5e5">Sights</span>
+  </div>
+</div>
+
+<div class="panel timeline-panel" id="timeline"></div>
+
+<div class="panel side-panel">
+  <h2>Before Saturday</h2>
+  <ul class="todo">
+    <li><b>Getting to CDG Sat 31 is not booked.</b> Be at T2E by ~15:00. Train (Brussels-Midi → CDG TGV, ~1h20) or drive (~3h + long-stay parking). Return lands 19:20 Sun.</li>
+    <li><b>Air France needs passport details</b> for all 3 (reminders 22 Oct) — add in My Bookings / online check-in.</li>
+    <li><b>Check your seats.</b> A refund on Z58TGP was processed 19 Oct (mail header mentions a wet-lease) — paid seats 17A–C may have changed.</li>
+    <li>Book: Cape Town stay, Plett stay, last night, Hertz, CPT⇄George flights (or decide to drive).</li>
+    <li>Work agenda: Mon 2 (Atlansec weekly, Founders) and Tue 3 (Karolien 1:1, Research, Admin, Research Admin) fall in the trip — decline or send apologies.</li>
+  </ul>
+  <h2 style="margin-top:14px">Stays (Airbnb, live 28 Oct)</h2>
+  <div id="props"></div>
+</div>
+
+<div class="panel budget-panel">
+  <div class="budget-row"><span>Long-haul flights (AF Z58TGP)</span><span>booked</span></div>
+  <div class="budget-row"><span>Stays — middle picks C3 + P2 + W1</span><span id="b-acc">€0</span></div>
+  <div class="budget-row"><span>CPT⇄George flights, 3 pax (est.)</span><span>~€450–600</span></div>
+  <div class="budget-row"><span>Hire car(s), 7 days (est.)</span><span>~€350–500</span></div>
+  <div class="budget-row"><span>CDG transfer (train or parking, est.)</span><span>~€150–300</span></div>
+  <div class="budget-row total"><span>Still to spend (excl. activities)</span><span id="b-tot">€0</span></div>
+</div>
+
+<script>
+const map = L.map('map', { zoomControl: false }).setView([-34.0, 20.8], 7);
+L.control.zoom({ position: 'bottomright' }).addTo(map);
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles &copy; Esri', maxZoom: 16 }).addTo(map);
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', { maxZoom: 16 }).addTo(map);
+
+const COL = { C: '#f59e0b', P: '#10b981', W: '#8b5cf6' };
+const q = (ci, co) => `?adults=2&children=1&check_in=${ci}&check_out=${co}&currency=EUR`;
+const CT = q('2026-10-31','2026-11-03'), PL = q('2026-11-03','2026-11-07'), WL = q('2026-11-07','2026-11-08');
+
+const props = [
+  { code:'C1', base:'C', name:'Stylish Cottage on Constantia Estate', lat:-34.0319, lng:18.4249, beds:'3 bed', rating:'5.0 (38) · Guest favourite', price:1618, id:'1230235103424779878', u:CT, note:'Treat option; estate grounds' },
+  { code:'C2', base:'C', name:'Witteboomen Forest Cottage', lat:-34.0145, lng:18.4155, beds:'3 bed', rating:'4.92 (51) · Guest favourite', price:1155, id:'1126574522592739478', u:CT, note:'Forest edge under the mountain' },
+  { code:'C3', base:'C', name:'Sunny Spacious Constantia House', lat:-34.02615, lng:18.45186, beds:'4 bed', rating:'5.0 (40)', price:735, id:'16458625', u:CT, note:'Best space for the money', pick:true },
+  { code:'C4', base:'C', name:'Light & Spacious Family Home (Tokai)', lat:-34.06043, lng:18.43549, beds:'4 bed', rating:'4.96 (45) · Guest favourite', price:709, id:'11580909', u:CT, note:'Closer to Boulders / Cape Point' },
+  { code:'C5', base:'C', name:'Kreupelbosch Mountain View', lat:-34.03935, lng:18.44622, beds:'2 bed', rating:'4.98 (97) · Top guest favourite', price:479, id:'22201075', u:CT, note:'Value pick' },
+  { code:'P1', base:'P', name:'Albacore on Beachyhead Drive', lat:-34.0731, lng:23.37112, beds:'4 bed', rating:'5.0 (107) · Guest favourite', price:2030, id:'17696924', u:PL, note:'Treat: on Robberg Beach' },
+  { code:'P2', base:'P', name:'Fern Tree House', lat:-34.07369, lng:23.36274, beds:'4 bed', rating:'4.86 (64) · Guest favourite', price:658, id:'26355286', u:PL, note:'Whole house near Robberg Beach', pick:true },
+  { code:'P3', base:'P', name:'Bay Cottage, River Club', lat:-34.06113, lng:23.36825, beds:'3 bed', rating:'4.85 (149)', price:376, id:'27792623', u:PL, note:'Quiet estate by the Piesang river' },
+  { code:'P4', base:'P', name:'Live Lekker hideaway, Keurbooms', lat:-34.0069, lng:23.437, beds:'3 bed', rating:'4.97 (300)', price:283, id:'39834587', u:PL, note:'3 min walk to Keurbooms beach; closest to Crags + Tsitsikamma' },
+  { code:'W1', base:'W', name:'Cape Dutch family stay — pool & farm animals', lat:-34.0286, lng:18.8283, beds:'2 bed', rating:'5.0 (68)', price:292, id:'30358600', u:WL, note:'Noah-friendly last night; ~25 min to CPT', pick:true },
+  { code:'W2', base:'W', name:'Acara Cottage (views, pool, off-grid)', lat:-34.02902, lng:18.80852, beds:'2 bed', rating:'5.0 (23) · Guest favourite', price:233, id:'9641249', u:WL, note:'Solar = no load-shedding worries' },
+  { code:'W3', base:'W', name:'Spacious Rustic Farm Homestead', lat:-33.99057, lng:18.77246, beds:'4 bed', rating:'5.0 (7) · Guest favourite', price:259, id:'1471449582718001389', u:WL, note:'Closest to the airport (~20 min)' },
+  { code:'W4', base:'W', name:'Capewinelands Cottage', lat:-34.05195, lng:18.83203, beds:'2 bed', rating:'4.82 (207) · Guest favourite', price:86, id:'14277315', u:WL, note:'Budget' },
+];
+
+const pois = [
+  { n:'CPT airport', lat:-33.9715, lng:18.6021, d:'AF872 lands 06:25 Sun 1 · AF871 departs 08:30 Sun 8' },
+  { n:'Table Mountain Cableway', lat:-33.9481, lng:18.4031, d:'Go Tue 3 early (gusts ~43 km/h) — closes on Cape Doctor days' },
+  { n:'Kirstenbosch Gardens', lat:-33.9875, lng:18.4325, d:'Sun 1 afternoon — tree canopy walkway, lawns, picnic' },
+  { n:'Boulders Beach penguins', lat:-34.1975, lng:18.4513, d:'Mon 2 — sheltered from the SE wind' },
+  { n:'Cape Point', lat:-34.3568, lng:18.4970, d:'Mon 2 — funicular to the lighthouse; very windy on top' },
+  { n:'Kalk Bay harbour', lat:-34.1280, lng:18.4490, d:'Fish & chips, seals at the harbour' },
+  { n:'Muizenberg beach huts', lat:-34.1084, lng:18.4706, d:'False Bay (17 °C) — shallow, warm-ish paddling' },
+  { n:'George airport', lat:-34.0056, lng:22.3789, d:'Airlink to/from CPT ~55 min' },
+  { n:'Robberg Nature Reserve', lat:-34.1006, lng:23.3695, d:'Wed 4 — Gap loop (~2 km), seal colony' },
+  { n:'Plett Central Beach / boat trips', lat:-34.0560, lng:23.3770, d:'Whale & dolphin boat (late southern rights + Bryde\'s + dolphins)' },
+  { n:'Lookout Beach', lat:-34.0602, lng:23.3800, d:'Lagoon mouth — calm water for Noah' },
+  { n:'Birds of Eden / Monkeyland', lat:-33.9572, lng:23.4900, d:'Thu 5 (hot day) — forest shade' },
+  { n:'Keurbooms beach', lat:-34.0047, lng:23.4500, d:'Thu 5 beach morning' },
+  { n:'Nature\'s Valley', lat:-33.9785, lng:23.5596, d:'Fri 6 — lagoon + beach, lunch at the Valley' },
+  { n:'Storms River Mouth suspension bridge', lat:-34.0215, lng:23.8970, d:'Fri 6 — Tsitsikamma boardwalk, before the next front' },
+  { n:'Hermanus cliff path', lat:-34.4187, lng:19.2345, d:'Only if you drive the N2 on Tue 3 — late-season whales' },
+  { n:'Spier wine farm', lat:-33.9737, lng:18.7836, d:'Sat 7 evening — Eagle Encounters, playground, picnic' },
+];
+
+const days = [
+  { d:'Sat 31 Oct', t:'Travel: Drongen → Paris CDG → overnight', x:'AF872 17:40 from CDG 2E. Get to CDG by ~15:00 (not booked yet).', wx:['','Flight'], at:[-33.97,18.60], z:9 },
+  { d:'Sun 1 Nov', t:'Land 06:25 · settle into Constantia', x:'Hire car at CPT. Room ready (booked from Sat). Nap, then Kirstenbosch. Garden Route is under the rain band today — you are in the dry spot.', wx:['mid','Dry 22° · SE gusts 66'], at:[-34.02,18.44], z:11 },
+  { d:'Mon 2 Nov', t:'Cape Point + Boulders penguins', x:'Boulders first (sheltered), Cape Point funicular, Kalk Bay fish & chips on the way back.', wx:['mid','Dry 23° · SE gusts 61'], at:[-34.2,18.45], z:10 },
+  { d:'Tue 3 Nov', t:'Table Mountain early → Plett', x:'Cableway at opening (calmest morning). Then fly CPT→George (4Z637 15:20) and drive 1h to Plett — or drive the N2 via Hermanus.', wx:['good','Dry everywhere · light wind'], at:[-34.0,20.9], z:7 },
+  { d:'Wed 4 Nov', t:'Boat trip + Robberg', x:'Whale & dolphin boat in the calm morning; Robberg Gap loop and seals in the afternoon.', wx:['good','Sunny 22° · calm'], at:[-34.09,23.38], z:12 },
+  { d:'Thu 5 Nov', t:'Hot beach day', x:'Berg-wind heat (33°). Keurbooms or Lookout Beach early, Birds of Eden in the forest shade midday.', wx:['good','Sunny 33° · hot'], at:[-34.0,23.44], z:11 },
+  { d:'Fri 6 Nov', t:'Tsitsikamma + Nature\'s Valley', x:'Storms River Mouth suspension bridge, then Nature\'s Valley lagoon. Last fully dry-ish day before the front.', wx:['mid','23° · 31% showers'], at:[-34.0,23.7], z:10 },
+  { d:'Sat 7 Nov', t:'Showers on the coast → Winelands', x:'Use the wet day to travel: fly George→CPT (or drive ~5.5h). Last night on a Stellenbosch farm, Spier at dusk.', wx:['bad','Coast 50–57% showers'], at:[-34.0,18.82], z:10 },
+  { d:'Sun 8 Nov', t:'Home', x:'Leave ~06:00 for CPT (25 min). AF871 08:30 → CDG 19:20 → home late. Noah at school Mon 9.', wx:['','Flight'], at:[-33.97,18.60], z:10 },
+];
+
+const markers = {};
+props.forEach(p => {
+  const icon = L.divIcon({ className: 'lbl', html: `<div style="width:32px;height:32px;border-radius:50%;background:${COL[p.base]};border:2px solid #fff;">${p.code}</div>`, iconSize: [32, 32], iconAnchor: [16, 16] });
+  const url = `https://www.airbnb.com/rooms/${p.id}${p.u}`;
+  markers[p.code] = L.marker([p.lat, p.lng], { icon }).addTo(map)
+    .bindPopup(`<b>${p.code} · ${p.name}</b><br>${p.beds} · ${p.rating}<br>€${p.price.toLocaleString()} total · ${p.note}<br><a href="${url}" target="_blank">Open on Airbnb ↗</a>`);
+});
+pois.forEach(p => L.circleMarker([p.lat, p.lng], { radius: 6, color: '#fff', weight: 1.5, fillColor: '#e5e5e5', fillOpacity: 0.85 })
+  .addTo(map).bindPopup(`<b>${p.n}</b><br>${p.d}`));
+
+L.polyline([[-33.9715,18.6021],[-34.0005,22.3789]], { color: '#10b981', weight: 2, dashArray: '6 8', opacity: .8 }).addTo(map).bindTooltip('Fly CPT ⇄ George ~55 min');
+L.polyline([[-34.02,18.45],[-34.42,19.23],[-34.03,20.44],[-34.18,22.14],[-33.99,22.58],[-34.04,23.05],[-34.06,23.37]], { color: '#f59e0b', weight: 2, dashArray: '2 6', opacity: .6 }).addTo(map).bindTooltip('Drive option via Hermanus ~6–7h');
+L.polyline([[-34.06,23.37],[-34.0056,22.3789]], { color: '#10b981', weight: 2, opacity: .6 }).addTo(map).bindTooltip('George → Plett ~1h');
+
+const tl = document.getElementById('timeline');
+days.forEach((d, i) => {
+  const el = document.createElement('div');
+  el.className = 'day'; el.style.borderLeftColor = i < 3 ? COL.C : i < 7 ? COL.P : COL.W;
+  el.innerHTML = `<div class="d" style="color:${el.style.borderLeftColor}">${d.d}</div><div class="t">${d.t}</div><div class="x">${d.x}</div>${d.wx[1] ? `<span class="wx ${d.wx[0]}">${d.wx[1]}</span>` : ''}`;
+  el.onclick = () => { document.querySelectorAll('.day').forEach(e => e.classList.remove('active')); el.classList.add('active'); map.flyTo(d.at, d.z); };
+  tl.appendChild(el);
+});
+
+const pp = document.getElementById('props');
+const nights = { C: 'Sat 31 Oct – Tue 3 Nov (3 nts)', P: 'Tue 3 – Sat 7 Nov (4 nts)', W: 'Sat 7 – Sun 8 Nov (1 nt)' };
+['C','P','W'].forEach(b => {
+  const h = document.createElement('div'); h.style.cssText = 'font-size:11.5px;color:' + COL[b] + ';margin:8px 0 4px;font-weight:700'; h.textContent = nights[b]; pp.appendChild(h);
+  props.filter(p => p.base === b).forEach(p => {
+    const el = document.createElement('div'); el.className = 'prop';
+    el.innerHTML = `<div class="code" style="background:${COL[b]}">${p.code}</div><div><div class="n">${p.name}${p.pick ? ' ★' : ''}</div><div class="m">${p.beds} · ${p.rating}<br>€${p.price.toLocaleString()} total · ${p.note}</div><a href="https://www.airbnb.com/rooms/${p.id}${p.u}" target="_blank">Airbnb ↗</a></div>`;
+    el.onclick = (e) => { if (e.target.tagName === 'A') return; map.flyTo([p.lat, p.lng], 14); markers[p.code].openPopup(); };
+    pp.appendChild(el);
+  });
+});
+
+const acc = props.filter(p => p.pick).reduce((s, p) => s + p.price, 0);
+document.getElementById('b-acc').textContent = '€' + acc.toLocaleString();
+document.getElementById('b-tot').textContent = '~€' + (acc + 950).toLocaleString() + '–' + (acc + 1400).toLocaleString();
+map.fitBounds([[-34.4, 18.3], [-33.9, 23.95]], window.innerWidth > 900 ? { paddingTopLeft: [410, 20], paddingBottomRight: [390, 20] } : { padding: [20, 20] });
+</script>
+</body>
+</html>

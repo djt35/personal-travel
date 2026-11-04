@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mallorca Family Long Weekend · Wed 2 – Sun 6 September 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --bg:#08131c; --panel:rgba(12,26,38,.82); --panel-solid:#0c1a26;
+    --line:rgba(255,255,255,.10); --txt:#e7f0f6; --muted:#90a8b8;
+    --teal:#2dd4bf; --cyan:#38bdf8; --amber:#f59e0b; --purple:#a78bfa; --coral:#fb7185;
+    --good:#34d399; --anchor:#60a5fa;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt)}
+  #map{position:absolute;inset:0;z-index:1}
+  .leaflet-container{background:#08131c}
+
+  .hdr{position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:1000;
+    background:var(--panel);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border:1px solid var(--line);border-radius:14px;padding:10px 18px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+  .hdr h1{margin:0;font-size:15px;letter-spacing:.3px;font-weight:700}
+  .hdr .sub{margin-top:3px;font-size:11.5px;color:var(--muted)}
+  .hdr .sub b{color:var(--teal)}
+
+  .side{position:absolute;top:0;left:0;height:100%;width:344px;z-index:900;
+    background:linear-gradient(180deg,rgba(8,19,28,.96),rgba(8,19,28,.86));
+    border-right:1px solid var(--line);overflow-y:auto;padding:14px 14px 120px;backdrop-filter:blur(8px)}
+  .side h2{font-size:11px;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted);margin:6px 4px 10px}
+  .card{background:rgba(255,255,255,.035);border:1px solid var(--line);border-left:3px solid var(--teal);
+    border-radius:10px;padding:10px 12px;margin-bottom:9px;cursor:pointer;transition:.18s}
+  .card:hover{background:rgba(45,212,191,.10);transform:translateX(2px)}
+  .card .top{display:flex;align-items:center;gap:9px}
+  .card .num{flex:0 0 26px;height:26px;border-radius:50%;background:var(--teal);color:#04222b;font-weight:800;
+    font-size:12px;display:flex;align-items:center;justify-content:center}
+  .card .ttl{font-weight:700;font-size:13.5px}
+  .card .day{font-size:10.5px;color:var(--muted);font-weight:600}
+  .card .leg{font-size:11px;color:var(--cyan);margin-top:6px;font-weight:600}
+  .card .desc{font-size:11.5px;color:#c5d6e1;margin-top:5px;line-height:1.45}
+  .card .moor{font-size:11px;color:#bfe9e2;margin-top:7px;line-height:1.4;border-top:1px dashed rgba(45,212,191,.25);padding-top:6px}
+  .card .moor b{color:var(--teal)}
+  .card .bk{font-size:10.5px;color:var(--anchor);margin-top:4px}
+
+  .toggle{position:absolute;top:14px;left:360px;z-index:1000;background:var(--panel);border:1px solid var(--line);
+    color:var(--txt);border-radius:10px;padding:8px 11px;font-size:12px;cursor:pointer;backdrop-filter:blur(10px)}
+  .info{position:absolute;top:58px;right:14px;z-index:950;width:316px;max-height:calc(100% - 150px);overflow-y:auto;
+    background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:14px;
+    padding:14px 16px;box-shadow:0 8px 30px rgba(0,0,0,.45);font-size:12px;line-height:1.5}
+  .info h3{margin:0 0 8px;font-size:13px;color:var(--teal)}
+  .info h4{margin:14px 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+  .info .row{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px dashed rgba(255,255,255,.06)}
+  .info .row span:last-child{color:#cfe0ea;text-align:right}
+  .info .note{color:#c5d6e1;margin:4px 0}
+  .info .note b{color:var(--cyan)}
+  .warn{background:rgba(251,113,133,.10);border:1px solid rgba(251,113,133,.35);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:11px;color:#ffd7dd}
+  .warn b{color:var(--coral)}
+  .ok{background:rgba(52,211,153,.10);border:1px solid rgba(52,211,153,.35);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:11px;color:#c9f5e3}
+  .ok b{color:var(--good)}
+  .pill{display:inline-block;background:rgba(56,189,248,.14);border:1px solid rgba(56,189,248,.35);color:#bfe6fb;
+    border-radius:999px;padding:1px 8px;font-size:10.5px;margin:2px 3px 0 0}
+
+  .budget{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:1000;display:flex;gap:0;
+    background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:14px;
+    overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+  .budget .b{padding:8px 16px;text-align:center;border-right:1px solid var(--line)}
+  .budget .b:last-child{border-right:none;background:rgba(45,212,191,.12)}
+  .budget .lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+  .budget .val{font-size:14px;font-weight:800;margin-top:2px}
+  .budget .b:last-child .val{color:var(--teal)}
+
+  .legend{position:absolute;bottom:14px;left:360px;z-index:950;background:var(--panel);backdrop-filter:blur(12px);
+    border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:11px}
+  .legend .li{display:flex;align-items:center;gap:8px;padding:2px 0}
+  .legend .dot{width:13px;height:13px;border-radius:50%;flex:0 0 13px}
+  .legend .ring{width:13px;height:13px;border-radius:50%;flex:0 0 13px;border:2px solid var(--anchor);background:transparent}
+  .legend .ln{width:18px;height:0;border-top:3px dashed var(--cyan);flex:0 0 18px}
+
+  .mk{display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:800;
+    color:#04222b;border:2px solid rgba(255,255,255,.85);box-shadow:0 3px 8px rgba(0,0,0,.5)}
+  .mk-poi{width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.5)}
+  .mk-anc{width:13px;height:13px;border-radius:50%;border:2px solid var(--anchor);background:rgba(96,165,250,.25);box-shadow:0 2px 6px rgba(0,0,0,.5)}
+  .leaflet-popup-content-wrapper{background:var(--panel-solid);color:var(--txt);border-radius:10px;border:1px solid var(--line)}
+  .leaflet-popup-tip{background:var(--panel-solid)}
+  .pop b{color:var(--teal)} .pop .s{color:var(--muted);font-size:11px} .pop .l{color:var(--cyan);font-size:11px}
+  .pop .m{font-size:11px;color:#bfe9e2;margin-top:5px} .pop .bk{font-size:11px;color:var(--anchor);margin-top:4px}
+
+  @media (max-width:760px){
+    .side{width:100%;height:46%;top:auto;bottom:0;border-right:none;border-top:1px solid var(--line)}
+    #map{bottom:46%;inset:auto;top:0;left:0;right:0;height:54%}
+    .info,.legend,.toggle{display:none}
+    .budget{bottom:auto;top:64px}
+  }
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div class="hdr">
+  <h1>🏝️ Mallorca — Family Long Weekend</h1>
+  <div class="sub"><b>Wed 2 → Sun 6 September 2026</b> · 4 nights · David, Lobke &amp; Noah (5) · nonstop BRU⇄PMI</div>
+</div>
+
+<button class="toggle" onclick="toggleInfo()">ℹ︎ Trip facts &amp; picks</button>
+
+<div class="info" id="info">
+  <h3>Trip at a glance</h3>
+  <div class="row"><span>Crew</span><span>2 adults + Noah (5)</span></div>
+  <div class="row"><span>Base</span><span>SW · Andratx–Peguera–Santa Ponça</span></div>
+  <div class="row"><span>Out</span><span>Wed 2 · Vueling 19:00→21:15</span></div>
+  <div class="row"><span>Back</span><span>Sun 6 · Vueling 19:10→21:40</span></div>
+  <div class="row"><span>Airport→base</span><span>~30–40 min</span></div>
+  <div class="ok" style="margin-top:8px">☀︎ <b>Why North:</b> Alcúdia &amp; Playa de Muro = the island's best <b>shallow, kid-safe sand</b>, plus the strongest 4★ family hotels. The extra 25 min from PMI is trivial over evening flights. SW (Santa Ponsa) only wins if you want the shortest airport hop.</div>
+
+  <h4>Flights (checked 23 Aug)</h4>
+  <div class="row"><span>Out Wed 2</span><span>VY3651 · €93/2ad</span></div>
+  <div class="row"><span>Back Sun 6</span><span>VY3650 · €220/2ad</span></div>
+  <div class="note" style="margin-top:4px">Nonstop from home airport. ~€313/2 adults; ~€480–550 family-of-3 with Noah + a hold bag. Brussels Airlines alt if you prefer a legacy carrier (pricier).</div>
+
+  <h4>Booking notes</h4>
+  <div class="warn"><b>Verify before booking:</b> the Airbnb scraper doesn't confirm bedroom count, A/C or private pool — check ≥2 bed + private pool + A/C on each listing.</div>
+  <div class="note"><b>Car hire</b> at PMI (~€180/4d); decline the excess-waiver upsell (own external policy). Booster seat for Noah.</div>
+  <div class="note"><b>Est. all-in</b> ≈ €1,500–3,100 (flights + stay + car). SW villas skew pricier than the north.</div>
+</div>
+
+<div class="side">
+  <h2>Villas · click to fly</h2>
+  <div id="vcards"></div>
+  <h2 style="margin-top:14px">Hotels (pool / beach)</h2>
+  <div id="hcards"></div>
+  <h2 style="margin-top:14px">Beaches &amp; day trips</h2>
+  <div id="pcards"></div>
+</div>
+
+<div class="legend">
+  <div class="li"><span class="dot" style="background:#10b981"></span> Villa (pool)</div>
+  <div class="li"><span class="dot" style="background:#f59e0b"></span> Hotel</div>
+  <div class="li"><span class="dot" style="background:#a78bfa"></span> Beach / day trip</div>
+</div>
+
+<div class="budget">
+  <div class="b"><div class="lbl">Flights (3)</div><div class="val">~€520</div></div>
+  <div class="b"><div class="lbl">Stay ×4 nts</div><div class="val">€600–2,400</div></div>
+  <div class="b"><div class="lbl">Car hire</div><div class="val">~€180</div></div>
+  <div class="b"><div class="lbl">Est. total</div><div class="val">≈ €1,500–3,100</div></div>
+</div>
+
+<script>
+const map = L.map('map',{zoomControl:true,attributionControl:false}).setView([39.55,2.47],11);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd'}).addTo(map);
+
+// Villas (emerald)
+const villas = [
+  {code:'A1', name:'Villa Camp de Mar Sea View', lat:39.53159, lng:2.42457, ppn:609, tot:'~€2,435', rt:'4.61 (31)', z:'Camp de Mar', url:'https://www.airbnb.com/rooms/48717935', note:'Cove views + private saltwater pool, right by the Camp de Mar beach + islet.'},
+  {code:'A2', name:'Casa Amarilla — sea & mountain views', lat:39.58281, lng:2.51116, ppn:504, tot:'~€2,016', rt:'4.86 (36) ⭐Superhost', z:'Calvià hills', url:'https://www.airbnb.com/rooms/42012549', note:'Polished villa w/ pool, sea + mountain views, central to the whole SW coast.'},
+  {code:'A3', name:'Villa Portals Nous', lat:39.53637, lng:2.5717, ppn:569, tot:'~€2,276', rt:'4.97 (37) ⭐GuestFav', z:'Portals Nous', url:'https://www.airbnb.com/rooms/20842243', note:'Upscale, near Puerto Portals marina — the smart end of the coast.'},
+  {code:'A4', name:'"Son Riera" Little Paradise', lat:39.67685, lng:2.49689, ppn:377, tot:'~€1,508', rt:'4.85 (33)', z:'Calvià countryside', url:'https://www.airbnb.com/rooms/17808188', note:'Best-value villa here — quiet clifftop terrace, ~15 min to the coves.'},
+  {code:'A5', name:'Atalaya Bosque (pool, near beach)', lat:39.53908, lng:2.44341, ppn:194, tot:'~€776', rt:'4.7 (154)', z:'Costa de la Calma / Peguera', url:'https://www.airbnb.com/rooms/45248367', note:'Cheapest with-pool option (apartment complex, shared pool) — walkable to Peguera beach.'}
+];
+
+// Hotels (amber)
+const hotels = [
+  {code:'H1', name:'Ona Palmira Paguera', lat:39.53837, lng:2.45938, tot:'€596 /4nt', rt:'4★ · 8.3 (1382)', z:'Peguera · family resort', url:'https://www.booking.com/hotel/es/michelmadrigal.html', note:'Big family-friendly resort with pools, short walk to Peguera beach. Value.'},
+  {code:'H2', name:'Hotel Playas de Paguera', lat:39.53677, lng:2.45470, tot:'€653 /4nt', rt:'3★ · 8.6 (719)', z:'Peguera · 400 ft to beach', url:'https://www.booking.com/hotel/es/playas-de-paguera.html', note:'Family-run, closest to the sand, breakfast included. Simple + solid.'},
+  {code:'H3', name:'Villa Real Club Apartments', lat:39.53897, lng:2.42233, tot:'€865 /4nt', rt:'4★ · 8.7 (443)', z:'Camp de Mar · 350 ft to beach', url:'https://www.booking.com/hotel/es/villa-real.html', note:'Aparthotel right on the pretty Camp de Mar cove — self-cater + beach steps.'},
+  {code:'H4', name:'Hilton Mallorca Galatzó', lat:39.52850, lng:2.47341, tot:'€1,014 /4nt', rt:'5★ · 8.0 (1713)', z:'Santa Ponça hills · resort', url:'https://www.booking.com/hotel/es/hilton-mallorca-galatzo.html', note:'Big 5★ resort — multiple pools, spa, family facilities (inland, drive to beach).'}
+];
+
+// Beaches / day trips (purple)
+const pois = [
+  {name:'Camp de Mar beach', t:'Sheltered sandy family cove with the little islet restaurant', lat:39.5333, lng:2.4260},
+  {name:'Platja de Peguera', t:'Long sandy family beach, gentle water, promenade', lat:39.5375, lng:2.4520},
+  {name:'Cala Fornells', t:'Pretty rocky swim cove just S of Peguera', lat:39.5330, lng:2.4460},
+  {name:'Santa Ponça beach', t:'Big sandy bay, watersports, calm', lat:39.5150, lng:2.4760},
+  {name:'Puerto Portals', t:'Glossy marina — waterfront lunch, boats, ice-cream stroll', lat:39.5300, lng:2.5820},
+  {name:'Sant Elm & Sa Dragonera', t:'Boat trip to the Dragonera island nature reserve', lat:39.5800, lng:2.3480},
+  {name:'Port d’Andratx', t:'Postcard harbour — evening dinner + gelato', lat:39.5430, lng:2.3900},
+  {name:'Palma old town & Cathedral', t:'City day trip (~30 min) — La Seu, old town, port', lat:39.5663, lng:2.6350}
+];
+
+function mk(color,label,size){return L.divIcon({className:'',html:`<div class="mk" style="width:${size}px;height:${size}px;background:${color};font-size:11px">${label}</div>`,iconSize:[size,size],iconAnchor:[size/2,size/2]});}
+function poiIcon(){return L.divIcon({className:'',html:`<div class="mk-poi" style="background:#a78bfa"></div>`,iconSize:[14,14],iconAnchor:[7,7]});}
+
+const vMarkers=[], hMarkers=[];
+villas.forEach((v,i)=>{
+  const m=L.marker([v.lat,v.lng],{icon:mk('#10b981',v.code,30)}).addTo(map);
+  m.bindPopup(`<div class="pop"><b>${v.code} · ${v.name}</b><br><span class="s">${v.z}</span><br><span class="l">€${v.ppn}/night · ${v.tot} · ${v.rt}</span><div style="margin-top:5px">${v.note}</div><div class="m"><a href="${v.url}" target="_blank" style="color:#38bdf8">View on Airbnb →</a></div></div>`,{maxWidth:280});
+  vMarkers[i]=m;
+});
+hotels.forEach((h,i)=>{
+  const m=L.marker([h.lat,h.lng],{icon:mk('#f59e0b',h.code,28)}).addTo(map);
+  m.bindPopup(`<div class="pop"><b>${h.code} · ${h.name}</b><br><span class="s">${h.z}</span><br><span class="l">${h.tot} · ${h.rt}</span><div style="margin-top:5px">${h.note}</div><div class="m"><a href="${h.url}" target="_blank" style="color:#38bdf8">View on Booking.com →</a></div></div>`,{maxWidth:280});
+  hMarkers[i]=m;
+});
+pois.forEach(p=>{
+  L.marker([p.lat,p.lng],{icon:poiIcon()}).addTo(map)
+   .bindPopup(`<div class="pop"><b>${p.name}</b><div style="margin-top:4px">${p.t}</div></div>`,{maxWidth:240});
+});
+
+const vc=document.getElementById('vcards');
+villas.forEach((v,i)=>{
+  const d=document.createElement('div');d.className='card';d.style.borderLeftColor='#10b981';
+  d.innerHTML=`<div class="top"><div class="num" style="background:#10b981;color:#04222b">${v.code}</div>
+    <div><div class="ttl" style="font-size:12.5px">${v.name}</div><div class="day">${v.z}</div></div></div>
+    <div class="leg">€${v.ppn}/night · ${v.tot} · ${v.rt}</div><div class="desc">${v.note}</div>`;
+  d.onclick=()=>{map.flyTo([v.lat,v.lng],13,{duration:1.1});vMarkers[i].openPopup();};
+  vc.appendChild(d);
+});
+const hc=document.getElementById('hcards');
+hotels.forEach((h,i)=>{
+  const d=document.createElement('div');d.className='card';d.style.borderLeftColor='#f59e0b';
+  d.innerHTML=`<div class="top"><div class="num" style="background:#f59e0b;color:#04222b">${h.code}</div>
+    <div><div class="ttl" style="font-size:12.5px">${h.name}</div><div class="day">${h.z}</div></div></div>
+    <div class="leg">${h.tot} · ${h.rt}</div><div class="desc">${h.note}</div>`;
+  d.onclick=()=>{map.flyTo([h.lat,h.lng],13,{duration:1.1});hMarkers[i].openPopup();};
+  hc.appendChild(d);
+});
+const pc=document.getElementById('pcards');
+pois.forEach(p=>{
+  const d=document.createElement('div');d.className='card';d.style.borderLeftColor='#a78bfa';
+  d.innerHTML=`<div class="ttl" style="font-size:12.5px">${p.name}</div><div class="desc">${p.t}</div>`;
+  d.onclick=()=>map.flyTo([p.lat,p.lng],13,{duration:1.1});
+  pc.appendChild(d);
+});
+
+function toggleInfo(){const e=document.getElementById('info');e.style.display=(e.style.display==='none')?'block':'none';}
+map.fitBounds(L.latLngBounds(villas.concat(hotels).map(x=>[x.lat,x.lng])).pad(0.15));
+</script>
+</body>
+</html>
