@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Menorca Family Break — Wed 15 → Mon 20 Jul 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --bg:#0b1220; --panel:rgba(17,25,40,0.82); --panel2:rgba(17,25,40,0.6);
+    --line:rgba(255,255,255,0.12); --txt:#e8eef7; --mut:#9fb0c6;
+    --amber:#f59e0b; --emerald:#10b981; --purple:#a78bfa; --cyan:#22d3ee;
+    --gold:#fcd34d;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt)}
+  #app{display:flex;height:100vh;overflow:hidden}
+  #map{flex:1;height:100vh}
+  /* Sidebar */
+  #side{width:390px;max-width:88vw;height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1526,#0b1220);border-right:1px solid var(--line);padding:0 0 40px}
+  .hd{padding:20px 20px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:linear-gradient(180deg,#0c1526,rgba(12,21,38,0.92));backdrop-filter:blur(8px);z-index:5}
+  .hd h1{margin:0;font-size:20px;letter-spacing:.2px}
+  .hd .sub{color:var(--mut);font-size:12.5px;margin-top:4px;line-height:1.5}
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--txt);margin:6px 6px 0 0;background:var(--panel2)}
+  .sec{padding:16px 18px 6px}
+  .sec h2{font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:var(--mut);margin:0 0 10px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 13px;margin-bottom:10px;cursor:pointer;transition:.15s;position:relative}
+  .card:hover{border-color:rgba(255,255,255,.28);transform:translateY(-1px)}
+  .code{position:absolute;top:-9px;left:-8px;width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#0b1220;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .row1{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+  .nm{font-weight:650;font-size:14px;line-height:1.25}
+  .pr{font-weight:800;font-size:14px;white-space:nowrap}
+  .pr small{font-weight:500;color:var(--mut);font-size:11px}
+  .meta{color:var(--mut);font-size:12px;margin-top:5px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .tag{font-size:10.5px;padding:2px 7px;border-radius:6px;border:1px solid var(--line)}
+  .fav{color:var(--gold);border-color:rgba(252,211,77,.4)}
+  .shost{color:var(--emerald);border-color:rgba(16,185,129,.4)}
+  .lk{color:#7cc4ff;text-decoration:none;font-size:12px}
+  .lk:hover{text-decoration:underline}
+  .zoneh{display:flex;align-items:center;gap:8px;margin:14px 0 8px;font-weight:700;font-size:13px}
+  .dot{width:11px;height:11px;border-radius:50%}
+  .day{display:flex;gap:11px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;cursor:pointer;background:var(--panel2);transition:.15s}
+  .day:hover{border-color:rgba(255,255,255,.28);background:var(--panel)}
+  .daynum{flex:0 0 auto;width:42px;text-align:center}
+  .daynum b{display:block;font-size:15px}
+  .daynum span{font-size:10px;color:var(--mut);text-transform:uppercase}
+  .dayb .t{font-weight:650;font-size:13px}
+  .dayb .d{color:var(--mut);font-size:11.5px;margin-top:3px;line-height:1.45}
+  .budget{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .brow{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px dashed var(--line)}
+  .brow:last-child{border:0}
+  .brow .v{font-weight:700}
+  .btot{display:flex;justify-content:space-between;font-size:14px;font-weight:800;margin-top:8px;padding-top:10px;border-top:1px solid var(--line)}
+  .note{font-size:11.5px;color:var(--mut);line-height:1.55;margin-top:8px}
+  .cta{display:block;text-align:center;background:linear-gradient(135deg,#2563eb,#0ea5e9);color:#fff;text-decoration:none;padding:11px;border-radius:11px;font-weight:700;font-size:13.5px;margin-top:6px}
+  .cta.sec{background:linear-gradient(135deg,#334155,#1e293b);border:1px solid var(--line)}
+  /* Legend */
+  .legend{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.9;color:var(--txt)}
+  .legend .li{display:flex;align-items:center;gap:8px}
+  .leaflet-popup-content-wrapper{background:#0e1830;color:var(--txt);border-radius:12px;border:1px solid var(--line)}
+  .leaflet-popup-tip{background:#0e1830}
+  .leaflet-popup-content{margin:12px 14px;font-size:13px;line-height:1.5}
+  .pp h3{margin:0 0 4px;font-size:14px}
+  .pp .ppm{color:var(--mut);font-size:12px}
+  .pp a{color:#7cc4ff}
+  .mk{border-radius:50%;border:2px solid rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;font-weight:800;color:#0b1220;box-shadow:0 2px 6px rgba(0,0,0,.5)}
+  .toggle{position:absolute;top:12px;left:12px;z-index:1000;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:8px 11px;font-size:12px;cursor:pointer;display:none}
+  @media (max-width:820px){
+    #app{flex-direction:column}
+    #side{width:100%;max-width:100%;height:auto;max-height:46vh;border-right:0;border-bottom:1px solid var(--line)}
+    #map{height:54vh}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="side">
+    <div class="hd">
+      <h1>🏝️ Menorca — Family Beach Break</h1>
+      <div class="sub">Wed 15 → Mon 20 July 2026 · 5 nights · Family of 3 (Noah, 5)<br/>Fly Ryanair <b>Stansted ⇄ Mahón</b> · one villa base + day-trip beaches</div>
+      <div>
+        <span class="pill">✈️ STN 10:45 → MAH ~14:15</span>
+        <span class="pill">↩︎ MAH 15:40 → STN ~17:15</span>
+        <span class="pill">🚗 Hire car</span>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>Where to base — pick a villa</h2>
+      <div class="note" style="margin-top:0">Menorca is tiny (≈45 min end-to-end), so any base reaches every beach. Three zones below — tap a card to fly there. Codes appear on the map. Prices are <b>per night</b>; ×5 = your stay. <i>Scraper doesn't confirm bedrooms/pool — verify on the listing.</i></div>
+
+      <div class="zoneh"><span class="dot" style="background:var(--amber)"></span> South-Centre · Son Bou &amp; Cala Galdana <span style="color:var(--mut);font-weight:500;font-size:11px">— best kid beaches ⭐</span></div>
+      <div id="grp-S"></div>
+
+      <div class="zoneh"><span class="dot" style="background:var(--emerald)"></span> West · Ciutadella &amp; Cala Blanca <span style="color:var(--mut);font-weight:500;font-size:11px">— lovely old town</span></div>
+      <div id="grp-C"></div>
+
+      <div class="zoneh"><span class="dot" style="background:var(--purple)"></span> South-East · Binibeca &amp; Punta Prima <span style="color:var(--mut);font-weight:500;font-size:11px">— closest to airport</span></div>
+      <div id="grp-B"></div>
+    </div>
+
+    <div class="sec">
+      <h2>5-day rhythm</h2>
+      <div id="days"></div>
+    </div>
+
+    <div class="sec">
+      <h2>Budget — family of 3</h2>
+      <div class="budget">
+        <div class="brow"><span>Flights · Ryanair STN⇄MAH (est. all-in w/ bags+seats)</span><span class="v">~€480</span></div>
+        <div class="brow"><span>Hire car · 5 days (compact/SUV, peak)</span><span class="v">~€300</span></div>
+        <div class="brow"><span>Villa · 5 nights <small style="color:var(--mut)">(swing factor)</small></span><span class="v">€1,090–2,530</span></div>
+        <div class="brow"><span>Food · fuel · beaches · boat trip</span><span class="v">~€550</span></div>
+        <div class="btot"><span>Estimated total</span><span>~€2,420 – €3,860</span></div>
+        <div class="note">Value end = best-value villa (C3 Sa Salada). Premium end = top-rated Son Bou villa (S2). Everything below is bookable direct — no aggregator markup.</div>
+      </div>
+      <a class="cta" id="flycta" href="https://www.ryanair.com/gb/en/trip/flights/select?adults=2&children=1&teens=0&infants=0&dateOut=2026-07-15&dateIn=2026-07-20&originIata=STN&destinationIata=MAH&isReturn=true" target="_blank" rel="noopener">✈️ Check live Ryanair fare (STN⇄MAH)</a>
+    </div>
+
+    <div class="sec">
+      <h2>Map key</h2>
+      <div class="legend">
+        <div class="li"><span class="dot" style="background:var(--amber)"></span> Villas — South-Centre (S1–S4)</div>
+        <div class="li"><span class="dot" style="background:var(--emerald)"></span> Villas — West/Ciutadella (C1–C4)</div>
+        <div class="li"><span class="dot" style="background:var(--purple)"></span> Villas — South-East (B1–B4)</div>
+        <div class="li"><span class="dot" style="background:var(--cyan)"></span> Family beaches / calas ⭐</div>
+        <div class="li"><span class="dot" style="background:#cbd5e1"></span> Towns &amp; sights</div>
+        <div class="li"><span class="dot" style="background:#ef4444"></span> ✈️ Mahón airport (MAH)</div>
+      </div>
+    </div>
+  </aside>
+  <div style="flex:1;position:relative">
+    <button class="toggle" id="tg">☰ Panel</button>
+    <div id="map"></div>
+  </div>
+</div>
+
+<script>
+// ---------- DATA ----------
+const villas = [
+  // South-Centre (amber)
+  {code:'S1',zone:'S',name:'Villas Cala Galdana (Escape Home)',ppn:440,rating:4.58,rev:88,fav:false,sh:false,lat:39.94136,lng:3.96068,url:'https://www.airbnb.com/rooms/47574100',note:'Steps from Cala Galdana cove'},
+  {code:'S2',zone:'S',name:'Villa Sol y Sombra (Escape Home)',ppn:454,rating:4.94,rev:36,fav:true,sh:false,lat:39.90642,lng:4.07193,url:'https://www.airbnb.com/rooms/53928990',note:'Top-rated · nr Son Bou'},
+  {code:'S3',zone:'S',name:'Villa Bona Vista (Escape Home)',ppn:397,rating:5,rev:3,fav:false,sh:false,lat:39.90844,lng:4.07105,url:'https://www.airbnb.com/rooms/1604191889082219182',note:'Son Bou hillside'},
+  {code:'S4',zone:'S',name:'Villa Malva (3 Villas Menorca)',ppn:506,rating:5,rev:10,fav:true,sh:false,lat:39.90347,lng:4.07156,url:'https://www.airbnb.com/rooms/39917194',note:'Guest favourite · Son Bou'},
+  // West / Ciutadella (emerald)
+  {code:'C1',zone:'C',name:'Cala Blanca chalet · pool + sea view',ppn:387,rating:4.84,rev:69,fav:false,sh:false,lat:39.97631,lng:3.83156,url:'https://www.airbnb.com/rooms/30808765',note:'Walk to Cala Blanca beach'},
+  {code:'C2',zone:'C',name:'Villas Amarillas (Escape Home)',ppn:358,rating:4.69,rev:164,fav:false,sh:false,lat:39.97354,lng:3.84252,url:'https://www.airbnb.com/rooms/47572553',note:'Most-reviewed · reliable'},
+  {code:'C3',zone:'C',name:'Sa Salada (3 Villas Menorca)',ppn:218,rating:4.58,rev:19,fav:false,sh:true,lat:39.97372,lng:3.8351,url:'https://www.airbnb.com/rooms/904792745644176554',note:'Best value villa'},
+  {code:'C4',zone:'C',name:'First-line · ocean views · pool',ppn:408,rating:5,rev:3,fav:false,sh:true,lat:39.9238,lng:3.8295,url:'https://www.airbnb.com/rooms/1552825315935871124',note:'SW coast · seafront'},
+  // South-East (purple)
+  {code:'B1',zone:'B',name:'Superb Villa · Binibeca Vell',ppn:639,rating:4.93,rev:15,fav:true,sh:false,lat:39.82485,lng:4.23474,url:'https://www.airbnb.com/rooms/954826243201761910',note:'Iconic white village'},
+  {code:'B2',zone:'B',name:'Villa Sol Menorca (Escape Home)',ppn:257,rating:4.75,rev:12,fav:false,sh:false,lat:39.81876,lng:4.28036,url:'https://www.airbnb.com/rooms/791109159897139133',note:'Value · Punta Prima'},
+  {code:'B3',zone:'B',name:'Can Lito (3 Villas Menorca)',ppn:250,rating:5,rev:3,fav:false,sh:true,lat:39.8111,lng:4.26443,url:'https://www.airbnb.com/rooms/1628396636147594697',note:'Value · SE coast'},
+  {code:'B4',zone:'B',name:'Villa · 4 bed, pool, sea view',ppn:541,rating:4.91,rev:11,fav:false,sh:false,lat:39.82687,lng:4.23076,url:'https://www.airbnb.com/rooms/712719605362818854',note:'Binibeca'},
+];
+const zoneColor = {S:'#f59e0b',C:'#10b981',B:'#a78bfa'};
+
+const beaches = [
+  {n:'Cala Galdana',lat:39.9414,lng:3.9607,d:'Horseshoe cove, sandy, shallow, amenities — family perfect ⭐'},
+  {n:'Son Bou',lat:39.8985,lng:4.0755,d:'Menorca\'s longest beach — very shallow, sandy. Best for a 5yo ⭐'},
+  {n:'Santo Tomàs',lat:39.9190,lng:4.0010,d:'Long sandy south beach, gentle, resort facilities'},
+  {n:'Cala Mitjana',lat:39.9360,lng:3.9650,d:'Turquoise cove, short walk from Galdana'},
+  {n:'Cala Macarella',lat:39.9285,lng:3.9360,d:'Iconic postcard cala (walk/boat from Galdana)'},
+  {n:'Cala en Turqueta',lat:39.9285,lng:3.9105,d:'Sandy, shallow, brilliant turquoise (SW)'},
+  {n:'Cala\'n Bosch / Son Xoriguer',lat:39.9280,lng:3.8280,d:'Family resort beaches, shallow, watersports'},
+  {n:'Punta Prima',lat:39.8130,lng:4.2800,d:'Wide sandy SE beach, islet view, family resort'},
+  {n:'Cala Morell',lat:40.0580,lng:3.8810,d:'Sheltered cove + prehistoric caves (NW)'},
+  {n:'Arenal d\'en Castell',lat:40.0221,lng:4.1790,d:'Round sheltered sandy bay — very calm for kids (N)'},
+];
+const towns = [
+  {n:'Ciutadella old town',lat:40.0010,lng:3.8420,d:'Gorgeous historic centre, port, best evening dining'},
+  {n:'Mahón (Maó) port',lat:39.8880,lng:4.2640,d:'Capital, huge natural harbour — boat trips, gin distillery'},
+  {n:'Binibeca Vell',lat:39.8248,lng:4.2347,d:'Whitewashed "fishing village" — magical for a wander'},
+  {n:'Fornells',lat:40.0550,lng:4.1320,d:'North fishing village — famous lobster stew, calm bay'},
+  {n:'Monte Toro',lat:39.9900,lng:4.1100,d:'Island\'s highest point — 360° panorama'},
+  {n:'Cova d\'en Xoroi',lat:39.8710,lng:4.1340,d:'Cliff caves at Cala\'n Porter — daytime visits + sunset'},
+];
+const airport = {n:'Mahón Airport (MAH)',lat:39.8626,lng:4.2185,d:'Ryanair STN⇄MAH · hire-car desks here'};
+
+const days = [
+  {n:'15',dow:'Wed',t:'Arrive & settle',d:'Land MAH ~14:15, pick up car, into the villa, first swim at the nearest cala. Easy supermarket run + villa supper.',lat:39.8626,lng:4.2185,z:11},
+  {n:'16',dow:'Thu',t:'Son Bou beach day',d:'The big one: 2.5 km of shallow sand — ideal for Noah. Lunch at a beach chiringuito.',lat:39.8985,lng:4.0755,z:13},
+  {n:'17',dow:'Fri',t:'Cala Galdana + walk',d:'Sheltered horseshoe cove; short shady walk to Cala Mitjana. Optional glass-bottom boat to Macarella.',lat:39.9414,lng:3.9607,z:13},
+  {n:'18',dow:'Sat',t:'West day — Ciutadella',d:'Wander the old town + port, then Cala\'n Bosch / Son Xoriguer family beach. Ice cream on the harbour.',lat:40.0010,lng:3.8420,z:12},
+  {n:'19',dow:'Sun',t:'East day — Binibeca & Mahón',d:'Binibeca Vell white village, swim at Punta Prima, Mahón harbour boat trip. (Or swap for Fornells in the north.)',lat:39.8248,lng:4.2347,z:12},
+  {n:'20',dow:'Mon',t:'Last swim & fly home',d:'Morning beach, checkout, drop car ~13:15, fly MAH 15:40 → STN ~17:15.',lat:39.8626,lng:4.2185,z:11},
+];
+
+// route hub = Son Bou (recommended base zone)
+const hub=[39.905,4.072];
+const routes=[
+  [hub,[39.9414,3.9607]], [hub,[39.9190,4.0010]],
+  [hub,[40.0010,3.8420]], [hub,[39.8880,4.2640]],
+  [hub,[40.0550,4.1320]], [hub,[39.8626,4.2185]],
+];
+
+// ---------- MAP ----------
+const map=L.map('map',{zoomControl:true,attributionControl:true}).setView([39.95,4.02],10);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+  attribution:'&copy; OpenStreetMap &copy; CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
+
+// day-trip routes
+routes.forEach(r=>L.polyline(r,{color:'#f59e0b',weight:2,opacity:.5,dashArray:'6,8'}).addTo(map));
+
+function divMk(txt,color,size){return L.divIcon({className:'',html:`<div class="mk" style="width:${size}px;height:${size}px;background:${color};font-size:${size>22?12:10}px">${txt}</div>`,iconSize:[size,size],iconAnchor:[size/2,size/2]});}
+const markerByCode={};
+
+villas.forEach(v=>{
+  const m=L.marker([v.lat,v.lng],{icon:divMk(v.code,zoneColor[v.zone],32)}).addTo(map);
+  m.bindPopup(`<div class="pp"><h3>${v.code} · ${v.name}</h3><div class="ppm">€${v.ppn}/night · €${v.ppn*5} for 5 nights<br/>${v.rating?('★ '+v.rating+' ('+v.rev+' reviews)'):'New listing'} ${v.fav?'· ⭐ Guest favourite':''} ${v.sh?'· Superhost':''}<br/>${v.note}</div><a href="${v.url}" target="_blank" rel="noopener">Open on Airbnb →</a></div>`);
+  markerByCode[v.code]=m;
+});
+beaches.forEach(b=>{
+  const m=L.circleMarker([b.lat,b.lng],{radius:7,color:'#0b1220',weight:1.5,fillColor:'#22d3ee',fillOpacity:.95}).addTo(map);
+  m.bindPopup(`<div class="pp"><h3>🏖️ ${b.n}</h3><div class="ppm">${b.d}</div></div>`);
+});
+towns.forEach(t=>{
+  const m=L.circleMarker([t.lat,t.lng],{radius:6,color:'#0b1220',weight:1.5,fillColor:'#cbd5e1',fillOpacity:.9}).addTo(map);
+  m.bindPopup(`<div class="pp"><h3>📍 ${t.n}</h3><div class="ppm">${t.d}</div></div>`);
+});
+L.marker([airport.lat,airport.lng],{icon:divMk('✈',' #ef4444',26)}).addTo(map)
+  .bindPopup(`<div class="pp"><h3>✈️ ${airport.n}</h3><div class="ppm">${airport.d}</div></div>`);
+
+// ---------- SIDEBAR RENDER ----------
+function villaCard(v){
+  const tags=[];
+  if(v.fav)tags.push('<span class="tag fav">⭐ Guest fav</span>');
+  if(v.sh)tags.push('<span class="tag shost">Superhost</span>');
+  const rat = v.rating?`★ ${v.rating} <span style="opacity:.6">(${v.rev})</span>`:'New';
+  return `<div class="card" data-code="${v.code}">
+    <span class="code" style="background:${zoneColor[v.zone]}">${v.code}</span>
+    <div class="row1"><span class="nm">${v.name}</span><span class="pr">€${v.ppn}<small>/n</small></span></div>
+    <div class="meta">${rat} <span style="opacity:.5">·</span> €${v.ppn*5} / 5 nts ${tags.join(' ')}</div>
+    <div class="meta" style="margin-top:6px">${v.note} · <a class="lk" href="${v.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Airbnb →</a></div>
+  </div>`;
+}
+['S','C','B'].forEach(z=>{
+  document.getElementById('grp-'+z).innerHTML = villas.filter(v=>v.zone===z).map(villaCard).join('');
+});
+document.querySelectorAll('.card').forEach(c=>c.addEventListener('click',()=>{
+  const v=villas.find(x=>x.code===c.dataset.code);
+  map.flyTo([v.lat,v.lng],14,{duration:.8});
+  markerByCode[v.code].openPopup();
+}));
+
+document.getElementById('days').innerHTML = days.map(d=>`
+  <div class="day" data-lat="${d.lat}" data-lng="${d.lng}" data-z="${d.z}">
+    <div class="daynum"><b>${d.n}</b><span>${d.dow}</span></div>
+    <div class="dayb"><div class="t">${d.t}</div><div class="d">${d.d}</div></div>
+  </div>`).join('');
+document.querySelectorAll('.day').forEach(el=>el.addEventListener('click',()=>{
+  map.flyTo([+el.dataset.lat,+el.dataset.lng],+el.dataset.z,{duration:.8});
+}));
+
+// mobile toggle
+const tg=document.getElementById('tg'),side=document.getElementById('side');
+function checkMobile(){ if(window.innerWidth<=820){tg.style.display='block';} else {tg.style.display='none';side.style.display='';} }
+tg.addEventListener('click',()=>{ side.style.display = side.style.display==='none'?'':'none'; setTimeout(()=>map.invalidateSize(),50); });
+window.addEventListener('resize',checkMobile); checkMobile();
+</script>
+</body>
+</html>

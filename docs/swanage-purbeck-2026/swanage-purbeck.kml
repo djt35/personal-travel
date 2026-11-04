@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+  <name>Swanage &amp; Purbeck - 3-Day Family Weekend (17-19 Jul 2026)</name>
+  <description>Colour-coded by day. Day 1 amber / Day 2 emerald / Day 3 sky / optional grey.</description>
+  <Style id="hotel"><IconStyle><color>ff3a48e0</color><scale>1.1</scale><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle><LabelStyle><scale>0.9</scale></LabelStyle></Style>
+  <Style id="d1"><IconStyle><color>ff0a96f2</color><scale>1.1</scale><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle><LabelStyle><scale>0.9</scale></LabelStyle></Style>
+  <Style id="d2"><IconStyle><color>ff81b912</color><scale>1.1</scale><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle><LabelStyle><scale>0.9</scale></LabelStyle></Style>
+  <Style id="d3"><IconStyle><color>ffdda32b</color><scale>1.1</scale><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle><LabelStyle><scale>0.9</scale></LabelStyle></Style>
+  <Style id="opt"><IconStyle><color>ffa49783</color><scale>1.1</scale><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle><LabelStyle><scale>0.9</scale></LabelStyle></Style>
+  <Folder>
+    <name>Base</name>
+    <Placemark>
+      <name>The Pines Hotel (base)</name>
+      <description><![CDATA[Clifftop base, Burlington Road — private steps to the sand.]]></description>
+      <styleUrl>#hotel</styleUrl>
+      <Point><coordinates>-1.95515,50.62134,0</coordinates></Point>
+    </Placemark>
+
+  </Folder>
+  <Folder>
+    <name>Day 1 - Fri: Train, Corfe &amp; Studland</name>
+    <Placemark>
+      <name>Swanage Railway station</name>
+      <description><![CDATA[Steam train 10:00 to Corfe (Freedom-of-the-Line day ticket). Corfe +20 min, Norden +22.]]></description>
+      <styleUrl>#d1</styleUrl>
+      <Point><coordinates>-1.96025,50.60997,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Corfe Castle</name>
+      <description><![CDATA[Ruined fortress — murder holes, siege story, the Famous Five's Kirrin. Go mid-morning.]]></description>
+      <styleUrl>#d1</styleUrl>
+      <Point><coordinates>-2.05723,50.63889,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Corfe Model Village + Sweet Shop</name>
+      <description><![CDATA[1/20 stone replica with working stocks, fossil corner & fairy garden; 17th-C sweet shop next door.]]></description>
+      <styleUrl>#d1</styleUrl>
+      <Point><coordinates>-2.05876,50.63806,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Lunch: The Greyhound Inn, Corfe</name>
+      <description><![CDATA[Best pub in the village — garden terrace with the finest castle view, fresh local food, kids & dogs welcome. Book ahead. Fox Inn is the backup.]]></description>
+      <styleUrl>#d1</styleUrl>
+      <Point><coordinates>-2.05650,50.63880,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Studland — Middle &amp; South Beach</name>
+      <description><![CDATA[Calm shallow paddling, rockpools at South Beach; quieter than Knoll. NT car park + toilets.]]></description>
+      <styleUrl>#d1</styleUrl>
+      <Point><coordinates>-1.95065,50.64567,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Knoll Beach, Studland (optional)</name>
+      <description><![CDATA[The big blue-flag family beach — dune-backed sand, NT café. Go early for parking.]]></description>
+      <styleUrl>#d1</styleUrl>
+      <Point><coordinates>-1.95296,50.64976,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Agglestone Rock (optional)</name>
+      <description><![CDATA[The 'stone the Devil threw' on the heath behind Studland — a quest, ~15 min walk. Skip if wet.]]></description>
+      <styleUrl>#d1</styleUrl>
+      <Point><coordinates>-1.96798,50.64514,0</coordinates></Point>
+    </Placemark>
+
+  </Folder>
+  <Folder>
+    <name>Day 2 - Sat: Durlston &amp; the quarry coves</name>
+    <Placemark>
+      <name>Peveril Point rockpools (optional, early)</name>
+      <description><![CDATA[5 min from the hotel — crabs, pools, loose fossils; prime at the 07:01 low. Don't get cut off.]]></description>
+      <styleUrl>#d2</styleUrl>
+      <Point><coordinates>-1.94588,50.60690,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Durlston — Great Globe</name>
+      <description><![CDATA[40-tonne stone world, play trail, Anvil Point lighthouse; clifftop meadows.]]></description>
+      <styleUrl>#d2</styleUrl>
+      <Point><coordinates>-1.95205,50.59488,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Seventh Wave café, Durlston Castle</name>
+      <description><![CDATA[Best sea-view café in Purbeck — clifftop terrace, dolphins sometimes passing.]]></description>
+      <styleUrl>#d2</styleUrl>
+      <Point><coordinates>-1.95272,50.59512,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Dancing Ledge</name>
+      <description><![CDATA[Quarry tidal pool (low tide + calm only) — ~45-min walk + steep scramble down. Careful.]]></description>
+      <styleUrl>#d2</styleUrl>
+      <Point><coordinates>-2.00432,50.59218,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Seacombe ledges (quieter)</name>
+      <description><![CDATA[Easier than Dancing Ledge; deep water off the ledges — rockpool & picnic, low tide.]]></description>
+      <styleUrl>#d2</styleUrl>
+      <Point><coordinates>-2.01635,50.59015,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Square &amp; Compass, Worth Matravers</name>
+      <description><![CDATA[Cult 1776 pub — home-pressed cider, pasties, a fossil museum, grassy terrace.]]></description>
+      <styleUrl>#d2</styleUrl>
+      <Point><coordinates>-2.03714,50.59791,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Winspit 'dragon caves'</name>
+      <description><![CDATA[Cliff-cut caves over a wild cove (a Doctor Who 'alien planet'). Unfenced cliffs & deep water.]]></description>
+      <styleUrl>#d2</styleUrl>
+      <Point><coordinates>-2.03399,50.58444,0</coordinates></Point>
+    </Placemark>
+
+  </Folder>
+  <Folder>
+    <name>Day 3 - Sun: Kimmeridge &amp; the west</name>
+    <Placemark>
+      <name>Kimmeridge Bay + Wild Seas Centre</name>
+      <description><![CDATA[Best rockpooling on the coast + FREE marine centre (touch-tanks). Go early after the 07:47 low. Toll road ~£5.]]></description>
+      <styleUrl>#d3</styleUrl>
+      <Point><coordinates>-2.12210,50.60560,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>The Etches Collection, Kimmeridge</name>
+      <description><![CDATA[World-class fossil sea-monsters, glass floor over the fossil lab. Indoor (wet-weather-proof).]]></description>
+      <styleUrl>#d3</styleUrl>
+      <Point><coordinates>-2.12280,50.61055,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Lunch: Clavell's Café &amp; Farm Shop</name>
+      <description><![CDATA[Farm-to-fork Kimmeridge crab; book ahead, esp. Sundays.]]></description>
+      <styleUrl>#d3</styleUrl>
+      <Point><coordinates>-2.12330,50.61070,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Chapman's Pool (Renscombe car park)</name>
+      <description><![CDATA[Park at Renscombe, then ~30-min steep walk to the secluded horseshoe cove. No facilities. Calm days only.]]></description>
+      <styleUrl>#d3</styleUrl>
+      <Point><coordinates>-2.05310,50.59660,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Tyneham ghost village (optional)</name>
+      <description><![CDATA[Village frozen since 1943 + wild Worbarrow Bay. Weekend-only for you — CONFIRM on gov.uk before driving.]]></description>
+      <styleUrl>#d3</styleUrl>
+      <Point><coordinates>-2.16948,50.62200,0</coordinates></Point>
+    </Placemark>
+
+  </Folder>
+  <Folder>
+    <name>Optional &amp; back-pocket</name>
+    <Placemark>
+      <name>Blue Pool, Furzebrook (wet-day magic)</name>
+      <description><![CDATA[Turquoise clay pool + fairy trail, rope bridge, tearoom. Top wet-weather swap.]]></description>
+      <styleUrl>#opt</styleUrl>
+      <Point><coordinates>-2.09252,50.65050,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Putlake Adventure Farm</name>
+      <description><![CDATA[Closest hands-on farm (5 min) — bottle-feed lambs, go-karts, covered soft play.]]></description>
+      <styleUrl>#opt</styleUrl>
+      <Point><coordinates>-1.99943,50.60885,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>The Tank Museum, Bovington</name>
+      <description><![CDATA[Best wet-weather day — Commander Basil kids' trail, soft play, free annual pass.]]></description>
+      <styleUrl>#opt</styleUrl>
+      <Point><coordinates>-2.24088,50.69440,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Monkey World, Wool</name>
+      <description><![CDATA[Ape-rescue centre + big adventure playgrounds. ~25 min.]]></description>
+      <styleUrl>#opt</styleUrl>
+      <Point><coordinates>-2.19320,50.69185,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>RSPB Arne</name>
+      <description><![CDATA[Free-roaming sika deer, hidden beach, play area. Arrive by ~9:30-10.]]></description>
+      <styleUrl>#opt</styleUrl>
+      <Point><coordinates>-2.04010,50.69004,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Wareham Quay — river boat hire</name>
+      <description><![CDATA[Hire a rowing boat on the gentle River Frome; ducks & ice cream on the quay.]]></description>
+      <styleUrl>#opt</styleUrl>
+      <Point><coordinates>-2.10930,50.68405,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Old Harry Rocks</name>
+      <description><![CDATA[Easy ~1-mile clifftop walk from Studland to chalk sea-stacks. Mind the edges.]]></description>
+      <styleUrl>#opt</styleUrl>
+      <Point><coordinates>-1.92332,50.64242,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Man O'War Cove &amp; Durdle Door</name>
+      <description><![CDATA[The iconic arch; the cove just east is the calmest, shallowest swimming. ~45 min west.]]></description>
+      <styleUrl>#opt</styleUrl>
+      <Point><coordinates>-2.27692,50.62119,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Gee White's — lobster on the quay</name>
+      <description><![CDATA[Seafront seafood shack — lobster, crab, oysters + fish & chips. Reserve a crab in the morning.]]></description>
+      <styleUrl>#opt</styleUrl>
+      <Point><coordinates>-1.95429,50.60795,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Chococo — the Chocolate House</name>
+      <description><![CDATA[Watch chocolate being made; hot chocolate + holiday lolly-making (book).]]></description>
+      <styleUrl>#opt</styleUrl>
+      <Point><coordinates>-1.95813,50.60898,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Baboo Gelato, Swanage</name>
+      <description><![CDATA[Award artisan gelato, Institute Road — the salted caramel milkshake.]]></description>
+      <styleUrl>#opt</styleUrl>
+      <Point><coordinates>-1.95662,50.60862,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>THE PIG on the Beach, Studland</name>
+      <description><![CDATA[Wood-fired Garden Oven pizza (no booking) or the restaurant (book). Beautiful clifftop garden.]]></description>
+      <styleUrl>#opt</styleUrl>
+      <Point><coordinates>-1.94964,50.64395,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>The Scott Arms, Kingston</name>
+      <description><![CDATA[Pub garden with the postcard Corfe Castle view — go for a sundowner, not a big meal.]]></description>
+      <styleUrl>#opt</styleUrl>
+      <Point><coordinates>-2.06203,50.61640,0</coordinates></Point>
+    </Placemark>
+
+  </Folder>
+</Document>
+</kml>

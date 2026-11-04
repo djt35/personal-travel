@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tarragona · Priorat · Salou · Cambrils — Stays Mar 18–20</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; height: 100vh; display: flex; flex-direction: column; }
+
+    header {
+      padding: 12px 20px;
+      background: #1a1d27;
+      border-bottom: 1px solid #2d3748;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    header h1 { font-size: 16px; font-weight: 600; color: #f7fafc; }
+    header span { font-size: 13px; color: #718096; }
+
+    .legend {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-left: auto;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #a0aec0;
+    }
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    #map { flex: 1; }
+
+    /* Leaflet popup overrides */
+    .leaflet-popup-content-wrapper {
+      background: #1a1d27;
+      border: 1px solid #2d3748;
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      color: #e2e8f0;
+      padding: 0;
+    }
+    .leaflet-popup-content {
+      margin: 0;
+      min-width: 240px;
+      max-width: 300px;
+    }
+    .leaflet-popup-tip { background: #1a1d27; }
+    .leaflet-popup-close-button { color: #718096 !important; top: 8px !important; right: 10px !important; }
+
+    .popup-inner { padding: 14px 16px; }
+    .popup-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+    }
+    .popup-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #f7fafc;
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+    .popup-meta {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .popup-score {
+      font-size: 13px;
+      font-weight: 700;
+      color: #68d391;
+    }
+    .popup-price {
+      font-size: 13px;
+      color: #90cdf4;
+    }
+    .popup-note {
+      font-size: 12px;
+      color: #718096;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    .popup-link {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .popup-link:hover { opacity: 0.8; }
+
+    /* category colors */
+    .cat-priorat    { background: #553c9a; color: #e9d8fd; }
+    .cat-tarragona  { background: #744210; color: #fefcbf; }
+    .cat-salou      { background: #1a365d; color: #bee3f8; }
+    .cat-cambrils   { background: #1c4532; color: #c6f6d5; }
+    .cat-airbnb     { background: #742a2a; color: #fed7d7; }
+
+    .link-booking { background: #003580; color: #fff; }
+    .link-airbnb  { background: #ff5a5f; color: #fff; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🗺 Tarragona · Priorat · Salou · Cambrils</h1>
+  <span>Mar 18–20, 2026 · 2 nights · 2 adults</span>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#805ad5"></div> Priorat</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#d69e2e"></div> Tarragona</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#3182ce"></div> Salou</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#38a169"></div> Cambrils</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e53e3e"></div> Airbnb Unique</div>
+  </div>
+</header>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const map = L.map('map', { zoomControl: true }).setView([41.15, 1.0], 10);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap contributors © CARTO',
+  maxZoom: 19
+}).addTo(map);
+
+function makeIcon(color, size = 14) {
+  return L.divIcon({
+    className: '',
+    html: `<svg width="${size+8}" height="${size+8}" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="11" cy="11" r="9" fill="${color}" stroke="rgba(255,255,255,0.35)" stroke-width="2"/>
+    </svg>`,
+    iconSize: [size+8, size+8],
+    iconAnchor: [(size+8)/2, (size+8)/2],
+    popupAnchor: [0, -(size+8)/2]
+  });
+}
+
+function popup(cat, name, score, price, note, url, platform) {
+  const tagClass = `cat-${cat}`;
+  const linkClass = platform === 'airbnb' ? 'link-airbnb' : 'link-booking';
+  const catLabel = { priorat: '🍷 Priorat', tarragona: '🏛 Tarragona', salou: '🏖 Salou', cambrils: '⛵ Cambrils', airbnb: '✨ Airbnb Unique' }[cat];
+  return `<div class="popup-inner">
+    <div class="popup-tag ${tagClass}">${catLabel}</div>
+    <div class="popup-name">${name}</div>
+    <div class="popup-meta">
+      ${score ? `<span class="popup-score">★ ${score}</span>` : ''}
+      ${price ? `<span class="popup-price">€${price} total</span>` : ''}
+    </div>
+    ${note ? `<div class="popup-note">${note}</div>` : ''}
+    <a href="${url}" target="_blank" class="popup-link ${linkClass}">View →</a>
+  </div>`;
+}
+
+const stays = [
+  // ===== PRIORAT =====
+  { lat: 41.2438, lng: 0.7969, cat: 'priorat', color: '#805ad5', size: 18,
+    name: 'Terra Dominicata Hotel & Winery ⭐⭐⭐⭐⭐', score: '9.5', price: '600',
+    note: 'B&D included. Winery on-site. Adults only. Last room!',
+    url: 'https://www.booking.com/hotel/es/terra-dominicata.html' },
+
+  { lat: 41.2051, lng: 0.7753, cat: 'priorat', color: '#805ad5', size: 16,
+    name: 'Buil & Giné Wine Hotel ⭐⭐⭐⭐', score: '9.0', price: '333',
+    note: 'Vineyard hotel in Gratallops. Breakfast incl.',
+    url: 'https://www.booking.com/hotel/es/bodega-buil-amp-gine.html' },
+
+  { lat: 41.2580, lng: 0.9321, cat: 'priorat', color: '#805ad5', size: 14,
+    name: 'Hotel Siuranella', score: '8.8', price: '282',
+    note: 'Clifftop village of Siurana. Stunning location.',
+    url: 'https://www.booking.com/hotel/es/siuranella.html' },
+
+  { lat: 41.1436, lng: 0.8204, cat: 'priorat', color: '#805ad5', size: 16,
+    name: 'Com a casa (Falset)', score: '9.7', price: '182',
+    note: 'Highest-rated in region. 2 bed / 2 bath apartment.',
+    url: 'https://www.booking.com/hotel/es/com-a-casa.html' },
+
+  { lat: 41.1452, lng: 0.8193, cat: 'priorat', color: '#805ad5', size: 14,
+    name: 'Priorat Aparthotel (Falset)', score: '9.6', price: '218',
+    note: 'Falset town centre. Last unit!',
+    url: 'https://www.booking.com/hotel/es/priorat-aparthotel-falset.html' },
+
+  { lat: 41.1015, lng: 0.7524, cat: 'priorat', color: '#805ad5', size: 14,
+    name: 'Hotel Rural Cal Torner', score: '9.3', price: '207',
+    note: 'Adults-only rural hotel. Guiamets.',
+    url: 'https://www.booking.com/hotel/es/rural-cal-torner.html' },
+
+  { lat: 41.1274, lng: 0.8034, cat: 'priorat', color: '#805ad5', size: 14,
+    name: 'Ca la Neus (Marçà)', score: '9.4', price: '146',
+    note: '2-bed rural house. Great value.',
+    url: 'https://www.booking.com/hotel/es/ca-la-neus-marca.html' },
+
+  { lat: 41.1936, lng: 0.7779, cat: 'priorat', color: '#805ad5', size: 14,
+    name: 'Hotel Cal Llop (Gratallops)', score: '8.7', price: '237',
+    note: 'Breakfast included. Classic Priorat village hotel.',
+    url: 'https://www.booking.com/hotel/es/cal-llop.html' },
+
+  // ===== TARRAGONA =====
+  { lat: 41.1148, lng: 1.2567, cat: 'tarragona', color: '#d69e2e', size: 18,
+    name: 'H10 Imperial Tarraco ⭐⭐⭐⭐', score: '9.0', price: '247',
+    note: 'Seafront 4★. Rambla Vella.',
+    url: 'https://www.booking.com/hotel/es/h10-imperial-tarraco.html' },
+
+  { lat: 41.1192, lng: 1.2684, cat: 'tarragona', color: '#d69e2e', size: 16,
+    name: 'Hotel Boutique Làpety', score: '9.8', price: '358',
+    note: 'Exceptional boutique. Breakfast incl. Only 3 left!',
+    url: 'https://www.booking.com/hotel/es/boutique-lapety.html' },
+
+  { lat: 41.1184, lng: 1.2424, cat: 'tarragona', color: '#d69e2e', size: 14,
+    name: 'AC Hotel Tarragona by Marriott ⭐⭐⭐⭐', score: '8.5', price: '220',
+    note: 'Reliable Marriott 4★.',
+    url: 'https://www.booking.com/hotel/es/ac-tarragona.html' },
+
+  { lat: 41.1173, lng: 1.2651, cat: 'tarragona', color: '#d69e2e', size: 14,
+    name: 'Hotel Astari ⭐⭐⭐⭐', score: '8.9', price: '171',
+    note: '950ft from beach. Free cancel.',
+    url: 'https://www.booking.com/hotel/es/astari.html' },
+
+  // ===== SALOU =====
+  { lat: 41.0756, lng: 1.1355, cat: 'salou', color: '#3182ce', size: 18,
+    name: 'Blaumar Hotel ⭐⭐⭐⭐', score: '8.8', price: '164',
+    note: 'Beachfront. Paseo Jaime I.',
+    url: 'https://www.booking.com/hotel/es/blaumar.html' },
+
+  { lat: 41.0759, lng: 1.1394, cat: 'salou', color: '#3182ce', size: 16,
+    name: 'Magnolia Hotel – Adults Only ⭐⭐⭐⭐', score: '8.7', price: '139',
+    note: 'Town centre. 750ft beach.',
+    url: 'https://www.booking.com/hotel/es/magnolia.html' },
+
+  { lat: 41.0756, lng: 1.1289, cat: 'salou', color: '#3182ce', size: 14,
+    name: '4R Casablanca Playa ⭐⭐⭐⭐', score: '8.5', price: '151',
+    note: 'Beachfront. Breakfast included. Only 1 left!',
+    url: 'https://www.booking.com/hotel/es/casablanca-playa.html' },
+
+  // ===== CAMBRILS =====
+  { lat: 41.0657, lng: 1.0611, cat: 'cambrils', color: '#38a169', size: 18,
+    name: 'La Torre Oceanside ⭐⭐⭐⭐', score: '9.6', price: '290',
+    note: 'Beachfront. 2-bed, 1076 ft². Score 10/10 location.',
+    url: 'https://www.booking.com/hotel/es/apartamento-rosamar-beach.html' },
+
+  { lat: 41.0675, lng: 1.0655, cat: 'cambrils', color: '#38a169', size: 16,
+    name: 'Instants Boutique Hotel ⭐⭐⭐⭐', score: '9.1', price: '222',
+    note: 'Adults-only boutique. 550ft beach.',
+    url: 'https://www.booking.com/hotel/es/monica-boutique-adults-only.html' },
+
+  { lat: 41.0691, lng: 1.0654, cat: 'cambrils', color: '#38a169', size: 14,
+    name: 'SOL Port Cambrils ⭐⭐⭐⭐', score: '8.7', price: '129',
+    note: '1,100ft from beach.',
+    url: 'https://www.booking.com/hotel/es/sol-port-cambrils.html' },
+
+  { lat: 41.0885, lng: 1.0918, cat: 'cambrils', color: '#38a169', size: 14,
+    name: 'Mas Gallau ⭐⭐⭐⭐', score: '8.5', price: '206',
+    note: 'Rural farmhouse hotel. Quiet.',
+    url: 'https://www.booking.com/hotel/es/mas-gallau.html' },
+
+  // ===== AIRBNB UNIQUE =====
+  { lat: 41.1170, lng: 1.2553, cat: 'airbnb', color: '#e53e3e', size: 18,
+    name: 'Ben-Hur Roman Experience', score: '4.9', price: '383',
+    note: 'Unique Roman-themed apt inside ancient city walls.',
+    url: 'https://www.airbnb.com/rooms/1151101474331474378', platform: 'airbnb' },
+
+  { lat: 41.1178, lng: 1.2534, cat: 'airbnb', color: '#e53e3e', size: 14,
+    name: 'Apartment in a Roman Wall', score: '4.65', price: '168',
+    note: 'Literally inside the 2,000-year-old Roman walls.',
+    url: 'https://www.airbnb.com/rooms/9124374', platform: 'airbnb' },
+
+  { lat: 41.1522, lng: 1.0770, cat: 'airbnb', color: '#e53e3e', size: 16,
+    name: 'Rustic house on private olive estate', score: '4.92', price: '172',
+    note: 'Private pool on olive farm. 299 reviews. Near Reus.',
+    url: 'https://www.airbnb.com/rooms/18725041', platform: 'airbnb' },
+
+  { lat: 41.1328, lng: 1.3888, cat: 'airbnb', color: '#e53e3e', size: 16,
+    name: 'Amazing balcony over Mediterranean', score: '5.0', price: '350',
+    note: 'Perfect score. Sea views + direct beach access. Altafulla.',
+    url: 'https://www.airbnb.com/rooms/1176548283991570731', platform: 'airbnb' },
+
+  { lat: 41.0161, lng: 0.9498, cat: 'airbnb', color: '#e53e3e', size: 14,
+    name: 'Private jacuzzi & sauna apt', score: '4.81', price: '183',
+    note: 'Private jacuzzi + sauna in unit. Mont-roig del Camp.',
+    url: 'https://www.airbnb.com/rooms/819927672402867601', platform: 'airbnb' },
+
+  { lat: 41.0655, lng: 1.0573, cat: 'airbnb', color: '#e53e3e', size: 16,
+    name: 'Cambrils • Rooftop Pool • 50m Beach', score: '4.92', price: '175',
+    note: 'Rooftop pool + A/C. 50m from beach.',
+    url: 'https://www.airbnb.com/rooms/877945148663213683', platform: 'airbnb' },
+
+  { lat: 41.1870, lng: 1.5579, cat: 'airbnb', color: '#e53e3e', size: 16,
+    name: 'Beachfront Design Apt (next to 5★ Hotel Ra)', score: '4.95', price: '298',
+    note: 'Designer beachfront. Pool access with 5★ hotel. Calafell.',
+    url: 'https://www.airbnb.com/rooms/32466899', platform: 'airbnb' },
+
+  { lat: 41.0113, lng: 0.9455, cat: 'airbnb', color: '#e53e3e', size: 14,
+    name: 'Luxurious apt / spa on the beach', score: '4.8', price: '229',
+    note: 'Spa on the beach. Miami Platja (quieter coast).',
+    url: 'https://www.airbnb.com/rooms/48138522', platform: 'airbnb' },
+];
+
+stays.forEach(s => {
+  const platform = s.platform || 'booking';
+  const marker = L.marker([s.lat, s.lng], { icon: makeIcon(s.color, s.size || 14) }).addTo(map);
+  marker.bindPopup(popup(s.cat, s.name, s.score, s.price, s.note, s.url, platform), {
+    maxWidth: 320,
+    className: 'custom-popup'
+  });
+});
+</script>
+</body>
+</html>

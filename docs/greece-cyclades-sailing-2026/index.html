@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cyclades — Family Sailing (alt to Lefkada) · Sat 5 – Sat 12 September 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --bg:#08131c; --panel:rgba(12,26,38,.82); --panel-solid:#0c1a26;
+    --line:rgba(255,255,255,.10); --txt:#e7f0f6; --muted:#90a8b8;
+    --teal:#2dd4bf; --cyan:#38bdf8; --amber:#f59e0b; --purple:#a78bfa; --coral:#fb7185;
+    --good:#34d399; --anchor:#60a5fa;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt)}
+  #map{position:absolute;inset:0;z-index:1}
+  .leaflet-container{background:#08131c}
+
+  .hdr{position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:1000;
+    background:var(--panel);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border:1px solid var(--line);border-radius:14px;padding:10px 18px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+  .hdr h1{margin:0;font-size:15px;letter-spacing:.3px;font-weight:700}
+  .hdr .sub{margin-top:3px;font-size:11.5px;color:var(--muted)}
+  .hdr .sub b{color:var(--teal)}
+
+  .side{position:absolute;top:0;left:0;height:100%;width:344px;z-index:900;
+    background:linear-gradient(180deg,rgba(8,19,28,.96),rgba(8,19,28,.86));
+    border-right:1px solid var(--line);overflow-y:auto;padding:14px 14px 120px;backdrop-filter:blur(8px)}
+  .side h2{font-size:11px;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted);margin:6px 4px 10px}
+  .card{background:rgba(255,255,255,.035);border:1px solid var(--line);border-left:3px solid var(--teal);
+    border-radius:10px;padding:10px 12px;margin-bottom:9px;cursor:pointer;transition:.18s}
+  .card:hover{background:rgba(45,212,191,.10);transform:translateX(2px)}
+  .card .top{display:flex;align-items:center;gap:9px}
+  .card .num{flex:0 0 26px;height:26px;border-radius:50%;background:var(--teal);color:#04222b;font-weight:800;
+    font-size:12px;display:flex;align-items:center;justify-content:center}
+  .card .ttl{font-weight:700;font-size:13.5px}
+  .card .day{font-size:10.5px;color:var(--muted);font-weight:600}
+  .card .leg{font-size:11px;color:var(--cyan);margin-top:6px;font-weight:600}
+  .card .desc{font-size:11.5px;color:#c5d6e1;margin-top:5px;line-height:1.45}
+  .card .moor{font-size:11px;color:#bfe9e2;margin-top:7px;line-height:1.4;border-top:1px dashed rgba(45,212,191,.25);padding-top:6px}
+  .card .moor b{color:var(--teal)}
+  .card .bk{font-size:10.5px;color:var(--anchor);margin-top:4px}
+
+  .toggle{position:absolute;top:14px;left:360px;z-index:1000;background:var(--panel);border:1px solid var(--line);
+    color:var(--txt);border-radius:10px;padding:8px 11px;font-size:12px;cursor:pointer;backdrop-filter:blur(10px)}
+  .info{position:absolute;top:58px;right:14px;z-index:950;width:316px;max-height:calc(100% - 150px);overflow-y:auto;
+    background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:14px;
+    padding:14px 16px;box-shadow:0 8px 30px rgba(0,0,0,.45);font-size:12px;line-height:1.5}
+  .info h3{margin:0 0 8px;font-size:13px;color:var(--teal)}
+  .info h4{margin:14px 0 6px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+  .info .row{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px dashed rgba(255,255,255,.06)}
+  .info .row span:last-child{color:#cfe0ea;text-align:right}
+  .info .note{color:#c5d6e1;margin:4px 0}
+  .info .note b{color:var(--cyan)}
+  .warn{background:rgba(251,113,133,.10);border:1px solid rgba(251,113,133,.35);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:11px;color:#ffd7dd}
+  .warn b{color:var(--coral)}
+  .ok{background:rgba(52,211,153,.10);border:1px solid rgba(52,211,153,.35);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:11px;color:#c9f5e3}
+  .ok b{color:var(--good)}
+  .pill{display:inline-block;background:rgba(56,189,248,.14);border:1px solid rgba(56,189,248,.35);color:#bfe6fb;
+    border-radius:999px;padding:1px 8px;font-size:10.5px;margin:2px 3px 0 0}
+
+  .budget{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:1000;display:flex;gap:0;
+    background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:14px;
+    overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+  .budget .b{padding:8px 16px;text-align:center;border-right:1px solid var(--line)}
+  .budget .b:last-child{border-right:none;background:rgba(45,212,191,.12)}
+  .budget .lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+  .budget .val{font-size:14px;font-weight:800;margin-top:2px}
+  .budget .b:last-child .val{color:var(--teal)}
+
+  .legend{position:absolute;bottom:14px;left:360px;z-index:950;background:var(--panel);backdrop-filter:blur(12px);
+    border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:11px}
+  .legend .li{display:flex;align-items:center;gap:8px;padding:2px 0}
+  .legend .dot{width:13px;height:13px;border-radius:50%;flex:0 0 13px}
+  .legend .ring{width:13px;height:13px;border-radius:50%;flex:0 0 13px;border:2px solid var(--anchor);background:transparent}
+  .legend .ln{width:18px;height:0;border-top:3px dashed var(--cyan);flex:0 0 18px}
+
+  .mk{display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:800;
+    color:#04222b;border:2px solid rgba(255,255,255,.85);box-shadow:0 3px 8px rgba(0,0,0,.5)}
+  .mk-poi{width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.5)}
+  .mk-anc{width:13px;height:13px;border-radius:50%;border:2px solid var(--anchor);background:rgba(96,165,250,.25);box-shadow:0 2px 6px rgba(0,0,0,.5)}
+  .leaflet-popup-content-wrapper{background:var(--panel-solid);color:var(--txt);border-radius:10px;border:1px solid var(--line)}
+  .leaflet-popup-tip{background:var(--panel-solid)}
+  .pop b{color:var(--teal)} .pop .s{color:var(--muted);font-size:11px} .pop .l{color:var(--cyan);font-size:11px}
+  .pop .m{font-size:11px;color:#bfe9e2;margin-top:5px} .pop .bk{font-size:11px;color:var(--anchor);margin-top:4px}
+
+  @media (max-width:760px){
+    .side{width:100%;height:46%;top:auto;bottom:0;border-right:none;border-top:1px solid var(--line)}
+    #map{bottom:46%;inset:auto;top:0;left:0;right:0;height:54%}
+    .info,.legend,.toggle{display:none}
+    .budget{bottom:auto;top:64px}
+  }
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div class="hdr">
+  <h1>⛵ Cyclades — Family Bareboat Catamaran <span style="color:var(--amber)">· ALT to Lefkada</span></h1>
+  <div class="sub"><b>Sat 5 → Sat 12 September 2026</b> · 7 nights · Small Cyclades sheltered loop · David, Lobke &amp; Noah (5)</div>
+</div>
+
+<button class="toggle" onclick="toggleInfo()">ℹ︎ Trip facts &amp; skipper's notes</button>
+
+<div class="info" id="info">
+  <h3>Cyclades vs Lefkada — read first</h3>
+  <div class="warn"><b>Meltemi:</b> the Cyclades are the windiest part of Greece. Early September the N/NW <b>Meltemi</b> can still blow <b>F5–7</b> for days, with big open crossings and short steep seas. For a family with Noah (5) and a skipper <b>new to catamarans</b>, this is materially harder than the Ionian.</div>
+  <div class="ok" style="margin-top:8px">✓ <b>This route mitigates it:</b> a tight <b>Small Cyclades</b> loop (Paros–Naxos–Koufonisia–Schinoussa) that hugs the lee of Naxos, keeps crossings short and offers bail-out anchorages. Do the exposed legs at dawn before the wind builds.</div>
+  <div class="note" style="margin-top:8px"><b>Recommendation:</b> keep <b>Lefkada as the primary</b> family choice (gentler, more forgiving for a cat checkout). Choose the Cyclades only if you specifically want the iconic white-and-blue Aegean <i>and</i> you get a settled forecast window — and strongly consider a <b>skippered</b> cat here rather than bareboat.</div>
+
+  <h3 style="margin-top:14px">Trip at a glance</h3>
+  <div class="row"><span>Crew</span><span>2 adults + Noah (5)</span></div>
+  <div class="row"><span>Boat</span><span>3-cabin catamaran</span></div>
+  <div class="row"><span>Skipper</span><span>David (self / consider skippered)</span></div>
+  <div class="row"><span>Base</span><span>Paros (Paroikia / Naousa)</span></div>
+  <div class="row"><span>Route</span><span>Small Cyclades loop · ~85 NM</span></div>
+  <div class="row"><span>Fly</span><span>→ Paros (PAS) or Athens+Lavrio base</span></div>
+
+  <h4>⚓ Skipper's notes (Aegean)</h4>
+  <div class="note"><b>Wind:</b> Meltemi from N/NW; strongest midday–evening, eases overnight. <b>Sail early, be in by 14:00.</b> Watch acceleration zones between islands (gusts +15–20 kt).</div>
+  <div class="note"><b>Ground:</b> many Cyclades harbours are exposed or ferry-washed; carry a <b>generous scope</b> and prefer laid moorings / well-sheltered bays. Naxos, Koufonisia and Schinoussa are the calmest here.</div>
+  <div class="note"><b>Ferries:</b> big fast ferries at Paros &amp; Naxos — keep clear of fairways, expect wake.</div>
+  <div class="note"><b>Bail-outs:</b> Naxos marina and the Small Cyclades give lee shelter in most Meltemi; abandon southbound plans (Ios/Amorgos) if it's blowing.</div>
+  <div class="warn">🐈 <b>Cat checkout</b> essential — David has only skippered monohulls. 🛟 Bring Noah's own child lifejacket.</div>
+</div>
+
+<div class="side">
+  <h2>Day-by-day · click to fly</h2>
+  <div id="cards"></div>
+  <h2 style="margin-top:14px">Highlights &amp; bail-out anchorages</h2>
+  <div id="pcards"></div>
+</div>
+
+<div class="legend">
+  <div class="li"><span class="dot" style="background:var(--teal)"></span> Overnight stop</div>
+  <div class="li"><span class="dot" style="background:var(--amber)"></span> Charter base</div>
+  <div class="li"><span class="ring"></span> Bail-out anchorage</div>
+  <div class="li"><span class="dot" style="background:var(--purple)"></span> Sight / swim waypoint</div>
+  <div class="li"><span class="ln"></span> Sailing route</div>
+</div>
+
+<div class="budget">
+  <div class="b"><div class="lbl">Flights</div><div class="val">€1,000</div></div>
+  <div class="b"><div class="lbl">Catamaran</div><div class="val">€3,000</div></div>
+  <div class="b"><div class="lbl">Boat extras</div><div class="val">€600</div></div>
+  <div class="b"><div class="lbl">Transfers</div><div class="val">€150</div></div>
+  <div class="b"><div class="lbl">Food/tavernas</div><div class="val">€850</div></div>
+  <div class="b"><div class="lbl">Est. total</div><div class="val">≈ €5,600</div></div>
+</div>
+
+<script>
+const map = L.map('map',{zoomControl:true,attributionControl:false}).setView([36.98,25.35],10);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd'}).addTo(map);
+
+const stops = [
+  {n:1, day:"Sat 5 Sep", name:"Paroikia (base)", island:"Paros", lat:37.085, lng:25.150,
+   leg:"Embark 17:00 · provision", desc:"Board at the Paros charter base, big-shop in Paroikia, dinner by the windmill. Cat checkout sail with the base if wind allows.",
+   moor:"Marina/quay berth, laid lines. Exposed to ferry wash — pick an inner berth.", bk:"Backup: Naousa (N Paros) if Paroikia is rolly."},
+  {n:2, day:"Sun 6 Sep", name:"Antiparos / Despotiko", island:"Antiparos", lat:37.020, lng:25.030,
+   leg:"→ ~8 NM · ~1.5 h", desc:"Gentle first hop across the strait. Turquoise anchorages off Despotiko islet — snorkelling and shallow swims. Antiparos town for dinner.",
+   moor:"Anchor sand 3–6 m off Despotiko (day) then Antiparos marina/quay for the night.", bk:"Backup: Antiparos marina, well sheltered."},
+  {n:3, day:"Mon 7 Sep", name:"Naxos Chora", island:"Naxos", lat:37.107, lng:25.376,
+   leg:"→ ~16 NM · ~3 h (cross early!)", desc:"Cross the Paros–Naxos strait at dawn before the Meltemi builds. Portara sunset, sandy Agios Prokopios beach, best tavernas of the trip.",
+   moor:"Naxos marina, laid lines — the region's most sheltered big harbour. Book ahead.", bk:"Backup: anchor Agios Prokopios / stay put if blowing hard."},
+  {n:4, day:"Tue 8 Sep", name:"Koufonisia", island:"Pano Koufonisi", lat:36.936, lng:25.610,
+   leg:"→ ~14 NM · ~2.5 h (down Naxos lee)", desc:"Run down the sheltered SE lee of Naxos. Tiny car-light island, pools of clear water at Pori, easy family swimming.",
+   moor:"Small harbour quay (fills fast — arrive early) or anchor Pori Bay in N/NW.", bk:"Backup: Pori Bay anchorage, good in Meltemi."},
+  {n:5, day:"Wed 9 Sep", name:"Schinoussa", island:"Schinoussa", lat:36.867, lng:25.520,
+   leg:"→ ~5 NM · ~1 h", desc:"Shortest, calmest hop of the week. Sleepy island, Mersini harbour, empty beaches — the quiet heart of the Small Cyclades.",
+   moor:"Mersini quay (small) or anchor the bay. Very sheltered pocket.", bk:"Backup: Iraklia (Agios Georgios), 2 NM W."},
+  {n:6, day:"Thu 10 Sep", name:"Naxos Chora", island:"Naxos", lat:37.107, lng:25.376,
+   leg:"→ ~16 NM · ~3 h (return N, early)", desc:"Head back up into the lee. Second Naxos night = buffer day if wind holds you in the Small Cyclades. Explore Naxos old town / kastro.",
+   moor:"Naxos marina again — the safe base for the upwind return.", bk:"Backup: hold at Koufonisia/Schinoussa if F6+."},
+  {n:7, day:"Fri 11 Sep", name:"Naousa", island:"Paros", lat:37.126, lng:25.238,
+   leg:"→ ~14 NM · ~2.5 h", desc:"Cross back to Paros, up to pretty Naousa fishing harbour for the last night — buzzy waterfront, great final dinner.",
+   moor:"Naousa quay / anchor the bay. Can be gusty in strong Meltemi.", bk:"Backup: Paroikia if Naousa is exposed."},
+  {n:8, day:"Sat 12 Sep", name:"Naousa → Paroikia", island:"Disembark", lat:37.085, lng:25.150,
+   leg:"→ ~8 NM · hand back by 09:00", desc:"Short morning motor round to the base, refuel, hand back. Fly home. ~1 week clear before ENDO 2026 (Cape Town, 20 Sep).",
+   moor:"Base hand-back; refuel at the fuel berth before handover.", bk:""}
+];
+
+const pois = [
+  {name:"Portara, Naxos", t:"Iconic marble temple gate at the harbour mouth — sunset landmark", lat:37.110, lng:25.373, c:"var(--purple)"},
+  {name:"Despotiko islet", t:"Turquoise sheltered swim/snorkel anchorages off Antiparos (Day 2)", lat:37.005, lng:25.020, c:"var(--purple)"},
+  {name:"Pori Bay, Koufonisia", t:"Clear shallow pools — easy family swimming & Meltemi anchorage (Day 4)", lat:36.945, lng:25.615, c:"var(--purple)"},
+  {name:"Ios (only if settled)", t:"Southern extension — skip in strong Meltemi (exposed upwind return)", lat:36.745, lng:25.283, c:"var(--coral)"}
+];
+
+const anchorages = [
+  {name:"Antiparos marina", t:"Well-sheltered bail-out near Paros (Day 2 backup)", lat:37.037, lng:25.083},
+  {name:"Naxos marina", t:"Region's safest big harbour — lee shelter in most Meltemi", lat:37.100, lng:25.378},
+  {name:"Pori Bay", t:"Koufonisia N — good holding in N/NW Meltemi", lat:36.945, lng:25.616},
+  {name:"Iraklia (Ag. Georgios)", t:"Tiny sheltered harbour 2 NM W of Schinoussa", lat:36.840, lng:25.470}
+];
+
+const route = [[37.085,25.150],[37.020,25.030],[37.107,25.376],[36.936,25.610],[36.867,25.520],[37.107,25.376],[37.126,25.238],[37.085,25.150]];
+L.polyline(route,{color:'#38bdf8',weight:3,dashArray:'8,8',opacity:.9}).addTo(map);
+
+function stopIcon(n,base){
+  const col = base ? 'var(--amber)' : 'var(--teal)';
+  return L.divIcon({className:'',html:`<div class="mk" style="width:30px;height:30px;background:${col};font-size:13px">${base?'⚓':n}</div>`,iconSize:[30,30],iconAnchor:[15,15]});
+}
+function poiIcon(c){return L.divIcon({className:'',html:`<div class="mk-poi" style="background:${c}"></div>`,iconSize:[14,14],iconAnchor:[7,7]});}
+function ancIcon(){return L.divIcon({className:'',html:`<div class="mk-anc"></div>`,iconSize:[13,13],iconAnchor:[7,7]});}
+
+const markers=[];
+stops.forEach((s,i)=>{
+  const base = (s.n===1);
+  const m=L.marker([s.lat,s.lng],{icon:stopIcon(s.n,base)}).addTo(map);
+  m.bindPopup(`<div class="pop"><b>${base?'⚓ ':'Night '+s.n+' · '}${s.name}</b><br><span class="s">${s.island} · ${s.day}</span><br><span class="l">${s.leg}</span><div style="margin-top:5px">${s.desc}</div><div class="m">⚓ ${s.moor}</div>${s.bk?`<div class="bk">↳ ${s.bk}</div>`:''}</div>`,{maxWidth:280});
+  markers[i]=m;
+});
+pois.forEach(p=>{
+  L.marker([p.lat,p.lng],{icon:poiIcon(p.c)}).addTo(map)
+   .bindPopup(`<div class="pop"><b>${p.name}</b><div style="margin-top:4px">${p.t}</div></div>`,{maxWidth:240});
+});
+anchorages.forEach(a=>{
+  L.marker([a.lat,a.lng],{icon:ancIcon()}).addTo(map)
+   .bindPopup(`<div class="pop"><b style="color:var(--anchor)">⚓ ${a.name}</b><div style="margin-top:4px">${a.t}</div></div>`,{maxWidth:240});
+});
+
+const cw=document.getElementById('cards');
+stops.forEach((s,i)=>{
+  const d=document.createElement('div');d.className='card';
+  d.innerHTML=`<div class="top"><div class="num" style="${s.n===1?'background:var(--amber)':''}">${s.n===1?'⚓':s.n}</div>
+    <div><div class="ttl">${s.name}</div><div class="day">${s.island} · ${s.day}</div></div></div>
+    <div class="leg">${s.leg}</div><div class="desc">${s.desc}</div>
+    <div class="moor">⚓ ${s.moor}</div>${s.bk?`<div class="bk">↳ ${s.bk}</div>`:''}`;
+  d.onclick=()=>{map.flyTo([s.lat,s.lng],12,{duration:1.1});markers[i].openPopup();};
+  cw.appendChild(d);
+});
+const pw=document.getElementById('pcards');
+pois.forEach(p=>{
+  const d=document.createElement('div');d.className='card';d.style.borderLeftColor=p.c;
+  d.innerHTML=`<div class="ttl" style="font-size:12.5px">${p.name}</div><div class="desc">${p.t}</div>`;
+  d.onclick=()=>map.flyTo([p.lat,p.lng],12,{duration:1.1});
+  pw.appendChild(d);
+});
+anchorages.forEach(a=>{
+  const d=document.createElement('div');d.className='card';d.style.borderLeftColor='var(--anchor)';
+  d.innerHTML=`<div class="ttl" style="font-size:12.5px;color:var(--anchor)">⚓ ${a.name}</div><div class="desc">${a.t}</div>`;
+  d.onclick=()=>map.flyTo([a.lat,a.lng],12,{duration:1.1});
+  pw.appendChild(d);
+});
+
+function toggleInfo(){const e=document.getElementById('info');e.style.display=(e.style.display==='none')?'block':'none';}
+map.fitBounds(L.latLngBounds(route).pad(0.18));
+</script>
+</body>
+</html>

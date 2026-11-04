@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Scotland West-Coast Highland Loop — Sat 5 → Tue 15 Jun 2027</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --bg:#0b1220; --panel:rgba(17,25,40,0.82); --panel2:rgba(17,25,40,0.6);
+    --line:rgba(255,255,255,0.12); --txt:#e8eef7; --mut:#9fb0c6;
+    --amber:#f59e0b; --emerald:#10b981; --purple:#a78bfa; --cyan:#22d3ee;
+    --gold:#fcd34d; --pink:#f472b6; --slate:#cbd5e1; --skyb:#7dd3fc;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt)}
+  #app{display:flex;height:100vh;overflow:hidden}
+  #map{flex:1;height:100vh}
+  #side{width:410px;max-width:88vw;height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1526,#0b1220);border-right:1px solid var(--line);padding:0 0 40px}
+  .hd{padding:20px 20px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:linear-gradient(180deg,#0c1526,rgba(12,21,38,0.92));backdrop-filter:blur(8px);z-index:5}
+  .hd h1{margin:0;font-size:20px;letter-spacing:.2px}
+  .hd .sub{color:var(--mut);font-size:12.5px;margin-top:4px;line-height:1.5}
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--txt);margin:6px 6px 0 0;background:var(--panel2)}
+  .sec{padding:16px 18px 6px}
+  .sec h2{font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:var(--mut);margin:0 0 10px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 13px;margin-bottom:10px;cursor:pointer;transition:.15s;position:relative}
+  .card:hover{border-color:rgba(255,255,255,.28);transform:translateY(-1px)}
+  .code{position:absolute;top:-9px;left:-8px;min-width:26px;height:26px;padding:0 5px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#0b1220;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .row1{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+  .nm{font-weight:650;font-size:14px;line-height:1.25}
+  .pr{font-weight:800;font-size:14px;white-space:nowrap}
+  .pr small{font-weight:500;color:var(--mut);font-size:11px}
+  .meta{color:var(--mut);font-size:12px;margin-top:5px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .tag{font-size:10.5px;padding:2px 7px;border-radius:6px;border:1px solid var(--line)}
+  .fav{color:var(--gold);border-color:rgba(252,211,77,.4)}
+  .poolt{color:#7cc4ff;border-color:rgba(124,196,255,.4)}
+  .sct{color:var(--emerald);border-color:rgba(16,185,129,.4)}
+  .lk{color:#7cc4ff;text-decoration:none;font-size:12px}
+  .lk:hover{text-decoration:underline}
+  .zoneh{display:flex;align-items:center;gap:8px;margin:14px 0 8px;font-weight:700;font-size:13px}
+  .dot{width:11px;height:11px;border-radius:50%;flex:0 0 auto}
+  .day{display:flex;gap:11px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;cursor:pointer;background:var(--panel2);transition:.15s}
+  .day:hover{border-color:rgba(255,255,255,.28);background:var(--panel)}
+  .daynum{flex:0 0 auto;width:42px;text-align:center}
+  .daynum b{display:block;font-size:15px}
+  .daynum span{font-size:10px;color:var(--mut);text-transform:uppercase}
+  .dayb .t{font-weight:650;font-size:13px}
+  .dayb .d{color:var(--mut);font-size:11.5px;margin-top:3px;line-height:1.45}
+  .budget{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .brow{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px dashed var(--line);gap:10px}
+  .brow:last-child{border:0}
+  .brow .v{font-weight:700;white-space:nowrap}
+  .btot{display:flex;justify-content:space-between;font-size:14px;font-weight:800;margin-top:8px;padding-top:10px;border-top:1px solid var(--line)}
+  .note{font-size:11.5px;color:var(--mut);line-height:1.55;margin-top:8px}
+  .todo{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 14px}
+  .todo .ti{display:flex;gap:9px;font-size:12.5px;padding:9px 0;border-bottom:1px dashed var(--line);line-height:1.45}
+  .todo .ti:last-child{border:0}
+  .todo .ti b{color:var(--txt)}
+  .chk{flex:0 0 auto;color:var(--gold)}
+  .cta{display:block;text-align:center;background:linear-gradient(135deg,#2563eb,#0ea5e9);color:#fff;text-decoration:none;padding:11px;border-radius:11px;font-weight:700;font-size:13.5px;margin-top:8px}
+  .cta.sec{background:linear-gradient(135deg,#334155,#1e293b);border:1px solid var(--line)}
+  .cta.warn{background:linear-gradient(135deg,#b45309,#d97706)}
+  .legend{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.9;color:var(--txt)}
+  .legend .li{display:flex;align-items:center;gap:8px}
+  .leaflet-popup-content-wrapper{background:#0e1830;color:var(--txt);border-radius:12px;border:1px solid var(--line)}
+  .leaflet-popup-tip{background:#0e1830}
+  .leaflet-popup-content{margin:12px 14px;font-size:13px;line-height:1.5}
+  .pp h3{margin:0 0 4px;font-size:14px}
+  .pp .ppm{color:var(--mut);font-size:12px}
+  .pp a{color:#7cc4ff}
+  .mk{border-radius:50%;border:2px solid rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;font-weight:800;color:#0b1220;box-shadow:0 2px 6px rgba(0,0,0,.5)}
+  .toggle{position:absolute;top:12px;left:12px;z-index:1000;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:8px 11px;font-size:12px;cursor:pointer;display:none}
+  @media (max-width:820px){
+    #app{flex-direction:column}
+    #side{width:100%;max-width:100%;height:auto;max-height:46vh;border-right:0;border-bottom:1px solid var(--line)}
+    #map{height:54vh}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="side">
+    <div class="hd">
+      <h1>🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland West-Coast Highland Loop</h1>
+      <div class="sub">Sat 5 → Tue 15 June 2027 · 10 nights · Family of 3 (Noah, 5)<br/><b>Fly BRU/AMS → Edinburgh + hire car</b> · anticlockwise A82 loop · five 2-night bases</div>
+      <div>
+        <span class="pill">✈️ Fly + hire · no own-car faff</span>
+        <span class="pill">🛂 UK ETA ×3</span>
+        <span class="pill">🌤️ Early June · pre-midge, pre-crowds</span>
+        <span class="pill">🚂 Jacobite steam train</span>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="note" style="margin-top:0;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:11px 13px">
+        📌 <b>This is a booking-ready skeleton for June 2027.</b> Route, pace and bases are locked; <b>prices are indicative planning figures</b> (June-2027 fares/rooms aren't live yet). We pull real quotes at the right window — flights when 2027 schedules load (~autumn 2026), rooms ~6–9 months out. Nothing here is booked.
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>Why this shape</h2>
+      <div class="note" style="margin-top:0">Flying in/out of <b>Edinburgh</b> turns your remembered “up the west, down the east” route into a clean <b>anticlockwise loop</b> that starts &amp; ends at the airport — dropping the old Lake District leg but cutting all the long driving. <b>Five 2-night bases</b>, no single-nighters, <b>longest drive ~2h45</b> — built for a 5-year-old. <b>Early June</b> is deliberate: before Scottish school holidays (~24 Jun) and before midges peak.</div>
+    </div>
+
+    <div class="sec">
+      <h2>Before you go — do these first</h2>
+      <div class="todo">
+        <div class="ti"><span class="chk">①</span><span><b>Apply for 3× UK ETA</b> at gov.uk/eta — £20 each (£60), Noah included. Valid 2 years, so fine to do any time before travel; needed to board.</span></div>
+        <div class="ti"><span class="chk">②</span><span><b>Book the Jacobite steam train the moment 2027 dates open</b> (usually released late 2026) — it sells out months ahead. This is the one thing to grab early.</span></div>
+        <div class="ti"><span class="chk">③</span><span><b>Book flights BRU/AMS → Edinburgh</b> when June-2027 schedules load (~autumn 2026). Direct from Brussels (Brussels Airlines, ~1h40) or Amsterdam (KLM/easyJet, more choice).</span></div>
+        <div class="ti"><span class="chk">④</span><span><b>Book a hire car — petrol/diesel estate or small SUV</b> (skip EV hire = no Highland charging planning) + a booster seat for Noah, or bring your own.</span></div>
+        <div class="ti"><span class="chk">⑤</span><span><b>Book rooms ~6–9 months out</b> — Fort William/Glencoe &amp; Inverness fill early even in June. Pick one property per base below.</span></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>Where to stay — pick one per base</h2>
+      <div class="note" style="margin-top:0">Prices are approx <b>2-night family-room totals (GBP)</b>, indicative for June 2027 — confirm live at booking. Ratings are Booking-style /10. Highland hotels with pools are rare and flagged 🏊 (great rainy-day insurance with Noah).</div>
+
+      <div class="zoneh"><span class="dot" style="background:var(--amber)"></span> 1 · Loch Lomond &amp; the Trossachs <span style="color:var(--mut);font-weight:500;font-size:11px">— Sat 5–Mon 7 · gentle Highland gateway</span></div>
+      <div id="grp-L"></div>
+
+      <div class="zoneh" style="margin-top:16px"><span class="dot" style="background:var(--emerald)"></span> 2 · Glencoe &amp; Fort William <span style="color:var(--mut);font-weight:500;font-size:11px">— Mon 7–Wed 9 · the Highland heart ⭐</span></div>
+      <div id="grp-G"></div>
+
+      <div class="zoneh" style="margin-top:16px"><span class="dot" style="background:var(--purple)"></span> 3 · Loch Ness &amp; Inverness <span style="color:var(--mut);font-weight:500;font-size:11px">— Wed 9–Fri 11 · monster + battlefield</span></div>
+      <div id="grp-N"></div>
+
+      <div class="zoneh" style="margin-top:16px"><span class="dot" style="background:var(--cyan)"></span> 4 · Stonehaven &amp; Aberdeenshire <span style="color:var(--mut);font-weight:500;font-size:11px">— Fri 11–Sun 13 · clifftop castle coast</span></div>
+      <div id="grp-S"></div>
+
+      <div class="zoneh" style="margin-top:16px"><span class="dot" style="background:var(--gold)"></span> 5 · Edinburgh <span style="color:var(--mut);font-weight:500;font-size:11px">— Sun 13–Tue 15 · city finale by the airport</span></div>
+      <div id="grp-E"></div>
+    </div>
+
+    <div class="sec">
+      <h2>The 11-day rhythm</h2>
+      <div id="days"></div>
+    </div>
+
+    <div class="sec">
+      <h2>Budget — family of 3, 10 nights</h2>
+      <div class="budget">
+        <div class="brow"><span>Flights BRU/AMS → Edinburgh ×3 (return)</span><span class="v">£450–850</span></div>
+        <div class="brow"><span>UK ETA ×3 <small style="color:var(--mut)">(do first)</small></span><span class="v">£60</span></div>
+        <div class="brow"><span>Hire car · estate/SUV, 10 days + booster</span><span class="v">£450–800</span></div>
+        <div class="brow"><span>Fuel · ~750 km loop + airport runs</span><span class="v">£120–170</span></div>
+        <div class="brow"><span>Accommodation · 5 bases × 2 nts (family)</span><span class="v">£1,300–3,000</span></div>
+        <div class="brow"><span>Food · attractions · steam train · castles (11 days)</span><span class="v">£900–1,400</span></div>
+        <div class="btot"><span>Estimated total</span><span>~£3,300 – £6,300</span></div>
+        <div class="note">≈ €3,900 – €7,400. Value end = Premier Inns + budget bases (~£3,300). Mid, comfortable family hotels ≈ £4,500–5,500 (~€5,300–6,400). Treat end = Cameron House + The Scotsman. Big-ticket day: Jacobite steam train (~£45–70pp adult / ~£30 child).</div>
+      </div>
+      <a class="cta" href="https://www.google.com/travel/flights" target="_blank" rel="noopener">✈️ Check BRU/AMS → Edinburgh flights</a>
+      <a class="cta sec" href="https://www.westcoastrailways.co.uk/jacobite/steam-train-trip" target="_blank" rel="noopener">🚂 Jacobite steam train — book early</a>
+      <a class="cta warn" href="https://www.gov.uk/eta" target="_blank" rel="noopener">🛂 Apply for UK ETA — £60 for the family</a>
+    </div>
+
+    <div class="sec">
+      <h2>Map key</h2>
+      <div class="legend">
+        <div class="li"><span class="dot" style="background:var(--amber)"></span> Stays — Loch Lomond (L1–L4)</div>
+        <div class="li"><span class="dot" style="background:var(--emerald)"></span> Stays — Glencoe / Fort William (G1–G4)</div>
+        <div class="li"><span class="dot" style="background:var(--purple)"></span> Stays — Loch Ness / Inverness (N1–N4)</div>
+        <div class="li"><span class="dot" style="background:var(--cyan)"></span> Stays — Stonehaven / Aberdeenshire (S1–S4)</div>
+        <div class="li"><span class="dot" style="background:var(--gold)"></span> Stays — Edinburgh (E1–E4)</div>
+        <div class="li"><span class="dot" style="background:var(--pink)"></span> ⭐ Kid set-pieces</div>
+        <div class="li"><span class="dot" style="background:var(--slate)"></span> Castles &amp; attractions</div>
+        <div class="li"><span class="dot" style="background:var(--skyb)"></span> Scenery, beaches &amp; viewpoints</div>
+        <div class="li"><span class="dot" style="background:#ef4444"></span> ✈️ Edinburgh Airport (start/end)</div>
+      </div>
+    </div>
+  </aside>
+  <div style="flex:1;position:relative">
+    <button class="toggle" id="tg">☰ Panel</button>
+    <div id="map"></div>
+  </div>
+</div>
+
+<script>
+// ---------- DATA ----------
+const stays = [
+  // 1 — Loch Lomond & Trossachs (amber)
+  {code:'L1',zone:'L',name:'Cameron House',area:'Loch Lomond · Balloch',price:640,rating:8.9,lat:56.0180,lng:-4.6260,pool:true,sc:false,fav:false,note:'5★ lochside resort · pool + kids’ club · seaplane. The splurge.',url:'https://www.cameronhouse.co.uk'},
+  {code:'L2',zone:'L',name:'The Lodge on Loch Lomond',area:'Luss',price:420,rating:8.7,lat:56.1010,lng:-4.6390,pool:false,sc:false,fav:true,note:'Lochside in pretty Luss · some rooms w/ sauna · private beach. Best all-rounder.',url:'https://www.lochlomond.co.uk'},
+  {code:'L3',zone:'L',name:'Duck Bay Hotel',area:'Arden · Loch Lomond',price:300,rating:8.0,lat:56.0330,lng:-4.6180,pool:false,sc:false,fav:false,note:'Lochside, great value · family rooms · restaurant with the view.',url:'https://www.duckbay.co.uk'},
+  {code:'L4',zone:'L',name:'Loch Lomond Waterfront Lodges',area:'Balmaha · east shore',price:520,rating:9.2,lat:56.0850,lng:-4.5560,pool:false,sc:true,fav:false,note:'Self-catering lodges w/ hot tub · rural, on the quiet shore.',url:'https://www.lochlomondwaterfront.com'},
+  // 2 — Glencoe & Fort William (emerald)
+  {code:'G1',zone:'G',name:'Isles of Glencoe Hotel',area:'Ballachulish',price:470,rating:8.5,lat:56.6890,lng:-5.1720,pool:true,sc:false,fav:true,note:'Lochside · INDOOR POOL · midway Glencoe↔Fort William. Top family pick ⭐',url:'https://www.crerarhotels.com/isles-of-glencoe-hotel'},
+  {code:'G2',zone:'G',name:'Ben Nevis Hotel & Leisure Club',area:'Fort William',price:400,rating:7.9,lat:56.8280,lng:-5.1000,pool:true,sc:false,fav:false,note:'Family rooms + indoor pool · edge of town, foot of the Ben.',url:'https://www.strathmorehotels.com/hotels/ben-nevis-hotel'},
+  {code:'G3',zone:'G',name:'Glencoe self-catering cottage',area:'Glencoe village',price:560,rating:9.3,lat:56.6870,lng:-5.1010,pool:false,sc:true,fav:false,note:'Cottage in the glen · space + kitchen · wake up to the mountains.',url:'https://www.cottages.com/regions/scottish-highlands'},
+  {code:'G4',zone:'G',name:'Premier Inn Fort William',area:'Fort William · lochside',price:320,rating:8.4,lat:56.8130,lng:-5.1130,pool:false,sc:false,fav:false,note:'Reliable family rooms · walk to the steam-train station. Value.',url:'https://www.premierinn.com'},
+  // 3 — Loch Ness & Inverness (purple)
+  {code:'N1',zone:'N',name:'Kingsmills Hotel',area:'Inverness',price:470,rating:8.8,lat:57.4630,lng:-4.1980,pool:true,sc:false,fav:true,note:'4★ · INDOOR POOL · family rooms · leafy city edge. Best base for the area ⭐',url:'https://www.kingsmillshotel.com'},
+  {code:'N2',zone:'N',name:'Loch Ness Highland Lodges',area:'Fort Augustus',price:460,rating:8.9,lat:57.1450,lng:-4.6810,pool:false,sc:true,fav:false,note:'Self-catering cabins by the canal · at the head of Loch Ness.',url:'https://www.lochness-cottages.com'},
+  {code:'N3',zone:'N',name:'Loch Ness Lodge',area:'Brachla · lochside',price:560,rating:9.4,lat:57.3860,lng:-4.4360,pool:false,sc:false,fav:false,note:'Boutique lochside retreat · gorgeous (adults-lean — check family policy).',url:'https://www.loch-ness-lodge.com'},
+  {code:'N4',zone:'N',name:'Premier Inn Inverness Centre',area:'Inverness · riverside',price:300,rating:8.6,lat:57.4790,lng:-4.2270,pool:false,sc:false,fav:false,note:'Budget family rooms · walk to the castle, river &amp; restaurants.',url:'https://www.premierinn.com'},
+  // 4 — Stonehaven & Aberdeenshire (cyan)
+  {code:'S1',zone:'S',name:'The Marine Hotel',area:'Stonehaven harbour',price:340,rating:8.7,lat:56.9630,lng:-2.2080,pool:false,sc:false,fav:true,note:'Harbourside · characterful · superb seafood. Walk to the pool + Dunnottar path.',url:'https://www.marinehotelstonehaven.co.uk'},
+  {code:'S2',zone:'S',name:'Banchory Lodge Hotel',area:'Royal Deeside',price:480,rating:8.9,lat:57.0530,lng:-2.4930,pool:false,sc:false,fav:false,note:'Country house on the River Dee · gardens · family-friendly, castle country.',url:'https://www.banchorylodge.com'},
+  {code:'S3',zone:'S',name:'The Ship Inn',area:'Stonehaven harbour',price:300,rating:8.4,lat:56.9640,lng:-2.2090,pool:false,sc:false,fav:false,note:'Harbour inn · rooms above one of the coast’s best seafood kitchens.',url:'https://www.shipinnstonehaven.com'},
+  {code:'S4',zone:'S',name:'Premier Inn Aberdeen South',area:'Portlethen',price:240,rating:8.5,lat:57.0570,lng:-2.1290,pool:false,sc:false,fav:false,note:'Budget family rooms · 15 min to Dunnottar. Value base.',url:'https://www.premierinn.com'},
+  // 5 — Edinburgh (gold)
+  {code:'E1',zone:'E',name:'The Scotsman Hotel',area:'Old Town · North Bridge',price:700,rating:9.0,lat:55.9518,lng:-3.1905,pool:true,sc:false,fav:false,note:'Landmark Old Town splurge · family rooms · pool &amp; spa. Right on the Royal Mile.',url:'https://www.thescotsmanhotel.co.uk'},
+  {code:'E2',zone:'E',name:'Leonardo Royal Edinburgh Haymarket',area:'West End',price:420,rating:8.5,lat:55.9450,lng:-3.2170,pool:false,sc:false,fav:false,note:'Modern family rooms · tram/walk to centre · dependable value.',url:'https://www.leonardohotels.com'},
+  {code:'E3',zone:'E',name:'Old Town serviced apartment',area:'Old Town',price:520,rating:9.1,lat:55.9490,lng:-3.1880,pool:false,sc:true,fav:true,note:'2-bed apartment · kitchen + space · walk to the Castle &amp; Museum. Best for a family.',url:'https://www.booking.com/city/gb/edinburgh.html'},
+  {code:'E4',zone:'E',name:'Premier Inn Edinburgh City Centre',area:'Lauriston Place',price:400,rating:8.7,lat:55.9440,lng:-3.1980,pool:false,sc:false,fav:false,note:'Reliable family rooms · walk to Castle, Museum &amp; Grassmarket. Value.',url:'https://www.premierinn.com'},
+];
+const zoneColor = {L:'#f59e0b',G:'#10b981',N:'#a78bfa',S:'#22d3ee',E:'#fcd34d'};
+
+// kid set-pieces (pink ⭐)
+const kidSpots = [
+  {n:'Jacobite Steam Train',lat:56.8210,lng:-5.1060,d:'🚂 The “Hogwarts Express” to Mallaig over Glenfinnan Viaduct · BOOK EARLY'},
+  {n:'Blair Drummond Safari Park',lat:56.1740,lng:-4.0620,d:'🦁 Drive-through safari + adventure play · perfect stop on the way in from EDI'},
+  {n:'Loch Lomond SEA LIFE',lat:56.0050,lng:-4.5810,d:'🐟 Aquarium + otters at Loch Lomond Shores, Balloch'},
+  {n:'Nevis Range Gondola',lat:56.8210,lng:-4.9640,d:'🚠 Cable car up Aonach Mòr · café + easy trails at the top, no big climb'},
+  {n:'Cruise Loch Ness',lat:57.1440,lng:-4.6800,d:'⛵ Monster-hunting sonar boat trip from Fort Augustus'},
+  {n:'Cairngorm Reindeer Herd',lat:57.1660,lng:-3.6870,d:'🦌 Meet &amp; hand-feed the free-ranging reindeer (optional Cairngorms detour)'},
+  {n:'Landmark Forest Park',lat:57.2810,lng:-3.8180,d:'🌲 Treetop trails, slides, dinosaurs · brilliant break at Carrbridge'},
+  {n:'Crathes Castle & playground',lat:57.0570,lng:-2.4390,d:'🏰 Fairytale castle + treetop Go Ape &amp; adventure playground, Deeside'},
+  {n:'Dynamic Earth',lat:55.9520,lng:-3.1740,d:'🌍 Hands-on planet-science galleries · Edinburgh rainy-day winner'},
+  {n:'Edinburgh Zoo',lat:55.9426,lng:-3.2680,d:'🐧 Penguin parade, koalas &amp; big cats'},
+];
+// castles & attractions (slate)
+const attractions = [
+  {n:'Stirling Castle',lat:56.1240,lng:-3.9470,d:'🏰 Cliff-top royal fortress · optional stop on the drive in from EDI'},
+  {n:'Glencoe Visitor Centre',lat:56.6720,lng:-5.0230,d:'ℹ️ Story of the glen + the massacre; short family trails from the door'},
+  {n:'Urquhart Castle',lat:57.3240,lng:-4.4420,d:'🏰 Romantic ruin right on Loch Ness — pairs with the boat trip'},
+  {n:'Culloden Battlefield',lat:57.4780,lng:-4.0940,d:'⚔️ 1746 battlefield + superb visitor centre near Inverness'},
+  {n:'Clava Cairns',lat:57.4730,lng:-4.0740,d:'🪨 4,000-year-old burial cairns &amp; stone circles (the Outlander stones)'},
+  {n:'Dunnottar Castle',lat:56.9460,lng:-2.1970,d:'🏰 Spectacular clifftop ruin at Stonehaven — the trip’s showpiece castle'},
+  {n:'Balmoral Castle',lat:57.0400,lng:-3.2300,d:'👑 The Royal residence, open to visitors in summer (Royal Deeside)'},
+  {n:'V&A Dundee',lat:56.4570,lng:-2.9700,d:'🎨 Striking design museum on the waterfront · optional stop toward Edinburgh'},
+  {n:'Edinburgh Castle',lat:55.9486,lng:-3.1999,d:'🏰 The big one · One O’Clock Gun, crown jewels, city views'},
+  {n:'National Museum of Scotland',lat:55.9470,lng:-3.1900,d:'🦕 Free · Dolly the Sheep, dinosaurs, interactive galleries — top rainy-day pick'},
+];
+// scenery, beaches & viewpoints (light blue)
+const nature = [
+  {n:'Luss village & beach',lat:56.1030,lng:-4.6360,d:'🏘️ Postcard conservation village + a pebble loch beach for skimming stones'},
+  {n:'Conic Hill / Balmaha',lat:56.0900,lng:-4.5430,d:'🥾 Short climb to a huge Loch Lomond view (do the lower slopes with Noah)'},
+  {n:'Rannoch Moor',lat:56.6100,lng:-4.7700,d:'🏔️ Vast wild plateau on the A82 — the drama builds before Glencoe'},
+  {n:'Glen Coe · Three Sisters',lat:56.6680,lng:-4.9900,d:'📸 The iconic viewpoint · short walk to the Meeting of Three Waters'},
+  {n:'Glen Nevis & Steall Falls',lat:56.7960,lng:-5.0020,d:'💦 Riverside meadows under Ben Nevis · easy walking + waterfalls'},
+  {n:'Glenfinnan Viaduct viewpoint',lat:56.8720,lng:-5.4330,d:'🌉 Watch the steam train cross the 21-arch viaduct (or ride it)'},
+  {n:'Fort Augustus Locks',lat:57.1440,lng:-4.6805,d:'🚤 Watch boats climb the Caledonian Canal staircase — kids love it'},
+  {n:'Chanonry Point',lat:57.5740,lng:-4.0870,d:'🐬 One of the UK’s best spots for wild bottlenose dolphins (rising tide)'},
+  {n:'Nairn Beach',lat:57.5900,lng:-3.8600,d:'🏖️ Long sandy “Brighton of the North” beach east of Inverness'},
+  {n:'Bow Fiddle Rock',lat:57.7020,lng:-2.8560,d:'🪨 Sea arch at Portknockie · lunch on Cullen skink en route to Stonehaven'},
+  {n:'Stonehaven Bay & Open-Air Pool',lat:56.9680,lng:-2.2090,d:'🏊 Heated 1930s Art-Deco lido + a curved pebble bay and harbour'},
+  {n:'Arthur’s Seat',lat:55.9440,lng:-3.1618,d:'🌋 Extinct volcano in the city · gentle family route to the top'},
+  {n:'Portobello Beach',lat:55.9540,lng:-3.1130,d:'🏖️ Edinburgh’s own sandy beach + promenade · last-morning paddle'},
+];
+const airport = {n:'Edinburgh Airport (EDI)',lat:55.9508,lng:-3.3615,d:'✈️ Fly in from BRU/AMS, collect the hire car; fly home from here. ~30 min from the city.'};
+
+const days = [
+  {n:'5',dow:'Sat',t:'Fly in → Loch Lomond',d:'Morning flight BRU/AMS→Edinburgh (~1h40), collect the hire car, drive ~1h15 to the loch. Settle in Luss/Balloch; pebble beach + first Highland sunset. (Early flight? Stop at Blair Drummond Safari Park or Stirling Castle.)',lat:56.0022,lng:-4.58,z:10},
+  {n:'6',dow:'Sun',t:'Loch Lomond & Trossachs',d:'Full gentle day: Luss village, a loch cruise, Loch Lomond SEA LIFE, or the lower slopes of Conic Hill from Balmaha. Trossachs (Aberfoyle, Go Ape Junior) if energy allows.',lat:56.0900,lng:-4.5430,z:11},
+  {n:'7',dow:'Mon',t:'The A82 showpiece → Glencoe',d:'THE drive: Loch Lomond → Rannoch Moor → Glen Coe. Stop at the Three Sisters viewpoint, the visitor centre and the short Meeting of Three Waters walk. On to your Ballachulish/Fort William base. ~2h + stops.',lat:56.6680,lng:-4.9900,z:11},
+  {n:'8',dow:'Tue',t:'Glenfinnan & Glen Nevis',d:'The Jacobite steam train to Mallaig, OR drive to Glenfinnan to watch it cross the viaduct. Afternoon: Glen Nevis meadows &amp; Steall gorge, or the Nevis Range gondola (café + easy trails at the top).',lat:56.8210,lng:-5.1060,z:11},
+  {n:'9',dow:'Wed',t:'Great Glen → Loch Ness → Inverness',d:'Drive up the Great Glen: Fort Augustus locks, a Loch Ness monster-cruise + Urquhart Castle, then into Inverness. Only ~1h45 driving, spread across a whole day of stops.',lat:57.1440,lng:-4.6800,z:10},
+  {n:'10',dow:'Thu',t:'Culloden, Clava & dolphins',d:'Culloden battlefield visitor centre + the Clava Cairns standing stones. Afternoon at Chanonry Point for wild dolphins (time it to a rising tide) or the sands at Nairn. Inverness riverside supper.',lat:57.5740,lng:-4.0870,z:11},
+  {n:'11',dow:'Fri',t:'Down the east → Stonehaven',d:'Transfer with a stop: the Moray coast (Bow Fiddle Rock + Cullen skink) OR a Cairngorms detour (reindeer + Landmark Park). Arrive Stonehaven; the heated open-air pool + harbour. ~2h45 driving.',lat:56.9640,lng:-2.2110,z:10},
+  {n:'12',dow:'Sat',t:'Dunnottar & Deeside',d:'Clifftop Dunnottar Castle (dramatic ~20-min walk down &amp; up), Stonehaven bay. Optional inland: Crathes Castle’s adventure playground or Balmoral in Royal Deeside. Fish supper at the harbour.',lat:56.9460,lng:-2.1970,z:12},
+  {n:'13',dow:'Sun',t:'Stonehaven → Edinburgh',d:'Drive ~2h south over the Forth. Optional stop: V&A Dundee or St Andrews. Arrive Edinburgh, settle in, an early-evening Royal Mile + Grassmarket stroll.',lat:55.9486,lng:-3.1999,z:11},
+  {n:'14',dow:'Mon',t:'Edinburgh',d:'Edinburgh Castle + the One O’Clock Gun, the free National Museum of Scotland (dinosaurs!), Camera Obscura, a gentle Arthur’s Seat, Dynamic Earth or the Zoo. As much or as little as Noah allows.',lat:55.9486,lng:-3.1999,z:13},
+  {n:'15',dow:'Tue',t:'Last morning & fly home',d:'Time for the Botanics or a Portobello Beach paddle, then ~30 min to Edinburgh Airport and home. Loop complete: up the west, down the east.',lat:55.9508,lng:-3.3615,z:10},
+];
+
+// hubs for routes
+const Lhub=[56.03,-4.60], Ghub=[56.72,-5.11], Nhub=[57.42,-4.35], Shub=[56.964,-2.211], Ehub=[55.95,-3.19];
+const mainRoute=[
+  [airport.lat,airport.lng], Lhub, [56.103,-4.636], [56.61,-4.77], [56.668,-4.99],
+  [56.8198,-5.1052], [57.144,-4.68], [57.4778,-4.2247], [57.1497,-2.0943], Shub,
+  [55.999,-3.403], Ehub, [airport.lat,airport.lng]
+];
+const spokesL=[[56.1030,-4.6360],[56.0900,-4.5430],[56.0050,-4.5810],[56.1740,-4.0620]];
+const spokesG=[[56.6680,-4.9900],[56.8720,-5.4330],[56.7960,-5.0020],[56.8210,-4.9640]];
+const spokesN=[[57.3240,-4.4420],[57.1440,-4.6800],[57.4780,-4.0940],[57.5740,-4.0870],[57.5900,-3.8600]];
+const spokesS=[[56.9460,-2.1970],[57.0570,-2.4390],[57.0400,-3.2300],[57.7020,-2.8560]];
+const spokesE=[[55.9486,-3.1999],[55.9440,-3.1618],[55.9426,-3.2680],[55.9540,-3.1130]];
+
+// ---------- MAP ----------
+const map=L.map('map',{zoomControl:true,attributionControl:true}).setView([56.7,-4.2],7);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+  attribution:'&copy; OpenStreetMap &copy; CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
+
+// main driving loop
+L.polyline(mainRoute,{color:'#fcd34d',weight:3,opacity:.75}).addTo(map);
+// day-trip spokes
+spokesL.forEach(p=>L.polyline([Lhub,p],{color:zoneColor.L,weight:2,opacity:.4,dashArray:'6,8'}).addTo(map));
+spokesG.forEach(p=>L.polyline([Ghub,p],{color:zoneColor.G,weight:2,opacity:.4,dashArray:'6,8'}).addTo(map));
+spokesN.forEach(p=>L.polyline([Nhub,p],{color:zoneColor.N,weight:2,opacity:.4,dashArray:'6,8'}).addTo(map));
+spokesS.forEach(p=>L.polyline([Shub,p],{color:zoneColor.S,weight:2,opacity:.4,dashArray:'6,8'}).addTo(map));
+spokesE.forEach(p=>L.polyline([Ehub,p],{color:zoneColor.E,weight:2,opacity:.4,dashArray:'6,8'}).addTo(map));
+
+function divMk(txt,color,size){return L.divIcon({className:'',html:`<div class="mk" style="width:${size}px;height:${size}px;background:${color};font-size:${size>22?12:10}px">${txt}</div>`,iconSize:[size,size],iconAnchor:[size/2,size/2]});}
+const markerByCode={};
+
+stays.forEach(h=>{
+  const m=L.marker([h.lat,h.lng],{icon:divMk(h.code,zoneColor[h.zone],32)}).addTo(map);
+  const feats=[h.pool?'🏊 indoor pool':'', h.sc?'🏡 self-catering':'', h.fav?'⭐ top pick':''].filter(Boolean).join(' · ');
+  m.bindPopup(`<div class="pp"><h3>${h.code} · ${h.name}</h3><div class="ppm">${h.area}<br/>~£${h.price} / 2 nights · ★ ${h.rating}/10${feats?'<br/>'+feats:''}<br/>${h.note}</div><a href="${h.url}" target="_blank" rel="noopener">Book / details →</a></div>`);
+  markerByCode[h.code]=m;
+});
+kidSpots.forEach(k=>{
+  const m=L.circleMarker([k.lat,k.lng],{radius:7,color:'#0b1220',weight:1.5,fillColor:'#f472b6',fillOpacity:.95}).addTo(map);
+  m.bindPopup(`<div class="pp"><h3>⭐ ${k.n}</h3><div class="ppm">${k.d}</div></div>`);
+});
+attractions.forEach(t=>{
+  const m=L.circleMarker([t.lat,t.lng],{radius:6,color:'#0b1220',weight:1.5,fillColor:'#cbd5e1',fillOpacity:.9}).addTo(map);
+  m.bindPopup(`<div class="pp"><h3>${t.n}</h3><div class="ppm">${t.d}</div></div>`);
+});
+nature.forEach(b=>{
+  const m=L.circleMarker([b.lat,b.lng],{radius:6,color:'#0b1220',weight:1.5,fillColor:'#7dd3fc',fillOpacity:.9}).addTo(map);
+  m.bindPopup(`<div class="pp"><h3>${b.n}</h3><div class="ppm">${b.d}</div></div>`);
+});
+L.marker([airport.lat,airport.lng],{icon:divMk('✈️','#ef4444',28)}).addTo(map)
+  .bindPopup(`<div class="pp"><h3>✈️ ${airport.n}</h3><div class="ppm">${airport.d}</div></div>`);
+
+// ---------- SIDEBAR RENDER ----------
+function stayCard(h){
+  const tags=[];
+  if(h.fav)tags.push('<span class="tag fav">⭐ top pick</span>');
+  if(h.pool)tags.push('<span class="tag poolt">🏊 pool</span>');
+  if(h.sc)tags.push('<span class="tag sct">🏡 self-catering</span>');
+  return `<div class="card" data-code="${h.code}">
+    <span class="code" style="background:${zoneColor[h.zone]}">${h.code}</span>
+    <div class="row1"><span class="nm">${h.name}</span><span class="pr">£${h.price}<small>/2 nts</small></span></div>
+    <div class="meta">★ ${h.rating}/10 <span style="opacity:.5">·</span> ${h.area}</div>
+    ${tags.length?`<div class="meta" style="margin-top:6px">${tags.join(' ')}</div>`:''}
+    <div class="meta" style="margin-top:6px">${h.note} · <a class="lk" href="${h.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Book →</a></div>
+  </div>`;
+}
+['L','G','N','S','E'].forEach(z=>{
+  document.getElementById('grp-'+z).innerHTML = stays.filter(h=>h.zone===z).map(stayCard).join('');
+});
+document.querySelectorAll('.card').forEach(c=>c.addEventListener('click',()=>{
+  const h=stays.find(x=>x.code===c.dataset.code);
+  map.flyTo([h.lat,h.lng],12,{duration:.8});
+  markerByCode[h.code].openPopup();
+}));
+
+document.getElementById('days').innerHTML = days.map(d=>`
+  <div class="day" data-lat="${d.lat}" data-lng="${d.lng}" data-z="${d.z}">
+    <div class="daynum"><b>${d.n}</b><span>${d.dow}</span></div>
+    <div class="dayb"><div class="t">${d.t}</div><div class="d">${d.d}</div></div>
+  </div>`).join('');
+document.querySelectorAll('.day').forEach(el=>el.addEventListener('click',()=>{
+  map.flyTo([+el.dataset.lat,+el.dataset.lng],+el.dataset.z,{duration:.8});
+}));
+
+// mobile toggle
+const tg=document.getElementById('tg'),side=document.getElementById('side');
+function checkMobile(){ if(window.innerWidth<=820){tg.style.display='block';} else {tg.style.display='none';side.style.display='';} }
+tg.addEventListener('click',()=>{ side.style.display = side.style.display==='none'?'':'none'; setTimeout(()=>map.invalidateSize(),50); });
+window.addEventListener('resize',checkMobile); checkMobile();
+</script>
+</body>
+</html>

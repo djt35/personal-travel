@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kent Coast Family Beach Break — Tue 14 → Mon 20 Jul 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --bg:#0b1220; --panel:rgba(17,25,40,0.82); --panel2:rgba(17,25,40,0.6);
+    --line:rgba(255,255,255,0.12); --txt:#e8eef7; --mut:#9fb0c6;
+    --amber:#f59e0b; --emerald:#10b981; --purple:#a78bfa; --cyan:#22d3ee;
+    --gold:#fcd34d; --orange:#fb923c;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt)}
+  #app{display:flex;height:100vh;overflow:hidden}
+  #map{flex:1;height:100vh}
+  #side{width:400px;max-width:88vw;height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1526,#0b1220);border-right:1px solid var(--line);padding:0 0 40px}
+  .hd{padding:20px 20px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:linear-gradient(180deg,#0c1526,rgba(12,21,38,0.92));backdrop-filter:blur(8px);z-index:5}
+  .hd h1{margin:0;font-size:20px;letter-spacing:.2px}
+  .hd .sub{color:var(--mut);font-size:12.5px;margin-top:4px;line-height:1.5}
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--txt);margin:6px 6px 0 0;background:var(--panel2)}
+  .sec{padding:16px 18px 6px}
+  .sec h2{font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:var(--mut);margin:0 0 10px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 13px;margin-bottom:10px;cursor:pointer;transition:.15s;position:relative}
+  .card:hover{border-color:rgba(255,255,255,.28);transform:translateY(-1px)}
+  .code{position:absolute;top:-9px;left:-8px;width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#0b1220;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .row1{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+  .nm{font-weight:650;font-size:14px;line-height:1.25}
+  .pr{font-weight:800;font-size:14px;white-space:nowrap}
+  .pr small{font-weight:500;color:var(--mut);font-size:11px}
+  .meta{color:var(--mut);font-size:12px;margin-top:5px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .tag{font-size:10.5px;padding:2px 7px;border-radius:6px;border:1px solid var(--line)}
+  .fav{color:var(--gold);border-color:rgba(252,211,77,.4)}
+  .beach{color:var(--cyan);border-color:rgba(34,211,238,.4)}
+  .poolt{color:#7cc4ff;border-color:rgba(124,196,255,.4)}
+  .bfastt{color:var(--emerald);border-color:rgba(16,185,129,.4)}
+  .lk{color:#7cc4ff;text-decoration:none;font-size:12px}
+  .lk:hover{text-decoration:underline}
+  .zoneh{display:flex;align-items:center;gap:8px;margin:14px 0 8px;font-weight:700;font-size:13px}
+  .dot{width:11px;height:11px;border-radius:50%}
+  .day{display:flex;gap:11px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;cursor:pointer;background:var(--panel2);transition:.15s}
+  .day:hover{border-color:rgba(255,255,255,.28);background:var(--panel)}
+  .daynum{flex:0 0 auto;width:42px;text-align:center}
+  .daynum b{display:block;font-size:15px}
+  .daynum span{font-size:10px;color:var(--mut);text-transform:uppercase}
+  .dayb .t{font-weight:650;font-size:13px}
+  .dayb .d{color:var(--mut);font-size:11.5px;margin-top:3px;line-height:1.45}
+  .budget{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .brow{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px dashed var(--line);gap:10px}
+  .brow:last-child{border:0}
+  .brow .v{font-weight:700;white-space:nowrap}
+  .btot{display:flex;justify-content:space-between;font-size:14px;font-weight:800;margin-top:8px;padding-top:10px;border-top:1px solid var(--line)}
+  .note{font-size:11.5px;color:var(--mut);line-height:1.55;margin-top:8px}
+  .todo{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 14px}
+  .todo .ti{display:flex;gap:9px;font-size:12.5px;padding:9px 0;border-bottom:1px dashed var(--line);line-height:1.45}
+  .todo .ti:last-child{border:0}
+  .todo .ti b{color:var(--txt)}
+  .chk{flex:0 0 auto;color:var(--gold)}
+  .cta{display:block;text-align:center;background:linear-gradient(135deg,#2563eb,#0ea5e9);color:#fff;text-decoration:none;padding:11px;border-radius:11px;font-weight:700;font-size:13.5px;margin-top:8px}
+  .cta.sec{background:linear-gradient(135deg,#334155,#1e293b);border:1px solid var(--line)}
+  .cta.warn{background:linear-gradient(135deg,#b45309,#d97706)}
+  .legend{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.9;color:var(--txt)}
+  .legend .li{display:flex;align-items:center;gap:8px}
+  .leaflet-popup-content-wrapper{background:#0e1830;color:var(--txt);border-radius:12px;border:1px solid var(--line)}
+  .leaflet-popup-tip{background:#0e1830}
+  .leaflet-popup-content{margin:12px 14px;font-size:13px;line-height:1.5}
+  .pp h3{margin:0 0 4px;font-size:14px}
+  .pp .ppm{color:var(--mut);font-size:12px}
+  .pp a{color:#7cc4ff}
+  .mk{border-radius:50%;border:2px solid rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;font-weight:800;color:#0b1220;box-shadow:0 2px 6px rgba(0,0,0,.5)}
+  .toggle{position:absolute;top:12px;left:12px;z-index:1000;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:8px 11px;font-size:12px;cursor:pointer;display:none}
+  @media (max-width:820px){
+    #app{flex-direction:column}
+    #side{width:100%;max-width:100%;height:auto;max-height:46vh;border-right:0;border-bottom:1px solid var(--line)}
+    #map{height:54vh}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="side">
+    <div class="hd">
+      <h1>🏖️ Kent Coast — Family Beach Break</h1>
+      <div class="sub">Tue 14 → Mon 20 July 2026 · 6 nights · Family of 3 (Noah, 5)<br/><b>LeShuttle Calais → Folkestone</b> in the Tesla · two coastal hotel bases</div>
+      <div>
+        <span class="pill">🚗 LeShuttle · 35 min</span>
+        <span class="pill">🛂 UK ETA needed ×3</span>
+        <span class="pill">⚡ Supercharger at terminal</span>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>Before you go — do these first</h2>
+      <div class="todo">
+        <div class="ti"><span class="chk">①</span><span><b>Apply for 3× UK ETA</b> at gov.uk/eta — £20 each (£60 total), Noah included. Allow up to 3 working days. <i>This is the one thing you must do before the tunnel.</i></span></div>
+        <div class="ti"><span class="chk">②</span><span><b>Book LeShuttle</b> — Tue 14 out / Mon 20 back. Midweek slots are cheapest (~£150–280 return booked ahead).</span></div>
+        <div class="ti"><span class="chk">③</span><span><b>Book hotels fast</b> — it's last-minute peak summer. Pick one from each base below; the two iconic Whitstable seafront hotels are sold out online (call direct, see note).</span></div>
+        <div class="ti"><span class="chk">④</span><span><b>Charge plan</b> — top up at the Folkestone terminal Supercharger on arrival; Maidstone (M20 J7) &amp; Ashford are your Tesla anchors.</span></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>Where to stay — pick one per base</h2>
+      <div class="note" style="margin-top:0">Two bases, 3 nights each. Prices are approx <b>3-night family-room totals (GBP)</b> — confirm live at booking. <i>Ratings are Booking-style /10. No boutique seafront hotel on this coast has a pool — only W3 Thanington does; otherwise lean on the sandy beaches (or a Bannatyne Broadstairs pool day-pass).</i></div>
+
+      <div class="zoneh"><span class="dot" style="background:var(--amber)"></span> Base 1 · Whitstable &amp; NW Kent <span style="color:var(--mut);font-weight:500;font-size:11px">— Tue 14–Fri 17 · oyster town + Canterbury</span></div>
+      <div id="grp-W"></div>
+      <div class="note" style="margin-top:2px">💡 <b>Sold out online — call direct:</b> <a class="lk" href="https://www.hotelcontinental.co.uk" target="_blank" rel="noopener">Hotel Continental</a> &amp; <a class="lk" href="https://www.booking.com/hotel/gb/themarine.html" target="_blank" rel="noopener">The Marine (Tankerton)</a> — Whitstable's two iconic seafront hotels sometimes hold rooms back for phone bookings.</div>
+
+      <div class="zoneh" style="margin-top:16px"><span class="dot" style="background:var(--emerald)"></span> Base 2 · Broadstairs &amp; Thanet <span style="color:var(--mut);font-weight:500;font-size:11px">— Fri 17–Mon 20 · best sandy beaches ⭐</span></div>
+      <div id="grp-B"></div>
+    </div>
+
+    <div class="sec">
+      <h2>7-day rhythm</h2>
+      <div id="days"></div>
+    </div>
+
+    <div class="sec">
+      <h2>Budget — family of 3</h2>
+      <div class="budget">
+        <div class="brow"><span>LeShuttle return · midweek, booked ahead</span><span class="v">£150–280</span></div>
+        <div class="brow"><span>UK ETA ×3 <small style="color:var(--mut)">(do first)</small></span><span class="v">£60</span></div>
+        <div class="brow"><span>Base 1 hotel · Whitstable/Canterbury (3 nts)</span><span class="v">£350–630</span></div>
+        <div class="brow"><span>Base 2 hotel · Broadstairs/Thanet (3 nts)</span><span class="v">£480–1,000</span></div>
+        <div class="brow"><span>Charging + fuel (Tesla)</span><span class="v">~£50</span></div>
+        <div class="brow"><span>Food · attractions · parking · beaches (6 days)</span><span class="v">£450–600</span></div>
+        <div class="btot"><span>Estimated total</span><span>~£1,540 – £2,620</span></div>
+        <div class="note">≈ €1,800 – €3,050. Value end = W3 Thanington + B5 Royal Albion. Treat end = W1 Crescent Turner + B2 Sands Margate. All bookable direct — no aggregator markup.</div>
+      </div>
+      <a class="cta" href="https://www.leshuttle.com/uk-en/" target="_blank" rel="noopener">🚗 Book LeShuttle (Tue 14 → Mon 20)</a>
+      <a class="cta warn" href="https://www.gov.uk/eta" target="_blank" rel="noopener">🛂 Apply for UK ETA — £60 for the family (do first)</a>
+    </div>
+
+    <div class="sec">
+      <h2>Map key</h2>
+      <div class="legend">
+        <div class="li"><span class="dot" style="background:var(--amber)"></span> Hotels — Base 1 · Whitstable/NW Kent (W1–W5)</div>
+        <div class="li"><span class="dot" style="background:var(--emerald)"></span> Hotels — Base 2 · Broadstairs/Thanet (B1–B5)</div>
+        <div class="li"><span class="dot" style="background:var(--orange)"></span> ☎︎ Sold-out icons — call direct</div>
+        <div class="li"><span class="dot" style="background:var(--cyan)"></span> Family beaches (sand) ⭐</div>
+        <div class="li"><span class="dot" style="background:#cbd5e1"></span> Attractions &amp; days out</div>
+        <div class="li"><span class="dot" style="background:#ef4444"></span> 🚗 LeShuttle Folkestone terminal</div>
+      </div>
+    </div>
+  </aside>
+  <div style="flex:1;position:relative">
+    <button class="toggle" id="tg">☰ Panel</button>
+    <div id="map"></div>
+  </div>
+</div>
+
+<script>
+// ---------- DATA ----------
+const hotels = [
+  // Base 1 — Whitstable / NW Kent (amber)
+  {code:'W1',zone:'W',name:'The Crescent Turner Hotel',area:'Whitstable · Wraik Hill',price:570,rating:8.9,lat:51.3368,lng:1.0144,walk:false,beach:'7-min drive to beach',pool:false,bfast:true,fav:true,note:'Boutique treat · 3 acres · panoramic sea views',url:'https://www.booking.com/hotel/gb/the-crescent-turner.html'},
+  {code:'W2',zone:'W',name:'Aqua Bay Guest House',area:'Herne Bay seafront',price:445,rating:9.0,lat:51.3725,lng:1.1248,walk:true,beach:'70 m to beach',pool:false,bfast:true,fav:false,note:'Best walk-to-beach · seaview family rooms · warm hosts',url:'https://www.booking.com/hotel/gb/aqua-bay-guest-house.html'},
+  {code:'W3',zone:'W',name:'The Thanington Hotel',area:'Canterbury',price:349,rating:8.2,lat:51.2724,lng:1.0690,walk:false,beach:'20-min drive to beach',pool:true,bfast:true,fav:false,note:'The POOL option · indoor pool + walled garden · best value',url:'https://www.booking.com/hotel/gb/thanington.html'},
+  {code:'W4',zone:'W',name:'Canterbury Cathedral Lodge',area:'Canterbury · Precincts',price:492,rating:9.0,lat:51.2788,lng:1.0831,walk:false,beach:'20-min drive to beach',pool:false,bfast:true,fav:false,note:'Gated cathedral grounds · traffic-free · family rooms',url:'https://www.booking.com/hotel/gb/canterbury-cathedral-lodge.html'},
+  {code:'W5',zone:'W',name:'The Falstaff in Canterbury',area:'Canterbury · Westgate',price:626,rating:8.3,lat:51.2820,lng:1.0750,walk:false,beach:'20-min drive to beach',pool:false,bfast:true,fav:false,note:'15th-C beamed coaching inn · full of character',url:'https://www.booking.com/hotel/gb/swallowfalstaffhotel.html'},
+  // Base 2 — Broadstairs / Thanet (emerald)
+  {code:'B1',zone:'B',name:'Botany Bay Hotel',area:'Kingsgate · Broadstairs',price:540,rating:9.2,lat:51.3868,lng:1.4302,walk:true,beach:'On Botany Bay sand',pool:false,bfast:true,fav:true,note:'Cliff above Blue-Flag Botany Bay · free parking · request a sea-view room',url:'https://www.botanybayhotel.co.uk/rooms'},
+  {code:'B2',zone:'B',name:'Sands Hotel Margate',area:'Margate seafront',price:725,rating:9.0,lat:51.3877,lng:1.3806,walk:true,beach:'30 m to Main Sands',pool:false,bfast:true,fav:true,note:'4★ boutique · front-row Main Sands · rooftop bar · under-6 free',url:'https://www.sandshotelmargate.co.uk'},
+  {code:'B3',zone:'B',name:'The Bay Tree',area:'Broadstairs · Stone Bay',price:570,rating:9.0,lat:51.3626,lng:1.4390,walk:true,beach:'250 m to Stone Bay',pool:false,bfast:true,fav:false,note:'10-room Victorian boutique B&B · superb breakfast',url:'https://www.baytreebroadstairs.co.uk'},
+  {code:'B4',zone:'B',name:'No.42 by GuestHouse',area:'Margate beachfront',price:1000,rating:9.4,lat:51.3874,lng:1.3852,walk:true,beach:'100 m to Main Sands',pool:false,bfast:true,fav:false,note:'Design-led splurge · sea-view balconies · small spa · couple’s treat',url:'https://www.guesthousehotels.co.uk/margate'},
+  {code:'B5',zone:'B',name:'Royal Albion Hotel',area:'Broadstairs · Viking Bay',price:530,rating:8.5,lat:51.3595,lng:1.4358,walk:true,beach:'100 m to Viking Bay',pool:false,bfast:true,fav:false,note:'Historic hotel over Viking Bay · best value · in the pretty town centre',url:'https://www.albionbroadstairs.co.uk'},
+];
+const zoneColor = {W:'#f59e0b',B:'#10b981'};
+
+const callDirect = [
+  {name:'Hotel Continental',area:'Beach Walk, Whitstable',lat:51.3644,lng:1.0323,note:'Iconic seafront boutique — SOLD OUT online for these dates. Call direct.',url:'https://www.hotelcontinental.co.uk'},
+  {name:'The Marine',area:'Marine Parade, Tankerton',lat:51.3645,lng:1.0434,note:'Seafront, family rooms — SOLD OUT online for these dates. Call direct.',url:'https://www.booking.com/hotel/gb/themarine.html'},
+];
+
+const beaches = [
+  {n:'Tankerton Beach & Slopes',lat:51.3665,lng:1.0498,d:'Grassy slopes, beach huts, low-tide sand + rock pools at "The Street" ⭐'},
+  {n:'Whitstable Beach & Harbour',lat:51.3606,lng:1.0225,d:'Working harbour, seafood shacks; sandy patches at low tide'},
+  {n:'Herne Bay Central',lat:51.3728,lng:1.1272,d:'Promenade, pier, paddling/splash park — easy with a pushchair'},
+  {n:'Minnis Bay (Birchington)',lat:51.3835,lng:1.2860,d:'Wide flat sand + tidal paddling pool — hidden-gem family beach ⭐'},
+  {n:'Viking Bay (Broadstairs)',lat:51.3591,lng:1.4479,d:'Sheltered sandy cove, tidal pool, donkey rides — best for young kids ⭐'},
+  {n:'Joss Bay',lat:51.3819,lng:1.4470,d:'Big open sand, lifeguarded in summer — gentle for building/paddling'},
+  {n:'Botany Bay',lat:51.3899,lng:1.4347,d:'White chalk stacks, clean wide sand, superb rock-pooling ⭐'},
+  {n:'Margate Main Sands',lat:51.3886,lng:1.3808,d:'Huge flat golden sand in town, gentle slope, Dreamland steps away'},
+  {n:'Ramsgate Main Sands',lat:51.3283,lng:1.4218,d:'Sheltered sand by the marina, promenade, ice-cream'},
+];
+const attractions = [
+  {n:'Dreamland Margate',lat:51.3862,lng:1.3833,d:'🎡 Vintage seaside theme park — gentle rides + arcades; top pick for a 5yo'},
+  {n:'Turner Contemporary',lat:51.3894,lng:1.3835,d:'🎨 Free seafront art gallery with a hands-on family area — rainy-day stop'},
+  {n:'Wildwood Trust (Herne)',lat:51.3225,lng:1.1235,d:'🐺 Native British wildlife — wolves, bears, otters + big play area'},
+  {n:'Port Lympne Reserve',lat:51.0790,lng:1.0180,d:'🦒 Safari park — giraffes, rhinos, truck safari; full day near the M20'},
+  {n:'Howletts Wild Animal Park',lat:51.2535,lng:1.1565,d:'🦍 Gorillas, elephants, big cats — nearest big-animal park to Canterbury'},
+  {n:'Quex Park & Powell-Cotton',lat:51.3658,lng:1.3015,d:'🏛️ Quirky natural-history museum + adventure play barn and gardens'},
+  {n:'Canterbury Cathedral & city',lat:51.2798,lng:1.0830,d:'⛪ Cathedral, cobbled streets, gentle river punting'},
+  {n:'Whitstable Castle & Gardens',lat:51.3643,lng:1.0388,d:'🌳 Free gardens, kids play area, tea garden — near the beach'},
+  {n:'Dickens House, Broadstairs',lat:51.3585,lng:1.4475,d:'📖 Tiny seaside museum right on Viking Bay'},
+];
+const terminal = {n:'LeShuttle — Folkestone Terminal',lat:51.0958,lng:1.1220,d:'🚗 Arrive/depart here · 35-min crossing to/from Calais · Tesla Supercharger on site'};
+
+const days = [
+  {n:'14',dow:'Tue',t:'Drive & arrive',d:'Drongen → Calais (~1h45), LeShuttle (35 min), top up at the Folkestone Supercharger, then ~45 min to Whitstable. Settle in, harbour stroll, seafood supper.',lat:51.0958,lng:1.1220,z:10},
+  {n:'15',dow:'Wed',t:'Tankerton & Whitstable',d:'Beach-hut day: low-tide sand and rock pools along "The Street", ice cream on the slopes, oysters for the grown-ups. Whitstable Castle gardens for shade.',lat:51.3665,lng:1.0498,z:13},
+  {n:'16',dow:'Thu',t:'Canterbury or Wildwood',d:'Either Canterbury — cathedral + gentle river punting — or Wildwood Trust for wolves, bears and a big playground. Finish at Herne Bay pier + splash park.',lat:51.2798,lng:1.0830,z:12},
+  {n:'17',dow:'Fri',t:'Move to Broadstairs',d:'Slow morning, ~45-min drive east to Thanet. Check in, then straight to Viking Bay — donkey rides, tidal pool and sandcastles.',lat:51.3591,lng:1.4479,z:13},
+  {n:'18',dow:'Sat',t:'Botany Bay + Dreamland',d:'Chalk-stack cove and brilliant rock-pooling at Botany/Joss Bay in the morning; Dreamland Margate rides in the afternoon.',lat:51.3899,lng:1.4347,z:13},
+  {n:'19',dow:'Sun',t:'Margate day',d:'Main Sands, Turner Contemporary’s family room, old-town mooch, and more Dreamland if Noah demands it. (Swap in quieter Ramsgate.)',lat:51.3886,lng:1.3808,z:13},
+  {n:'20',dow:'Mon',t:'Last paddle & home',d:'Morning paddle at Viking Bay, checkout, ~40 min back to the Folkestone terminal, LeShuttle to Calais and home.',lat:51.0958,lng:1.1220,z:10},
+];
+
+// hubs
+const whub=[51.362,1.030], bhub=[51.360,1.440];
+const mainRoute=[[terminal.lat,terminal.lng],whub,bhub,[terminal.lat,terminal.lng]];
+const dayTripsW=[[51.3665,1.0498],[51.3728,1.1272],[51.2798,1.0830],[51.3835,1.2860]];
+const dayTripsB=[[51.3899,1.4347],[51.3886,1.3808],[51.3283,1.4218],[51.3591,1.4479]];
+
+// ---------- MAP ----------
+const map=L.map('map',{zoomControl:true,attributionControl:true}).setView([51.30,1.20],9);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+  attribution:'&copy; OpenStreetMap &copy; CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
+
+// main driving route (arrive → base 1 → base 2 → depart)
+L.polyline(mainRoute,{color:'#fcd34d',weight:3,opacity:.7}).addTo(map);
+// day-trip spokes
+dayTripsW.forEach(p=>L.polyline([whub,p],{color:'#f59e0b',weight:2,opacity:.45,dashArray:'6,8'}).addTo(map));
+dayTripsB.forEach(p=>L.polyline([bhub,p],{color:'#10b981',weight:2,opacity:.45,dashArray:'6,8'}).addTo(map));
+
+function divMk(txt,color,size){return L.divIcon({className:'',html:`<div class="mk" style="width:${size}px;height:${size}px;background:${color};font-size:${size>22?12:10}px">${txt}</div>`,iconSize:[size,size],iconAnchor:[size/2,size/2]});}
+const markerByCode={};
+
+hotels.forEach(h=>{
+  const m=L.marker([h.lat,h.lng],{icon:divMk(h.code,zoneColor[h.zone],32)}).addTo(map);
+  const feats=[h.walk?'🏖️ '+h.beach:h.beach, h.pool?'🏊 indoor pool':'', h.bfast?'🍳 breakfast':''].filter(Boolean).join(' · ');
+  m.bindPopup(`<div class="pp"><h3>${h.code} · ${h.name}</h3><div class="ppm">${h.area}<br/>~£${h.price} for 3 nights · ★ ${h.rating}/10 ${h.fav?'· ⭐ top pick':''}<br/>${feats}<br/>${h.note}</div><a href="${h.url}" target="_blank" rel="noopener">Book / details →</a></div>`);
+  markerByCode[h.code]=m;
+});
+callDirect.forEach(c=>{
+  const m=L.marker([c.lat,c.lng],{icon:divMk('☎',' #fb923c',24)}).addTo(map);
+  m.bindPopup(`<div class="pp"><h3>☎︎ ${c.name}</h3><div class="ppm">${c.area}<br/>${c.note}</div><a href="${c.url}" target="_blank" rel="noopener">Hotel site →</a></div>`);
+});
+beaches.forEach(b=>{
+  const m=L.circleMarker([b.lat,b.lng],{radius:7,color:'#0b1220',weight:1.5,fillColor:'#22d3ee',fillOpacity:.95}).addTo(map);
+  m.bindPopup(`<div class="pp"><h3>🏖️ ${b.n}</h3><div class="ppm">${b.d}</div></div>`);
+});
+attractions.forEach(t=>{
+  const m=L.circleMarker([t.lat,t.lng],{radius:6,color:'#0b1220',weight:1.5,fillColor:'#cbd5e1',fillOpacity:.9}).addTo(map);
+  m.bindPopup(`<div class="pp"><h3>📍 ${t.n}</h3><div class="ppm">${t.d}</div></div>`);
+});
+L.marker([terminal.lat,terminal.lng],{icon:divMk('🚗',' #ef4444',28)}).addTo(map)
+  .bindPopup(`<div class="pp"><h3>🚗 ${terminal.n}</h3><div class="ppm">${terminal.d}</div></div>`);
+
+// ---------- SIDEBAR RENDER ----------
+function hotelCard(h){
+  const tags=[];
+  if(h.fav)tags.push('<span class="tag fav">⭐ top pick</span>');
+  if(h.walk)tags.push('<span class="tag beach">🏖️ walk to beach</span>');
+  if(h.pool)tags.push('<span class="tag poolt">🏊 pool</span>');
+  if(h.bfast)tags.push('<span class="tag bfastt">🍳 B&B</span>');
+  return `<div class="card" data-code="${h.code}">
+    <span class="code" style="background:${zoneColor[h.zone]}">${h.code}</span>
+    <div class="row1"><span class="nm">${h.name}</span><span class="pr">£${h.price}<small>/3 nts</small></span></div>
+    <div class="meta">★ ${h.rating}/10 <span style="opacity:.5">·</span> ${h.area} <span style="opacity:.5">·</span> ${h.beach}</div>
+    <div class="meta" style="margin-top:6px">${tags.join(' ')}</div>
+    <div class="meta" style="margin-top:6px">${h.note} · <a class="lk" href="${h.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Book →</a></div>
+  </div>`;
+}
+['W','B'].forEach(z=>{
+  document.getElementById('grp-'+z).innerHTML = hotels.filter(h=>h.zone===z).map(hotelCard).join('');
+});
+document.querySelectorAll('.card').forEach(c=>c.addEventListener('click',()=>{
+  const h=hotels.find(x=>x.code===c.dataset.code);
+  map.flyTo([h.lat,h.lng],13,{duration:.8});
+  markerByCode[h.code].openPopup();
+}));
+
+document.getElementById('days').innerHTML = days.map(d=>`
+  <div class="day" data-lat="${d.lat}" data-lng="${d.lng}" data-z="${d.z}">
+    <div class="daynum"><b>${d.n}</b><span>${d.dow}</span></div>
+    <div class="dayb"><div class="t">${d.t}</div><div class="d">${d.d}</div></div>
+  </div>`).join('');
+document.querySelectorAll('.day').forEach(el=>el.addEventListener('click',()=>{
+  map.flyTo([+el.dataset.lat,+el.dataset.lng],+el.dataset.z,{duration:.8});
+}));
+
+// mobile toggle
+const tg=document.getElementById('tg'),side=document.getElementById('side');
+function checkMobile(){ if(window.innerWidth<=820){tg.style.display='block';} else {tg.style.display='none';side.style.display='';} }
+tg.addEventListener('click',()=>{ side.style.display = side.style.display==='none'?'':'none'; setTimeout(()=>map.invalidateSize(),50); });
+window.addEventListener('resize',checkMobile); checkMobile();
+</script>
+</body>
+</html>
