@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canada BC — Stays: Airbnb + Booking.com (normalised) · 10–18 Jul 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{--van:#3b82f6;--vic:#10b981;--tof:#f59e0b;--rich:#8b5cf6;
+    --ink:#0b0f16;--panel:rgba(15,22,33,.86);--line:rgba(255,255,255,.10);--txt:#e8edf5;--mut:#9aa7b8;}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--ink);color:var(--txt)}
+  #map{position:fixed;inset:0;z-index:1}
+  .leaflet-popup-content-wrapper{background:#0f1620;color:var(--txt);border-radius:12px;border:1px solid var(--line)}
+  .leaflet-popup-tip{background:#0f1620}
+  .leaflet-popup-content{margin:11px 13px;font-size:12.5px;line-height:1.45}
+  .leaflet-popup-content a{color:#7dd3fc;font-weight:600}
+  .pin{display:flex;align-items:center;justify-content:center;color:#08101c;font-weight:800;font-size:10px;
+       border:2px solid rgba(255,255,255,.92);box-shadow:0 2px 7px rgba(0,0,0,.55);padding:0 5px;height:22px;white-space:nowrap}
+  .pin.A{border-radius:12px}
+  .pin.B{border-radius:4px;border-style:dashed}
+  .top{position:fixed;top:12px;left:12px;z-index:1000;background:var(--panel);backdrop-filter:blur(14px);
+       border:1px solid var(--line);border-radius:14px;padding:10px 14px;box-shadow:0 8px 30px rgba(0,0,0,.45);max-width:56vw}
+  .top h1{margin:0;font-size:13.5px}.top p{margin:3px 0 0;font-size:11px;color:var(--mut)}
+  .filters{margin-top:8px;display:flex;gap:6px}
+  .fbtn{font-size:11px;font-weight:600;padding:4px 11px;border-radius:20px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--txt);cursor:pointer}
+  .fbtn.on{background:#e8edf5;color:#0b0f16;border-color:#e8edf5}
+  .side{position:fixed;top:12px;right:12px;bottom:12px;width:412px;max-width:94vw;z-index:1000;overflow-y:auto;
+        background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 8px 40px rgba(0,0,0,.55)}
+  .side::-webkit-scrollbar{width:8px}.side::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:8px}
+  .note{font-size:11px;line-height:1.55;color:var(--mut);background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:12px}
+  .note b{color:var(--txt)}.note .k{color:#7dd3fc}.warn{color:#fcd34d}
+  .region{border:1px solid var(--line);border-radius:14px;margin-bottom:11px;overflow:hidden}
+  .region h2{margin:0;padding:10px 12px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.03)}
+  .dot{width:11px;height:11px;border-radius:50%;flex:none}
+  .cols{display:flex;gap:8px;padding:4px 10px 10px}
+  .col{flex:1;min-width:0}
+  .col h4{margin:4px 0 3px;font-size:10px;letter-spacing:.4px;text-transform:uppercase;color:var(--mut)}
+  .col.airbnb h4::before{content:"● ";color:#e8edf5}
+  .col.booking h4::before{content:"▪ ";color:#e8edf5}
+  .row{padding:5px 0;border-top:1px solid var(--line);cursor:pointer}
+  .row:hover{background:rgba(255,255,255,.03)}
+  .rn{font-size:11px;font-weight:600;line-height:1.2}
+  .rm{font-size:10px;color:var(--mut);margin-top:1px}
+  .rp{font-weight:700}.win{color:#34d399}
+  .legend{position:fixed;bottom:12px;left:12px;z-index:1000;background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-size:10.5px}
+  .legend div{display:flex;align-items:center;gap:7px;margin:2px 0}
+  .legend .sq{width:11px;height:11px;border:2px solid #fff;flex:none}
+  @media(max-width:700px){.side{position:static;width:auto;margin:120px 8px 8px}.legend,.top{position:static}}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div class="top">
+  <h1>🍁 Canada BC — Stays · Airbnb + Booking.com</h1>
+  <p>10–18 Jul 2026 · Vancouver → Victoria → Tofino → YVR · price = €/night</p>
+  <div class="filters">
+    <button class="fbtn on" id="f-all" onclick="setF('all')">Both</button>
+    <button class="fbtn" id="f-A" onclick="setF('A')">● Airbnb</button>
+    <button class="fbtn" id="f-B" onclick="setF('B')">▪ Booking</button>
+  </div>
+</div>
+<div class="side">
+  <div class="note">
+    <b>Normalised like the villas:</b> €/night comparator, ratings <span class="k">/5</span> (Booking /10 ÷2). Airbnb totals = nightly × that base's nights (excl. fees); Booking totals are fee-inclusive.<br>
+    <span class="warn">⚠️ Tofino is nearly sold out</span> for 14–17 Jul — only <b>4 Airbnb cabins + 3 Booking resorts</b> left. Book it first. Pools are rare on the coast — think <b>hot tubs, beach & rainforest</b>. Vancouver/Victoria Airbnb links are name-searches (I only captured room IDs for Tofino).
+  </div>
+  <div class="note" style="margin-bottom:12px">
+    <b>Accommodation build (cheapest good option/base, 8 nts):</b><br>
+    ● Airbnb ≈ <b>€1,380</b> · ▪ Booking ≈ <b>€1,850</b> (Tofino drives the cost either way).<br>
+    Add flights ~€3,400 + car ~€800 + ferries ~€120 + food/fun ~€1,200 → <b>≈ €6,900–7,400 all-in</b>.
+    <a href="index.html">↪ day-by-day route map</a>
+  </div>
+  <div id="regions"></div>
+</div>
+<div class="legend" id="legend"></div>
+<script>
+const map=L.map('map',{zoomControl:true}).setView([49.0,-124.6],7);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
+function fly(la,ln,z){map.flyTo([la,ln],z,{duration:1.0})}
+
+const REG={
+ V:{name:'Vancouver · 2 nts (10–12)',c:'#3b82f6',ctr:[49.27,-123.12]},
+ C:{name:'Victoria / Cowichan · 2 nts (12–14)',c:'#10b981',ctr:[48.45,-123.45]},
+ T:{name:'Tofino / Pacific Rim · 3 nts (14–17)',c:'#f59e0b',ctr:[49.06,-125.75]},
+ R:{name:'Richmond · by YVR · 1 nt (17–18)',c:'#8b5cf6',ctr:[49.17,-123.14]},
+};
+const ORDER=['V','C','T','R'];
+function abnb(q,ci,co){return `https://www.airbnb.com/s/homes?query=${encodeURIComponent(q)}&checkin=${ci}&checkout=${co}&adults=2&children=1&room_types%5B%5D=Entire%20home%2Fapt`;}
+
+// [base,plat,name,perNight,total,rating5,reviews,type,lat,lng,url]
+const D=[
+ // VANCOUVER (2n)
+ ['V','A','Stylish 1-Bedroom Suite',127,254,4.9,67,'suite',49.2211,-123.0806,abnb('Stylish 1 Bedroom Suite Vancouver','2026-07-10','2026-07-12')],
+ ['V','A','Modern North Van Suite, private entrance',151,302,4.95,111,'suite',49.31418,-123.04392,abnb('Modern North Vancouver Suite private entrance','2026-07-10','2026-07-12')],
+ ['V','A','Bright 2BR Suite · patio + parking',199,398,4.97,117,'2BR',49.27082,-123.05344,abnb('Bright Spacious 2BR Suite patio parking Vancouver','2026-07-10','2026-07-12')],
+ ['V','A','Coal Harbour 1BR condo · view',279,558,4.83,166,'condo',49.2869,-123.124,abnb('Amazing Coal Harbour 1 Bedroom Condo view','2026-07-10','2026-07-12')],
+ ['V','B','Barclay Hotel',182,364,3.7,2039,'hotel',49.2875,-123.1295,'https://www.booking.com/hotel/ca/barclay.html'],
+ ['V','B','Blue Horizon Hotel',334,668,4.5,9235,'hotel',49.2864,-123.1274,'https://www.booking.com/hotel/ca/blue-horizon-hotel.html'],
+ ['V','B','Hotel Le Soleil',385,770,4.55,2837,'boutique hotel',49.2852,-123.1181,'https://www.booking.com/hotel/ca/lesoleil.html'],
+ ['V','B','Pan Pacific Vancouver',509,1017,4.35,2822,'5★ harbour',49.2877,-123.1137,'https://www.booking.com/hotel/ca/p-p-vancouver-vancouver-british-columbia.html'],
+ // VICTORIA / COWICHAN (2n)
+ ['C','A','Suburbia & Nature',97,194,4.97,290,'suite',48.4445,-123.5393,abnb('Suburbia and Nature Victoria','2026-07-12','2026-07-14')],
+ ['C','A','Zen retreat · 2-bed cottage',133,266,4.93,95,'cottage',48.44507,-123.54461,abnb('Zen retreat 2 bed cottage Victoria','2026-07-12','2026-07-14')],
+ ['C','A','Ocean Vibe Retreat w/ Hot Tub',203,406,4.97,78,'house+hot tub',48.42351,-123.50103,abnb('Ocean Vibe Retreat Hot Tub Victoria','2026-07-12','2026-07-14')],
+ ['C','A','Rustic timber cabin in the woods',231,462,4.94,50,'cabin',48.5666,-123.4839,abnb('Rustic artisan timber cabin woods Cowichan','2026-07-12','2026-07-14')],
+ ['C','B','Zen Retreat Langford',111,222,4.6,56,'guesthouse',48.4465,-123.5453,'https://www.booking.com/hotel/ca/zen-retreat.html'],
+ ['C','B','Beaconsfield B&B',295,590,4.65,646,'B&B',48.4177,-123.3586,'https://www.booking.com/hotel/ca/beaconsfield-inn-victoria.html'],
+ ['C','B',"Abigail's Hotel",315,630,4.8,964,'boutique 5★',48.4209,-123.3599,'https://www.booking.com/hotel/ca/abigail-s.html'],
+ ['C','B','Fairmont Empress',449,898,4.45,1255,'icon 5★',48.4217,-123.3681,'https://www.booking.com/hotel/ca/fairmont-empress.html'],
+ // TOFINO (3n) — thin supply, ALL shown
+ ['T','A','Small Ocean Front Yurt (Ucluelet)',213,638,4.74,122,'yurt',48.9724,-125.5894,'https://www.airbnb.com/rooms/32520643?check_in=2026-07-14&check_out=2026-07-17&adults=2&children=1'],
+ ['T','A','Salmon Lodge on Ucluth Beach',224,672,4.81,144,'beach lodge',48.97207,-125.60682,'https://www.airbnb.com/rooms/27601748?check_in=2026-07-14&check_out=2026-07-17&adults=2&children=1'],
+ ['T','A','West Coast Hideaway · hot tub, Cox Bay',484,1452,4.97,278,'house+hot tub',49.10725,-125.8689,'https://www.airbnb.com/rooms/7823886?check_in=2026-07-14&check_out=2026-07-17&adults=2&children=1'],
+ ['T','A','Kelp Forest Cove',534,1602,5.0,4,'oceanfront',48.9332,-125.5179,'https://www.airbnb.com/rooms/51208019?check_in=2026-07-14&check_out=2026-07-17&adults=2&children=1'],
+ ['T','B','Meares Vista Inn',344,1033,4.25,454,'inn',49.1455,-125.89,'https://www.booking.com/hotel/ca/meares-vista-inn.html'],
+ ['T','B','Ocean Village Resort · beach cabins',475,1424,4.35,512,'beach cabins',49.1288,-125.9003,'https://www.booking.com/hotel/ca/tofino-555-hellesen-drive-british-columbia.html'],
+ ['T','B','Best Western Tin Wis Resort · beachfront',516,1547,4.45,753,'beach resort',49.1307,-125.8972,'https://www.booking.com/hotel/ca/best-western-tin-wis-resort.html'],
+ // RICHMOND (1n)
+ ['R','A','Rose Villa (2 rooms)',184,184,5.0,12,'2BR',49.1363,-123.1333,abnb('Rose Villa Richmond BC','2026-07-17','2026-07-18')],
+ ['R','A','Dreamcatcher',188,188,4.95,20,'suite',49.15334,-123.17375,abnb('Dreamcatcher Richmond BC','2026-07-17','2026-07-18')],
+ ['R','A','Serenity 2BR · Richmond YVR',210,210,4.87,148,'2BR',49.1449,-123.0969,abnb('Serenity 2 bedrooms Richmond YVR','2026-07-17','2026-07-18')],
+ ['R','B','Amy Guesthouse',134,134,4.4,447,'guesthouse',49.1596,-123.1136,'https://www.booking.com/hotel/ca/amy-gauesthouse.html'],
+ ['R','B','Accent Inns Vancouver Airport',228,228,4.3,708,'hotel',49.1850,-123.1069,'https://www.booking.com/hotel/ca/accent-inns-vancouver-airport.html'],
+ ['R','B','Fairmont Vancouver Airport · in-terminal',354,354,4.6,4101,'5★ in-terminal',49.1947,-123.1759,'https://www.booking.com/hotel/ca/the-fairmount-vancouver-airport.html'],
+];
+
+// route lines (context)
+L.polyline([[49.283,-123.121],[49.006,-123.132]],{color:'#94a3b8',weight:3,opacity:.6}).addTo(map);
+L.polyline([[48.688,-123.408],[48.45,-123.45],[49.194,-123.957],[49.283,-124.663],[49.153,-125.905]],{color:'#94a3b8',weight:3,opacity:.6}).addTo(map);
+L.polyline([[49.006,-123.132],[48.688,-123.408]],{color:'#38bdf8',weight:3,opacity:.8,dashArray:'6,7'}).addTo(map);
+L.polyline([[49.194,-123.957],[49.170,-123.135]],{color:'#38bdf8',weight:3,opacity:.8,dashArray:'6,7'}).addTo(map);
+
+const layers={A:L.layerGroup().addTo(map),B:L.layerGroup().addTo(map)};
+const markers={};
+function icon(plat,color,pn){return L.divIcon({className:'',iconSize:[46,22],iconAnchor:[23,11],html:`<div class="pin ${plat}" style="background:${color}">€${pn}</div>`});}
+D.forEach((p,i)=>{
+  const [reg,plat,name,pn,tot,rt,rv,type,la,ln,url]=p;
+  const col=REG[reg].c, platName=plat==='A'?'Airbnb':'Booking.com';
+  const m=L.marker([la,ln],{icon:icon(plat,col,pn)});
+  m.bindPopup(`<b>${name}</b><br>${type} · ${platName}<br><b>€${pn}</b>/night · ~€${tot.toLocaleString()} total<br>★${rt}/5 (${rv})<br><a href="${url}" target="_blank">Open ↗</a>`);
+  m.addTo(layers[plat]); markers[i]=m;
+});
+const regionsEl=document.getElementById('regions');
+ORDER.forEach(reg=>{
+  const meta=REG[reg];
+  const card=document.createElement('div');card.className='region';
+  const h=document.createElement('h2');h.innerHTML=`<span class="dot" style="background:${meta.c}"></span>${meta.name}`;h.onclick=()=>fly(meta.ctr[0],meta.ctr[1],10);
+  card.appendChild(h);
+  const cols=document.createElement('div');cols.className='cols';
+  ['A','B'].forEach(plat=>{
+    const col=document.createElement('div');col.className='col '+(plat==='A'?'airbnb':'booking');
+    col.innerHTML=`<h4>${plat==='A'?'Airbnb':'Booking·com'}</h4>`;
+    const items=D.map((p,i)=>({p,i})).filter(x=>x.p[0]===reg&&x.p[1]===plat).sort((a,b)=>a.p[3]-b.p[3]);
+    const cheapest=Math.min(...items.map(x=>x.p[3]));
+    items.forEach(({p,i})=>{const [,,name,pn,,rt,,type]=p;
+      const row=document.createElement('div');row.className='row';
+      row.innerHTML=`<div class="rn">${name}</div><div class="rm">${type} · ★${rt}/5 · <span class="rp ${pn===cheapest?'win':''}">€${pn}/nt</span></div>`;
+      row.onclick=()=>{fly(p[8],p[9],12);markers[i].openPopup();};col.appendChild(row);});
+    cols.appendChild(col);
+  });
+  card.appendChild(cols);regionsEl.appendChild(card);
+});
+function setF(f){['all','A','B'].forEach(x=>document.getElementById('f-'+x).classList.toggle('on',x===f));
+  if(f==='all'){map.addLayer(layers.A);map.addLayer(layers.B);}else if(f==='A'){map.addLayer(layers.A);map.removeLayer(layers.B);}else{map.removeLayer(layers.A);map.addLayer(layers.B);}}
+const legendEl=document.getElementById('legend');
+legendEl.innerHTML=`<div><span class="sq" style="border-radius:11px;background:#e8edf5"></span>● Airbnb (pill)</div><div><span class="sq" style="border-radius:3px;border-style:dashed;background:#e8edf5"></span>▪ Booking (dashed)</div>`;
+Object.keys(REG).forEach(r=>{const d=document.createElement('div');d.innerHTML=`<span class="sq" style="border-radius:11px;background:${REG[r].c}"></span>${REG[r].name.split(' · ')[0]}`;legendEl.appendChild(d);});
+</script>
+</body>
+</html>

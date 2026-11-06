@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Muse · The Wow! Signal — Amsterdam, Sun 29 Nov 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --venue:#ec4899; --a:#f59e0b; --c:#8b5cf6; --poi:#38bdf8; --trip:#34d399; --home:#f43f5e;
+    --ink:#e8edf4; --muted:#9fb0c3; --glass:rgba(15,23,38,.82);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1b2b;color:var(--ink)}
+  #map{position:absolute;inset:0;z-index:1}
+  .panel{position:absolute;z-index:1000;background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.10);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.45)}
+  #title{top:14px;left:14px;padding:14px 18px;max-width:350px}
+  #title h1{margin:0;font-size:18px;letter-spacing:.2px}
+  #title .sub{color:var(--muted);font-size:12.5px;margin-top:4px;line-height:1.5}
+  #title .tags{margin-top:9px;display:flex;flex-wrap:wrap;gap:6px}
+  .tag{font-size:11px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}
+  #timeline{top:14px;right:14px;width:288px;max-height:calc(100vh-28px);overflow:auto;padding:12px}
+  #timeline h2{margin:2px 4px 10px;font-size:12px;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted)}
+  .day{display:flex;gap:10px;padding:10px;border-radius:12px;cursor:pointer;transition:.15s;border:1px solid transparent}
+  .day:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
+  .day .dot{flex:0 0 auto;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-weight:700;font-size:11px;color:#0d1b2b}
+  .day .meta b{font-size:13px}
+  .day .meta span{display:block;color:var(--muted);font-size:11.5px;margin-top:2px;line-height:1.45}
+  #legend{bottom:62px;left:14px;padding:11px 14px;font-size:12px}
+  #legend .row{display:flex;align-items:center;gap:8px;margin:5px 0}
+  #legend .pin{width:13px;height:13px;border-radius:50%;border:2px solid #fff}
+  #budget{bottom:14px;left:14px;right:14px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:11px 14px}
+  #budget .item{font-size:12px;color:var(--muted)}
+  #budget .item b{color:var(--ink);font-size:13.5px}
+  #budget .total{margin-left:auto;font-size:13px;color:var(--muted)}
+  #budget .total b{color:#fff;font-size:18px;margin-left:6px}
+  .chip{font-size:10.5px;padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.07)}
+  .stay-marker{border-radius:50%;border:2.5px solid #fff;display:grid;place-items:center;font-weight:800;font-size:11px;color:#0d1b2b;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+  .venue-marker{border-radius:50%;border:3px solid #fff;display:grid;place-items:center;font-size:18px;box-shadow:0 0 18px rgba(236,72,153,.7),0 2px 8px rgba(0,0,0,.6)}
+  .poi-marker{border-radius:50%;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.5)}
+  .home-marker{border-radius:7px;border:2px solid #fff;background:var(--home);display:grid;place-items:center;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+  .leaflet-popup-content-wrapper{background:#0f1726;color:var(--ink);border-radius:12px;border:1px solid rgba(255,255,255,.12)}
+  .leaflet-popup-tip{background:#0f1726}
+  .leaflet-popup-content{margin:11px 13px;font-size:12.5px;line-height:1.5}
+  .leaflet-popup-content b{font-size:13.5px}
+  .leaflet-popup-content a{color:#5ec2ff;font-weight:600}
+  .pp-row{color:var(--muted);margin-top:3px}
+  .pp-code{display:inline-block;font-weight:800;color:#0d1b2b;padding:1px 7px;border-radius:6px;margin-bottom:4px}
+  @media (max-width:680px){#title{max-width:none;right:14px}#timeline,#legend{display:none}#budget{font-size:11px}}
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div id="title" class="panel">
+  <h1>🎸 Muse — <em>The Wow! Signal</em></h1>
+  <div class="sub"><b>Sun 29 Nov 2026</b> · Ziggo Dome, Amsterdam · David + 1 · 1 overnight<br>Drive from Ghent ~2h15 (E17→Antwerp→A2) · no Belgian date on this tour</div>
+  <div class="tags">
+    <span class="tag">🎤 Ziggo Dome</span>
+    <span class="tag">🚗 ~230 km</span>
+    <span class="tag">🏨 walk-back hotel</span>
+    <span class="tag">🎟️ buy tickets first</span>
+  </div>
+</div>
+
+<div id="timeline" class="panel">
+  <h2>Plan — tap to fly</h2>
+  <div id="days"></div>
+</div>
+
+<div id="legend" class="panel">
+  <div class="row"><span class="pin" style="background:var(--home);border-radius:3px"></span> Ghent — home base (drive start)</div>
+  <div class="row"><span class="pin" style="background:var(--venue)"></span> Ziggo Dome — the gig</div>
+  <div class="row"><span class="pin" style="background:var(--a)"></span> Hotels A1–A4 · walk to venue</div>
+  <div class="row"><span class="pin" style="background:var(--c)"></span> Hotels C1–C3 · central / metro</div>
+  <div class="row"><span class="pin" style="background:var(--poi)"></span> Amsterdam sights (pre-show / Mon)</div>
+</div>
+
+<div id="budget" class="panel">
+  <span class="item">🎟️ Tickets ×2 <b>~€220</b></span>
+  <span class="item">🏨 Hotel 1n <b>~€95–130</b></span>
+  <span class="item">⛽ Fuel return <b>~€65</b></span>
+  <span class="item">🅿️ Parking <b>~€25</b></span>
+  <span class="chip">excl. food & drinks</span>
+  <span class="total">Est. trip <b>~€450</b></span>
+</div>
+
+<script>
+const map = L.map('map',{zoomControl:true}).setView([51.95,4.45], 8);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+  attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:'abcd', maxZoom:19
+}).addTo(map);
+
+const COL={A:'#f59e0b',C:'#8b5cf6'};
+const DIN='2026-11-29', DOUT='2026-11-30';
+
+// ---- The gig ----
+const VENUE=[52.3128,4.9377];
+const vicon=L.divIcon({className:'',html:`<div class="venue-marker" style="width:40px;height:40px;background:#ec4899">🎸</div>`,iconSize:[40,40],iconAnchor:[20,20]});
+L.marker(VENUE,{icon:vicon}).addTo(map).bindPopup(
+  `<b>🎸 Muse · The Wow! Signal Tour</b>`+
+  `<div class="pp-row"><b>Ziggo Dome</b> · De Passage 100, Amsterdam Zuidoost</div>`+
+  `<div class="pp-row">Sun 29 Nov 2026 · doors ~18:30 · Muse ~20:30 · ends ~22:45 <i>(verify on ticket)</i></div>`+
+  `<div class="pp-row">Indoor arena, ~17,000 cap · metro 50/54 → Bijlmer ArenA / Strandvliet</div>`+
+  `<a href="https://www.muse.mu/tour" target="_blank">Official tour & tickets →</a>`);
+
+// ---- Hotels (live Booking.com rates for 29→30 Nov 2026, 2 adults — advance prices, will rise) ----
+const stays=[
+ // A = walk to the Ziggo Dome (Arena / ArenAPoort district)
+ {code:'A1',n:'Jaz in the City Amsterdam',lat:52.31421,lng:4.93932,price:'€123',score:'8.6',rev:'9,992',star:4,tag:'⭐ next to Ziggo Dome · ~3 min walk · design hotel',base:'A',url:'https://www.booking.com/hotel/nl/jaz-amsterdam.html'},
+ {code:'A2',n:'Courtyard by Marriott Amsterdam',lat:52.31016,lng:4.94645,price:'€95',score:'8.5',rev:'3,169',star:4,tag:'💶 best-value 4★ · ~8 min walk',base:'A',url:'https://www.booking.com/hotel/nl/courtyard-by-marriott-amsterdam-arena-atlas.html'},
+ {code:'A3',n:'Holiday Inn Amsterdam – Arena Towers',lat:52.30966,lng:4.94188,price:'€132',score:'8.1',rev:'4,478',star:4,tag:'🛗 reliable 4★ · ~9 min walk',base:'A',url:'https://www.booking.com/hotel/nl/holiday-inn-amsterdam-arena-towers.html'},
+ {code:'A4',n:'Hampton by Hilton Arena Boulevard',lat:52.31306,lng:4.94809,price:'€182',score:'8.2',rev:'12,649',star:3,tag:'🏨 closest Hilton · on the boulevard (pricier)',base:'A',url:'https://www.booking.com/hotel/nl/hampton-by-hilton-amsterdam-arena-boulevard.html'},
+ // C = central / metro corridor (12–15 min on metro 50/54 back to the arena)
+ {code:'C1',n:'Monet Garden Hotel Amsterdam',lat:52.36979,lng:4.90726,price:'€129',score:'9.1',rev:'3,687',star:4,tag:'🌿 charming canal-district 4★ · Waterlooplein metro',base:'C',url:'https://www.booking.com/hotel/nl/monet-garden-amsterdam.html'},
+ {code:'C2',n:'Ruby Emma Hotel Amsterdam',lat:52.33848,lng:4.92111,price:'€98',score:'8.7',rev:'7,759',star:4,tag:'🚇 modern · Spaklerweg metro · halfway to arena',base:'C',url:'https://www.booking.com/hotel/nl/ruby-emma.html'},
+ {code:'C3',n:"art'otel amsterdam",lat:52.37767,lng:4.89722,price:'€179',score:'8.8',rev:'3,419',star:4,tag:'🎨 design hotel at Centraal Station',base:'C',url:'https://www.booking.com/hotel/nl/art-otel-amsterdam.html'},
+];
+stays.forEach(s=>{
+  const icon=L.divIcon({className:'',html:`<div class="stay-marker" style="width:30px;height:30px;background:${COL[s.base]}">${s.code}</div>`,iconSize:[30,30],iconAnchor:[15,15]});
+  L.marker([s.lat,s.lng],{icon}).addTo(map).bindPopup(
+    `<span class="pp-code" style="background:${COL[s.base]}">${s.code}</span><br><b>${s.n}</b>`+
+    `<div class="pp-row">${s.price}/night · ${'★'.repeat(s.star)} · ${s.score} (${s.rev} reviews)</div>`+
+    `<div class="pp-row">${s.tag}</div>`+
+    `<div class="pp-row">${DIN} → ${DOUT} · 1 night, 2 adults</div>`+
+    `<a href="${s.url}?checkin=${DIN}&checkout=${DOUT}&group_adults=2&no_rooms=1" target="_blank">Open on Booking.com →</a>`);
+});
+
+// ---- Home base (Ghent) ----
+const hicon=L.divIcon({className:'',html:'<div class="home-marker" style="width:30px;height:30px">🏠</div>',iconSize:[30,30],iconAnchor:[15,15]});
+L.marker([51.0536,3.7253],{icon:hicon}).addTo(map).bindPopup('<b>🏠 Ghent — home base</b><div class="pp-row">Drive ~2h15 · ~230 km · E17 → Antwerp R1 → E19/A2 (watch the Antwerp ring)</div><div class="pp-row">Sunday traffic = light. Train alt: Brussels/Antwerp → Amsterdam Centraal ~2–3h</div>');
+
+// ---- Sights (pre-show Sunday afternoon, or Monday morning before driving home) ----
+const pois=[
+ {n:'Rijksmuseum',lat:52.3600,lng:4.8852,d:'Vermeer, Rembrandt — open Sunday. Great pre-show afternoon.',t:'town'},
+ {n:'Van Gogh Museum',lat:52.3584,lng:4.8811,d:'Book a timed slot. Next to Museumplein.',t:'town'},
+ {n:'Vondelpark',lat:52.3580,lng:4.8686,d:'City park stroll if the weather plays nice.',t:'nat'},
+ {n:'Foodhallen (Oud-West)',lat:52.3667,lng:4.8693,d:'Indoor food market — easy early dinner before the gig.',t:'town'},
+ {n:'Dam Square & the 9 Streets',lat:52.3731,lng:4.8926,d:'Historic centre + canal-belt shopping wander.',t:'town'},
+ {n:'Albert Cuyp Market',lat:52.3556,lng:4.8917,d:'Street market — closed Sun, open Mon. Nice Monday-morning stop.',t:'town'},
+];
+pois.forEach(p=>{
+  const col=p.t==='nat'?'var(--trip)':'var(--poi)';
+  const icon=L.divIcon({className:'',html:`<div class="poi-marker" style="width:13px;height:13px;background:${col}"></div>`,iconSize:[13,13],iconAnchor:[7,7]});
+  L.marker([p.lat,p.lng],{icon}).addTo(map).bindPopup(`<b>${p.n}</b><div class="pp-row">${p.d}</div>`);
+});
+
+// ---- Route: Ghent → Amsterdam ----
+L.polyline([[51.0536,3.7253],[51.2194,4.4025],[51.5719,4.7683],[52.0907,5.1214],[52.3128,4.9377]],
+  {color:'#34d399',weight:3.5,opacity:.85,dashArray:'8,9'}).addTo(map);
+
+// ---- Timeline ----
+const days=[
+ {t:'Pre',col:'#f43f5e',h:'Buy tickets FIRST',s:'Album dropped 26 Jun → general sale is live/imminent. Lock 2 tickets via muse.mu/tour (Ticketmaster NL) before booking the hotel.',z:[52.31,4.94,12]},
+ {t:'Sun',col:'#ec4899',h:'29 Nov · Ghent → Amsterdam + the gig',s:'Drive ~2h15 (leave ~13:00). Check in, early dinner (Foodhallen / centre), Muse at Ziggo Dome ~20:30, walk back if you took an A-hotel.',z:[52.3128,4.9377,13]},
+ {t:'Mon',col:'#8b5cf6',h:'30 Nov · Amsterdam → home',s:'Breakfast, optional Albert Cuyp market or a museum, then drive home ~2h15. Beat the evening Antwerp-ring rush.',z:[52.36,4.89,12]},
+];
+const dwrap=document.getElementById('days');
+days.forEach(d=>{
+  const el=document.createElement('div');el.className='day';
+  el.innerHTML=`<div class="dot" style="background:${d.col}">${d.t}</div>`+
+    `<div class="meta"><b>${d.h}</b><span>${d.s}</span></div>`;
+  el.onclick=()=>map.flyTo([d.z[0],d.z[1]],d.z[2],{duration:1.1});
+  dwrap.appendChild(el);
+});
+
+map.fitBounds([[50.95,3.55],[52.45,5.25]],{padding:[40,40]});
+</script>
+</body>
+</html>

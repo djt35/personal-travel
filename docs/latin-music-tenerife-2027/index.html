@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tenerife — Latin-Music Winter Week · Jan–Feb 2027</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --bg:#0b1220; --panel:rgba(17,25,40,0.82); --panel2:rgba(17,25,40,0.6);
+    --line:rgba(255,255,255,0.12); --txt:#e8eef7; --mut:#9fb0c6;
+    --amber:#f59e0b; --emerald:#10b981; --purple:#a78bfa; --cyan:#22d3ee;
+    --gold:#fcd34d; --red:#ef4444;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt)}
+  #app{display:flex;height:100vh;overflow:hidden}
+  #map{flex:1;height:100vh}
+  #side{width:400px;max-width:88vw;height:100vh;overflow-y:auto;background:linear-gradient(180deg,#0c1526,#0b1220);border-right:1px solid var(--line);padding:0 0 40px}
+  .hd{padding:20px 20px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:linear-gradient(180deg,#0c1526,rgba(12,21,38,0.92));backdrop-filter:blur(8px);z-index:5}
+  .hd h1{margin:0;font-size:20px;letter-spacing:.2px}
+  .hd .sub{color:var(--mut);font-size:12.5px;margin-top:4px;line-height:1.5}
+  .pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--txt);margin:6px 6px 0 0;background:var(--panel2)}
+  .sec{padding:16px 18px 6px}
+  .sec h2{font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:var(--mut);margin:0 0 10px}
+  .vibe{background:linear-gradient(135deg,rgba(245,158,11,.14),rgba(239,68,68,.12));border:1px solid rgba(245,158,11,.3);border-radius:14px;padding:12px 13px;font-size:12.5px;line-height:1.6;color:var(--txt)}
+  .vibe b{color:var(--gold)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 13px;margin-bottom:10px;cursor:pointer;transition:.15s;position:relative}
+  .card:hover{border-color:rgba(255,255,255,.28);transform:translateY(-1px)}
+  .card.rec{border-color:rgba(16,185,129,.55);box-shadow:0 0 0 1px rgba(16,185,129,.25)}
+  .code{position:absolute;top:-9px;left:-8px;width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#0b1220;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .row1{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+  .nm{font-weight:650;font-size:14px;line-height:1.25}
+  .pr{font-weight:800;font-size:13px;white-space:nowrap}
+  .pr small{font-weight:500;color:var(--mut);font-size:10.5px}
+  .meta{color:var(--mut);font-size:12px;margin-top:5px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .tag{font-size:10.5px;padding:2px 7px;border-radius:6px;border:1px solid var(--line)}
+  .fav{color:var(--gold);border-color:rgba(252,211,77,.4)}
+  .ao{color:var(--emerald);border-color:rgba(16,185,129,.4)}
+  .lk{color:#7cc4ff;text-decoration:none;font-size:12px}
+  .lk:hover{text-decoration:underline}
+  .desc{color:var(--mut);font-size:11.8px;line-height:1.5;margin-top:6px}
+  .zoneh{display:flex;align-items:center;gap:8px;margin:14px 0 8px;font-weight:700;font-size:13px}
+  .dot{width:11px;height:11px;border-radius:50%}
+  .day{display:flex;gap:11px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;cursor:pointer;background:var(--panel2);transition:.15s}
+  .day:hover{border-color:rgba(255,255,255,.28);background:var(--panel)}
+  .daynum{flex:0 0 auto;width:42px;text-align:center}
+  .daynum b{display:block;font-size:15px}
+  .daynum span{font-size:10px;color:var(--mut);text-transform:uppercase}
+  .dayb .t{font-weight:650;font-size:13px}
+  .dayb .d{color:var(--mut);font-size:11.5px;margin-top:3px;line-height:1.45}
+  .budget{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .brow{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px dashed var(--line);gap:10px}
+  .brow:last-child{border:0}
+  .brow .v{font-weight:700;white-space:nowrap}
+  .btot{display:flex;justify-content:space-between;font-size:14px;font-weight:800;margin-top:8px;padding-top:10px;border-top:1px solid var(--line)}
+  .note{font-size:11.5px;color:var(--mut);line-height:1.55;margin-top:8px}
+  .cta{display:block;text-align:center;background:linear-gradient(135deg,#2563eb,#0ea5e9);color:#fff;text-decoration:none;padding:11px;border-radius:11px;font-weight:700;font-size:13.5px;margin-top:8px}
+  .cta.sec{background:linear-gradient(135deg,#334155,#1e293b);border:1px solid var(--line)}
+  .legend{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.9;color:var(--txt)}
+  .legend .li{display:flex;align-items:center;gap:8px}
+  .leaflet-popup-content-wrapper{background:#0e1830;color:var(--txt);border-radius:12px;border:1px solid var(--line)}
+  .leaflet-popup-tip{background:#0e1830}
+  .leaflet-popup-content{margin:12px 14px;font-size:13px;line-height:1.5}
+  .pp h3{margin:0 0 4px;font-size:14px}
+  .pp .ppm{color:var(--mut);font-size:12px}
+  .pp a{color:#7cc4ff}
+  .mk{border-radius:50%;border:2px solid rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;font-weight:800;color:#0b1220;box-shadow:0 2px 6px rgba(0,0,0,.5)}
+  .toggle{position:absolute;top:12px;left:12px;z-index:1000;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:8px 11px;font-size:12px;cursor:pointer;display:none}
+  @media (max-width:820px){
+    #app{flex-direction:column}
+    #side{width:100%;max-width:100%;height:auto;max-height:46vh;border-right:0;border-bottom:1px solid var(--line)}
+    #map{height:54vh}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="side">
+    <div class="hd">
+      <h1>🌴🎶 Tenerife — Latin-Music Winter Week</h1>
+      <div class="sub">Jan–Feb 2027 · 7 nights · <b>Couple</b> (David &amp; Lobke) · all-inclusive<br/>South Tenerife (Costa Adeje) · direct from Brussels / Charleroi ~4h20</div>
+      <div>
+        <span class="pill">☀️ 21–23°C days, warm evenings</span>
+        <span class="pill">✈️ BRU/CRL ⇄ TFS direct</span>
+        <span class="pill">🍹 Resort + a salsa night</span>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="vibe">
+        <b>The honest formula.</b> A Costa Adeje all-inclusive nails the <b>warm-evening + resident live singer</b> half every night — but resort music leans pop/rock covers, not Latin. For the <b>real Cuban/salsa hit</b>, pair the resort with one night out at <b>Achamán</b> (salsa cubana, locals dancing) ⭐. Resort for the vibe; salsa night for the soul.
+      </div>
+    </div>
+
+    <div class="sec">
+      <h2>Where to base — pick a resort</h2>
+      <div class="note" style="margin-top:0">All in warm SW Costa Adeje/Adeje (best winter sun, calm sea). Tap a card to fly there; codes match the map. Prices are <b>AI, 7 nights, 2 people</b> — winter (not peak-Xmas) — <i>verify live at booking; fares/rates for early 2027 aren't fully loaded yet.</i></div>
+
+      <div class="zoneh"><span class="dot" style="background:var(--amber)"></span> Music-forward <span style="color:var(--mut);font-weight:500;font-size:11px">— live band every night</span></div>
+      <div id="grp-A"></div>
+
+      <div class="zoneh"><span class="dot" style="background:var(--emerald)"></span> Adults-only &amp; relaxed <span style="color:var(--mut);font-weight:500;font-size:11px">— singer + a drink ⭐ couple pick</span></div>
+      <div id="grp-B"></div>
+
+      <div class="zoneh"><span class="dot" style="background:var(--purple)"></span> 5★ premium all-rounders</div>
+      <div id="grp-C"></div>
+    </div>
+
+    <div class="sec">
+      <h2>Where the Latin music actually is</h2>
+      <div id="pois"></div>
+    </div>
+
+    <div class="sec">
+      <h2>7-night rhythm <span style="color:var(--mut);font-weight:400;text-transform:none;letter-spacing:0">· sample week Sat 30 Jan → Sat 6 Feb 2027</span></h2>
+      <div id="days"></div>
+    </div>
+
+    <div class="sec">
+      <h2>Budget — couple, all-in</h2>
+      <div class="budget">
+        <div class="brow"><span>Flights · BRU/CRL ⇄ TFS direct (2 pax, w/ bags)</span><span class="v">~€300–700</span></div>
+        <div class="brow"><span>All-inclusive resort · 7 nts, 2 pax <small style="color:var(--mut)">(swing factor)</small></span><span class="v">€1,200–2,800</span></div>
+        <div class="brow"><span>Transfers · salsa night · Teide/catamaran · tapas out</span><span class="v">~€350</span></div>
+        <div class="btot"><span>Estimated total</span><span>~€1,850 – €3,850</span></div>
+        <div class="note">Value end = adults-only 4★ (B2 AluaSoul). Premium end = Hard Rock / 5★. Sweet spot ≈ <b>€2,200–2,800</b>. A <b>TUI Belgium package</b> (BRU→TFS + AI hotel + transfer) is usually cheaper &amp; simpler than booking parts separately; DIY = Ryanair from Charleroi + book the hotel direct.</div>
+      </div>
+      <a class="cta" id="flycta" href="https://www.ryanair.com/gb/en/trip/flights/select?adults=2&teens=0&children=0&infants=0&dateOut=2027-01-30&dateIn=2027-02-06&originIata=CRL&destinationIata=TFS&isReturn=true" target="_blank" rel="noopener">✈️ Check live Ryanair fare (CRL ⇄ TFS)</a>
+      <a class="cta sec" href="https://www.tui.be/en/last-minute/brussels/tenerife-south" target="_blank" rel="noopener">📦 TUI Belgium package (flight + AI hotel)</a>
+    </div>
+
+    <div class="sec">
+      <h2>Map key</h2>
+      <div class="legend">
+        <div class="li"><span class="dot" style="background:var(--amber)"></span> Resort — music-forward (A)</div>
+        <div class="li"><span class="dot" style="background:var(--emerald)"></span> Resort — adults-only, relaxed (B)</div>
+        <div class="li"><span class="dot" style="background:var(--purple)"></span> Resort — 5★ premium (C)</div>
+        <div class="li"><span class="dot" style="background:var(--red)"></span> 💃 Salsa / Latin night ⭐</div>
+        <div class="li"><span class="dot" style="background:var(--cyan)"></span> 🎸 Live-music venue</div>
+        <div class="li"><span class="dot" style="background:var(--gold)"></span> 🍽️ Sunset dinner spot</div>
+        <div class="li"><span class="dot" style="background:#cbd5e1"></span> ✈️ Tenerife South (TFS)</div>
+      </div>
+      <div class="note">Resort pins are approximate (regional planning map) — confirm exact location on booking. Codes let you prune fast: e.g. "keep B1, B2, A1 — drop the rest."</div>
+    </div>
+  </aside>
+  <div style="flex:1;position:relative">
+    <button class="toggle" id="tg">☰ Panel</button>
+    <div id="map"></div>
+  </div>
+</div>
+
+<script>
+// ---------- DATA ----------
+const resorts = [
+  // A — Music-forward (amber)
+  {code:'A1',tier:'A',name:'Hard Rock Hotel Tenerife',price:'€1,900–2,800',rating:4.4,ao:false,rec:false,lat:28.1225,lng:-16.7855,board:'AI Plus · Playa Paraíso',
+   desc:'Live band every night in the lobby + DJ &amp; live musicians at the adults-only pool. Music everywhere — but rock/pop-leaning, not Latin. The most "music holiday" of the lot.',url:'https://hotel.hardrock.com/tenerife/'},
+  // B — Adults-only relaxed (emerald)
+  {code:'B1',tier:'B',name:'Meliá Jardines del Teide — Adults Only',price:'€1,300–2,000',rating:4.5,ao:true,rec:true,lat:28.0975,lng:-16.7315,board:'AI · Costa Adeje',
+   desc:'Calm 5★ adults-only above Costa Adeje: resident singer + evening shows, big pools, sea views. The relaxed "singer with a drink" mood, dialled in. ⭐ couple pick.',url:'https://www.melia.com/en/hotels/spain/tenerife/melia-jardines-del-teide'},
+  {code:'B2',tier:'B',name:'AluaSoul Costa Adeje (Hyatt)',price:'€1,200–1,900',rating:4.4,ao:true,rec:true,lat:28.0920,lng:-16.7345,board:'AI · Fañabé (adults 16+)',
+   desc:'Fully renovated 2024, Hyatt Inclusive Collection; daily day + night entertainment incl. evening singers. Central Fañabé, short walk to the beach. Best value adults-only.',url:'https://www.hyattinclusivecollection.com/en/resorts-hotels/alua-hotels/tenerife/aluasoul-costa-adeje/'},
+  {code:'B3',tier:'B',name:'H10 Gran Tinerfe — Adults Only',price:'€1,300–2,000',rating:4.4,ao:true,rec:false,lat:28.0715,lng:-16.7300,board:'AI · seafront',
+   desc:'Seafront adults-only on the Costa Adeje–Américas promenade; nightly live music/shows and the easiest stroll to off-resort Latin bars.',url:'https://www.h10hotels.com/en/tenerife-hotels/h10-gran-tinerfe'},
+  // C — 5★ premium (purple)
+  {code:'C1',tier:'C',name:'Iberostar Selection Anthelia',price:'€1,600–2,600',rating:4.5,ao:false,rec:false,lat:28.0905,lng:-16.7425,board:'AI · El Duque (family + adult zones)',
+   desc:"Landmark 5★ at El Duque. Iberostar's Cuban heritage shows in its live evening programme; adult pools/spa if you want the option without going full adults-only.",url:'https://www.iberostar.com/en/hotels/tenerife/iberostar-selection-anthelia/'},
+  {code:'C2',tier:'C',name:'GF Gran Costa Adeje',price:'€1,400–2,300',rating:4.5,ao:false,rec:false,lat:28.0945,lng:-16.7360,board:'AI · Fañabé',
+   desc:'Polished 5★ with nightly live entertainment, superb pools + spa. The reliable all-rounder if you want comfort over a specific music theme.',url:'https://www.gfhoteles.com/en/hotels/gf-gran-costa-adeje'},
+];
+const tierColor={A:'#f59e0b',B:'#10b981',C:'#a78bfa'};
+
+const pois=[
+  {code:'💃',n:'Achamán Discopub ⭐',type:'salsa',lat:28.0790,lng:-16.7295,d:'THE authentic Latin night — salsa cubana, bachata &amp; reggaeton, locals dancing as couples. Mid-week is best; runs salsa/bachata classes. ~15 min from the resorts.'},
+  {code:'🎸',n:'Hard Rock Cafe Tenerife',type:'live',lat:28.0585,lng:-16.7275,d:'Playa de las Américas — live bands + guest artists most nights. A dinner-and-a-gig night off-resort.'},
+  {code:'🍽️',n:'La Caleta (Costa Adeje)',type:'dine',lat:28.1030,lng:-16.7620,d:'Pretty fishing village — seafront seafood + sunset. The loveliest evening meal out.'},
+];
+const poiColor={salsa:'#ef4444',live:'#22d3ee',dine:'#fcd34d'};
+const airport={n:'Tenerife South (TFS)',lat:28.0445,lng:-16.5725,d:'Reina Sofía — direct from Brussels (Brussels Airlines/TUI ~4h20) &amp; Charleroi (Ryanair). ~40-min transfer to Costa Adeje.'};
+
+const days=[
+  {n:'30',dow:'Sat',t:'Arrive & first sundowner',d:'Land TFS, ~40-min transfer to Costa Adeje, check in. Sunset drink to the resort\'s live singer.',lat:28.092,lng:-16.735,z:13},
+  {n:'31',dow:'Sun',t:'Beach + pool reset',d:'Playa del Duque / Fañabé sand, long lunch, spa. Evening: resort live band + show.',lat:28.094,lng:-16.741,z:14},
+  {n:'01',dow:'Mon',t:'Slow day → live music out',d:'Promenade stroll; dinner + live bands at Hard Rock Cafe (Américas), or stay in for the resort singer.',lat:28.0585,lng:-16.7275,z:14},
+  {n:'02',dow:'Tue',t:'Teide by day, salsa by night ⭐',d:'Daytime: Teide sunset & stargazing, or a whale/dolphin catamaran. Night: SALSA CUBANA at Achamán — mid-week is when the locals dance. The authentic Latin evening.',lat:28.0790,lng:-16.7295,z:13},
+  {n:'03',dow:'Wed',t:'La Caleta sunset dinner',d:'Pool morning; evening seafood at La Caleta fishing village as the sun drops.',lat:28.1030,lng:-16.7620,z:14},
+  {n:'04',dow:'Thu',t:'Free — chase a gig',d:'Check Bandsintown / Songkick for any Cuban/Latin touring act on your dates; otherwise the resort finale night.',lat:28.092,lng:-16.735,z:13},
+  {n:'05',dow:'Fri',t:'Last full day',d:'Nothing but pool, sea and one more live-music evening.',lat:28.094,lng:-16.741,z:14},
+  {n:'06',dow:'Sat',t:'Fly home',d:'Checkout, ~40-min transfer to TFS, direct back to Brussels/Charleroi.',lat:28.0445,lng:-16.5725,z:12},
+];
+
+const hub=[28.092,-16.735];
+const routes=[
+  [hub,[28.0790,-16.7295]],[hub,[28.0585,-16.7275]],
+  [hub,[28.1030,-16.7620]],[hub,[28.0445,-16.5725]],[hub,[28.2723,-16.6425]],
+];
+
+// ---------- MAP ----------
+const map=L.map('map',{zoomControl:true,attributionControl:true}).setView([28.088,-16.700],11);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+  attribution:'&copy; OpenStreetMap &copy; CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
+
+routes.forEach(r=>L.polyline(r,{color:'#f59e0b',weight:2,opacity:.45,dashArray:'6,8'}).addTo(map));
+
+function divMk(txt,color,size){return L.divIcon({className:'',html:`<div class="mk" style="width:${size}px;height:${size}px;background:${color};font-size:${size>22?12:10}px">${txt}</div>`,iconSize:[size,size],iconAnchor:[size/2,size/2]});}
+const markerByCode={};
+
+resorts.forEach(v=>{
+  const m=L.marker([v.lat,v.lng],{icon:divMk(v.code,tierColor[v.tier],32)}).addTo(map);
+  m.bindPopup(`<div class="pp"><h3>${v.code} · ${v.name}</h3><div class="ppm">${v.board}<br/>AI 7 nts (2 pax): <b>${v.price}</b> · ★ ${v.rating} ${v.ao?'· Adults-only':''} ${v.rec?'· ⭐ couple pick':''}<br/>${v.desc}</div><a href="${v.url}" target="_blank" rel="noopener">Hotel site →</a></div>`);
+  markerByCode[v.code]=m;
+});
+pois.forEach(p=>{
+  const m=L.marker([p.lat,p.lng],{icon:divMk(p.code,poiColor[p.type],26)}).addTo(map);
+  m.bindPopup(`<div class="pp"><h3>${p.n}</h3><div class="ppm">${p.d}</div></div>`);
+  markerByCode[p.n]=m;
+});
+L.marker([airport.lat,airport.lng],{icon:divMk('✈','#cbd5e1',26)}).addTo(map)
+  .bindPopup(`<div class="pp"><h3>✈️ ${airport.n}</h3><div class="ppm">${airport.d}</div></div>`);
+// Teide POI
+L.circleMarker([28.2723,-16.6425],{radius:7,color:'#0b1220',weight:1.5,fillColor:'#f472b6',fillOpacity:.95}).addTo(map)
+  .bindPopup(`<div class="pp"><h3>🌋 Teide National Park</h3><div class="ppm">Spain's highest peak (3,715 m) — sunset + stargazing tours from Costa Adeje. The one big day-trip worth doing.</div></div>`);
+
+// ---------- SIDEBAR ----------
+function resortCard(v){
+  const tags=[];
+  if(v.rec)tags.push('<span class="tag fav">⭐ Couple pick</span>');
+  if(v.ao)tags.push('<span class="tag ao">Adults-only</span>');
+  return `<div class="card ${v.rec?'rec':''}" data-code="${v.code}">
+    <span class="code" style="background:${tierColor[v.tier]}">${v.code}</span>
+    <div class="row1"><span class="nm">${v.name}</span><span class="pr">${v.price}<small> /7nt·2</small></span></div>
+    <div class="meta">★ ${v.rating} <span style="opacity:.5">·</span> ${v.board} ${tags.join(' ')}</div>
+    <div class="desc">${v.desc}</div>
+    <div class="meta" style="margin-top:6px"><a class="lk" href="${v.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Hotel site →</a></div>
+  </div>`;
+}
+['A','B','C'].forEach(t=>{
+  document.getElementById('grp-'+t).innerHTML=resorts.filter(v=>v.tier===t).map(resortCard).join('');
+});
+document.querySelectorAll('.card').forEach(c=>c.addEventListener('click',()=>{
+  const v=resorts.find(x=>x.code===c.dataset.code);
+  map.flyTo([v.lat,v.lng],14,{duration:.8});
+  markerByCode[v.code].openPopup();
+}));
+
+document.getElementById('pois').innerHTML=pois.map(p=>`
+  <div class="day" data-lat="${p.lat}" data-lng="${p.lng}" data-z="14">
+    <div class="daynum" style="width:30px;font-size:18px">${p.code}</div>
+    <div class="dayb"><div class="t">${p.n}</div><div class="d">${p.d}</div></div>
+  </div>`).join('');
+
+document.getElementById('days').innerHTML=days.map(d=>`
+  <div class="day" data-lat="${d.lat}" data-lng="${d.lng}" data-z="${d.z}">
+    <div class="daynum"><b>${d.n}</b><span>${d.dow}</span></div>
+    <div class="dayb"><div class="t">${d.t}</div><div class="d">${d.d}</div></div>
+  </div>`).join('');
+
+document.querySelectorAll('.day').forEach(el=>el.addEventListener('click',()=>{
+  map.flyTo([+el.dataset.lat,+el.dataset.lng],+el.dataset.z,{duration:.8});
+}));
+
+const tg=document.getElementById('tg'),side=document.getElementById('side');
+function checkMobile(){ if(window.innerWidth<=820){tg.style.display='block';} else {tg.style.display='none';side.style.display='';} }
+tg.addEventListener('click',()=>{ side.style.display=side.style.display==='none'?'':'none'; setTimeout(()=>map.invalidateSize(),50); });
+window.addEventListener('resize',checkMobile); checkMobile();
+</script>
+</body>
+</html>
